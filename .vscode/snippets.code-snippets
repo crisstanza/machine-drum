@@ -1,0 +1,8 @@
+{
+  "Log output to console with a === mark": {
+    "scope": "javascript,typescript",
+    "prefix": "ll",
+    "body": ["console.log(\"====\", $0);"],
+    "description": "Log output to console with a ==== mark, so you can easily search for such log calls.",
+  },
+}

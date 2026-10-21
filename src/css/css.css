@@ -1,0 +1,15 @@
+* {
+    font-size: 40px;
+}
+
+html {
+    background-color: #f0f0f0;
+    padding: 20px;
+}
+
+body {
+    background-color: aliceblue;
+    padding: 20px;
+    margin: 0;
+    border: 1px solid black;
+}
