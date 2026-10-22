@@ -10,8 +10,8 @@ export class Index {
   init() {
     this.player.init();
     const playButton = document.querySelector("button#play-button");
-    playButton?.addEventListener("click", () => this.player.play());
+    playButton?.addEventListener("mousedown", () => this.player.play());
     const stopButton = document.querySelector("button#stop-button");
-    stopButton?.addEventListener("click", () => this.player.stop());
+    stopButton?.addEventListener("mousedown", () => this.player.stop());
   }
 }
