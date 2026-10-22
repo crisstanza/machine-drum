@@ -5,5 +5,5 @@
     "rootDir": "src/ts",
     "outDir": "src/js"
   },
-  "include": ["**/*"]
+  "include": ["**/*.mts"]
 }

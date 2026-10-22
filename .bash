@@ -16,6 +16,7 @@ deps() {
 
 clean() {
     rm -Rf build
+    rm -Rf src/js
 }
 
 transpile() {

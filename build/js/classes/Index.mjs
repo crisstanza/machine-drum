@@ -1,1 +1,0 @@
-class n{constructor(t){this.player=t}init(){this.player.init();const t=document.querySelector("button#play-button");t?.addEventListener("click",()=>this.player.play());const o=document.querySelector("button#stop-button");o?.addEventListener("click",()=>this.player.stop())}}export{n as Index};
