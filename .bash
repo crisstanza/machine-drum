@@ -28,11 +28,11 @@ transpileAndWatch() {
 }
 
 minifyJS() {
-    npx esbuild `find . -wholename '*/src/*.mjs'` --outdir=build/js --minify --format=esm --out-extension:.js=.mjs
+    npx esbuild `find . -wholename '*/src/js/*.mjs'` --outdir=build/js --minify --format=esm --out-extension:.js=.mjs
 }
 
 minifyCSS() {
-    npx esbuild `find . -wholename '*/src/*.css'` --outdir=build/css --minify
+    npx esbuild `find . -wholename '*/src/css/*.css'` --outdir=build/css --minify
 }
 
 viteHelp() {
@@ -142,6 +142,12 @@ function _print_quit() { # pseudo-private
     echo -e " ${BLUE}q)${RESET} ${ITALIC}quit${RESET}"
 }
 
+function _print_separator() { # pseudo-private
+    echo -ne ${CYAN}
+    printf '%*s\n' "$(tput cols)" '' | tr ' ' _
+    echo -ne ${RESET}
+}
+
 function _run_commands() { # pseudo-private
     local INPUTS="${@}"
     for input in ${INPUTS} ; do
@@ -176,8 +182,7 @@ function _run_commands() { # pseudo-private
 
 function _menu() { # pseudo-private
     while true ; do
-        echo -ne ${CYAN}
-        printf '%*s\n' "$(tput cols)" '' | tr ' ' _ ; echo -ne ${RESET}
+        _print_separator
         echo -e "\n${BOLD}Available commands:${RESET}\n"
         local IS_QUIT_PRINTED=0
         local I=1
