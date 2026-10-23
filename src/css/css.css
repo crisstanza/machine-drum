@@ -1,15 +1,52 @@
+:root {
+    --main-padding: 20px;
+}
+
 * {
-    font-size: 40px;
+    font-size: 50pt;
 }
 
 html {
     background-color: #f0f0f0;
-    padding: 20px;
+    padding: var(--main-padding);
+    height: calc(100% - var(--main-padding)*2);
+    display: flex;
+    vertical-align: middle;
 }
 
 body {
     background-color: aliceblue;
-    padding: 20px;
-    margin: 0;
-    border: 1px solid black;
+    padding: var(--main-padding);
+    border: 1px solid #696969;
+    text-align: center;
+    width: fit-content;
+    margin: auto;
+    box-shadow: 2px 2px 0px gray;
+}
+
+button {
+    border-style: outset;
+    border-width: 3px;
+    line-height: 94px;
+    height: 100px;
+    width: 100px;
+    padding: 0;
+}
+
+div.buttons {
+    display: flex;
+    gap: 20px;
+}
+
+button:active,
+button.active {
+    border-style: inset;
+    background-color: #e0e0e0;
+    padding-top: 3px;
+    color: color-mix(in srgb, currentColor 75%, transparent);
+}
+
+input[type="range"] {
+    width: 125px;
+    margin-bottom: -20px;
 }

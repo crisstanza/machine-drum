@@ -8,7 +8,12 @@
     <script type="module" src="js/index.mjs"></script>
   </head>
   <body>
-    <button id="play-button">play</button>
-    <button id="stop-button">stop</button>
+    <div class="buttons">
+      <button id="play-button">▶️</button>
+      <button id="stop-button">⏹️</button>
+    </div>
+    <div class="volume">
+      <input id="volume-control" type="range" min="0" max="1" step="0.01" value="0.5" />
+    </div>
   </body>
 </html>
