@@ -7,7 +7,7 @@
 }
 
 html {
-    background-color: #f0f0f0;
+    background-color: #ebd7d7;
     padding: var(--main-padding);
     height: calc(100% - var(--main-padding)*2);
     display: flex;

@@ -28,10 +28,10 @@ A kind of drum machine 🡆 https://crisstanza.github.io/machine-drum/
 | E2        | Chinese Cymbal       | Prato China                   |
 | F2        | Ride Bell            | Cúpula do Prato de Condução   |
 | F#2       | Tambourine           | Pandeireta / Meia-Lua         |
-| G2        | Splash Cymbal        | Prato Splash                  |
+| ~~G2~~    | ~~Splash Cymbal~~    | ~~Prato Splash~~              |
 | G#2       | Cowbell              | Campana / Cowbell             |
 | A2        | Crash Cymbal 2       | Prato de Ataque 2             |
-| A#2       | Vibraslap            | Vibra-slap                    |
+| ~~A#2~~   | ~~Vibraslap~~        | ~~Vibra-slap~~                |
 | B2        | Ride Cymbal 2        | Prato de Condução 2           |
 
 <br>
