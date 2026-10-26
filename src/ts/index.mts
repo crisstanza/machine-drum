@@ -1,4 +1,4 @@
 import { Index } from "./classes/Index.mjs";
 
-const index = new Index();
+const index: Index = new Index();
 index.init();

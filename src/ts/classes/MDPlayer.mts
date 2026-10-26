@@ -1,12 +1,12 @@
 import { MDAudioBufferMap, MDSong } from "../types/types.mjs";
 
 export class MDPlayer {
-  private audioContext: AudioContext = new AudioContext();
-  private gainNode: GainNode = this.audioContext.createGain();
+  private readonly audioContext = new AudioContext();
+  private readonly gainNode: GainNode = this.audioContext.createGain();
 
-  private volumeControl: HTMLInputElement;
+  private readonly volumeControl: HTMLInputElement;
 
-  private AUDIO_FILES = [
+  private readonly AUDIO_FILES = [
     "B0",
     "C1",
     "Cs1",
@@ -33,7 +33,7 @@ export class MDPlayer {
     "As2", // empty
     "B2",
   ];
-  private AUDIO_BUFFERS: MDAudioBufferMap = {};
+  private readonly AUDIO_BUFFERS: MDAudioBufferMap = {};
 
   private requestId = 0;
   private timeControl = 0;
@@ -43,9 +43,9 @@ export class MDPlayer {
   private beatCount = 0;
 
   private bpm = 120;
-  private stepDuration = 60 / 4 / this.bpm;
+  private stepDuration = (1000 * 60) / (4 * this.bpm);
 
-  private song: MDSong = [
+  private readonly song: MDSong = [
     {
       beats: [
         ["A2", "Fs1", "B0"], //
@@ -72,15 +72,15 @@ export class MDPlayer {
       ],
       repeat: 7,
     },
-    // {
-    //   beats: [
-    //     ["Fs2"], //
-    //     [""],
-    //     ["Fs2"],
-    //     [""],
-    //   ],
-    //   repeat: 2,
-    // },
+    {
+      beats: [
+        ["Fs2"], //
+        [""],
+        ["Fs2"],
+        [""],
+      ],
+      repeat: 2,
+    },
   ];
 
   constructor(volumeControl: HTMLInputElement) {
@@ -97,7 +97,7 @@ export class MDPlayer {
   }
 
   private async playing(timestamp: number) {
-    if (timestamp - this.timeControl >= this.stepDuration * 1000) {
+    if (timestamp - this.timeControl >= this.stepDuration) {
       this.playStep();
       this.timeControl = timestamp;
     }
@@ -106,16 +106,15 @@ export class MDPlayer {
 
   private async playStep() {
     await this.audioContext.resume();
-    const startTime = this.audioContext.currentTime;
     const beats = this.song[this.beatIndex];
     const step = beats.beats[this.positionIndex];
     const audioBuffers = step.filter((name) => name != "").map((name) => this.AUDIO_BUFFERS[name]);
     audioBuffers.forEach(async (buffer) => {
-      const source = this.audioContext.createBufferSource();
+      const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
       source.buffer = buffer;
       this.gainNode.gain.value = parseFloat(this.volumeControl.value);
       source.connect(this.gainNode);
-      source.start(startTime);
+      source.start();
     });
     this.positionIndex++;
     if (this.positionIndex >= beats.beats.length) {

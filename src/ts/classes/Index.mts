@@ -1,7 +1,7 @@
 import { MDPlayer } from "./MDPlayer.mjs";
 
 export class Index {
-  private player: MDPlayer;
+  private readonly player;
 
   constructor() {
     const volumeControl = document.querySelector("input#volume-control") as HTMLInputElement;

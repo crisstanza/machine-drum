@@ -29,6 +29,7 @@ jobs:
       - name: Build static content
         run: |
           chmod +x ./.bash
+          ./.bash installDeps
           ./.bash build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
