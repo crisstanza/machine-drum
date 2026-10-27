@@ -2,17 +2,18 @@ import { MDPlayer } from "./MDPlayer.mjs";
 
 export class Index {
   private readonly player;
+  private readonly playButton: HTMLButtonElement;
 
   constructor() {
     const volumeControl = document.querySelector("input#volume-control") as HTMLInputElement;
-    this.player = new MDPlayer(volumeControl);
+    this.playButton = document.querySelector("button#play-button") as HTMLButtonElement;
+    this.player = new MDPlayer(volumeControl, this.playButton);
     this.player.init();
   }
 
   init() {
-    const playButton = document.querySelector("button#play-button");
-    playButton?.addEventListener("mousedown", () => this.player.play(playButton));
+    this.playButton?.addEventListener("mousedown", () => this.player.play());
     const stopButton = document.querySelector("button#stop-button");
-    stopButton?.addEventListener("mousedown", () => this.player.stop(playButton));
+    stopButton?.addEventListener("mousedown", () => this.player.stop());
   }
 }

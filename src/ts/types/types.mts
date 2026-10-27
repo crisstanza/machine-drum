@@ -1,4 +1,7 @@
-export type MDSong = MDSongBeats[];
+export type MDSong = {
+  repeat: boolean;
+  data: MDSongBeats[];
+};
 
 export type MDSongBeats = {
   beats: string[][];

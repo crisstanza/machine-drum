@@ -5,6 +5,7 @@ export class MDPlayer {
   private readonly gainNode: GainNode = this.audioContext.createGain();
 
   private readonly volumeControl: HTMLInputElement;
+  private readonly playButton: HTMLButtonElement;
 
   private readonly AUDIO_FILES = [
     "B0",
@@ -45,37 +46,41 @@ export class MDPlayer {
   private bpm = 120;
   private stepDuration = (1000 * 60) / (4 * this.bpm);
 
-  private readonly song: MDSong = [
-    {
-      beats: [
-        ["A2", "Fs1", "B0"], //
-        [""],
-        ["Fs1"],
-        [""],
-        ["Fs1", "D1"],
-        [""],
-        ["Fs1"],
-        [""],
-      ],
-      repeat: 1,
-    },
-    {
-      beats: [
-        ["Fs1", "B0"], //
-        [""],
-        ["Fs1"],
-        [""],
-        ["Fs1", "D1"],
-        [""],
-        ["Fs1"],
-        [""],
-      ],
-      repeat: 3,
-    },
-  ];
+  private readonly song: MDSong = {
+    repeat: false,
+    data: [
+      {
+        beats: [
+          ["A2", "Fs1", "B0"], //
+          [""],
+          ["Fs1"],
+          [""],
+          ["Fs1", "D1"],
+          [""],
+          ["Fs1"],
+          [""],
+        ],
+        repeat: 1,
+      },
+      {
+        beats: [
+          ["Fs1", "B0"], //
+          [""],
+          ["Fs1"],
+          [""],
+          ["Fs1", "D1"],
+          [""],
+          ["Fs1"],
+          [""],
+        ],
+        repeat: 3,
+      },
+    ],
+  };
 
-  constructor(volumeControl: HTMLInputElement) {
+  constructor(volumeControl: HTMLInputElement, playButton: HTMLButtonElement) {
     this.volumeControl = volumeControl;
+    this.playButton = playButton;
     this.gainNode.connect(this.audioContext.destination);
   }
 
@@ -97,16 +102,16 @@ export class MDPlayer {
 
   private async playStep() {
     await this.audioContext.resume();
-    let beats = this.song[this.beatIndex];
+    let beats = this.song.data[this.beatIndex];
     let tryNumber = 1;
     while (!beats || beats.repeat < 1) {
-      this.beatIndex = (this.beatIndex + 1) % this.song.length;
+      this.beatIndex = (this.beatIndex + 1) % this.song.data.length;
       this.positionIndex = 0;
       this.beatCount = 0;
-      beats = this.song[this.beatIndex];
+      beats = this.song.data[this.beatIndex];
       tryNumber++;
-      if (tryNumber > this.song.length) {
-        this.stop(document.getElementById("play-button"));
+      if (tryNumber > this.song.data.length) {
+        this.stop();
         return;
       }
     }
@@ -114,12 +119,11 @@ export class MDPlayer {
     this.positionIndex++;
     if (this.positionIndex >= beats.beats.length) {
       if (++this.beatCount >= beats.repeat) {
-        this.beatIndex = (this.beatIndex + 1) % this.song.length;
+        this.beatIndex = (this.beatIndex + 1) % this.song.data.length;
         this.beatCount = 0;
       }
       this.positionIndex = 0;
     }
-
     const audioBuffers = step.filter((name) => name != "").map((name) => this.AUDIO_BUFFERS[name]);
     audioBuffers.forEach(async (buffer) => {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
@@ -134,15 +138,15 @@ export class MDPlayer {
     });
   }
 
-  play(playButton: Element) {
-    if (playButton.classList.contains("active")) {
+  play() {
+    if (this.playButton?.classList.contains("active")) {
       return;
     }
-    playButton.classList.add("active");
+    this.playButton?.classList.add("active");
     this.requestId = requestAnimationFrame(this.playing.bind(this));
   }
 
-  stop(playButton: Element | null) {
+  stop() {
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
       this.requestId = 0;
@@ -150,7 +154,7 @@ export class MDPlayer {
       this.positionIndex = 0;
       this.beatCount = 0;
       this.audioContext.suspend();
-      playButton?.classList.remove("active");
+      this.playButton?.classList.remove("active");
     }
   }
 }
