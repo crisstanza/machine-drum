@@ -47,7 +47,7 @@ export class MDPlayer {
   private stepDuration = (1000 * 60) / (4 * this.bpm);
 
   private readonly song: MDSong = {
-    repeat: false,
+    repeat: true, // not implemented!!!
     data: [
       {
         beats: [
@@ -81,7 +81,6 @@ export class MDPlayer {
   constructor(volumeControl: HTMLInputElement, playButton: HTMLButtonElement) {
     this.volumeControl = volumeControl;
     this.playButton = playButton;
-    this.gainNode.connect(this.audioContext.destination);
   }
 
   async init() {
@@ -90,6 +89,7 @@ export class MDPlayer {
       const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
       this.AUDIO_BUFFERS[name] = buffer;
     });
+    this.gainNode.connect(this.audioContext.destination);
   }
 
   private async playing(timestamp: number) {
@@ -104,7 +104,7 @@ export class MDPlayer {
     await this.audioContext.resume();
     let beats = this.song.data[this.beatIndex];
     let tryNumber = 1;
-    while (!beats || beats.repeat < 1) {
+    while (!beats.repeat || beats.repeat < 1) {
       this.beatIndex = (this.beatIndex + 1) % this.song.data.length;
       this.positionIndex = 0;
       this.beatCount = 0;
@@ -139,10 +139,10 @@ export class MDPlayer {
   }
 
   play() {
-    if (this.playButton?.classList.contains("active")) {
+    if (this.playButton.classList.contains("active")) {
       return;
     }
-    this.playButton?.classList.add("active");
+    this.playButton.classList.add("active");
     this.requestId = requestAnimationFrame(this.playing.bind(this));
   }
 
@@ -154,7 +154,7 @@ export class MDPlayer {
       this.positionIndex = 0;
       this.beatCount = 0;
       this.audioContext.suspend();
-      this.playButton?.classList.remove("active");
+      this.playButton.classList.remove("active");
     }
   }
 }
