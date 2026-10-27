@@ -1,4 +1,5 @@
-import { song1 } from "../songs/song1.mjs";
+import { CLASS_NAMES } from "../enums/enums.mjs";
+import { song8 } from "../songs/song8.mjs";
 import { MDAudioBufferMap, MDSong } from "../types/types.mjs";
 
 export class MDPlayer {
@@ -44,7 +45,7 @@ export class MDPlayer {
   private positionIndex = 0;
   private beatCount = 0;
 
-  private readonly song: MDSong = song1;
+  private readonly song: MDSong = song8;
 
   private stepDuration = (1000 * 60) / (this.song.time * this.song.bpm);
 
@@ -67,7 +68,7 @@ export class MDPlayer {
       await this.playStep();
       this.timeControl = timestamp;
     }
-    if (this.playButton.classList.contains("active")) {
+    if (this.isPlaying()) {
       this.requestId = requestAnimationFrame(this.playing.bind(this));
     }
   }
@@ -122,15 +123,22 @@ export class MDPlayer {
       source.addEventListener("ended", (evt: Event) => {
         const target = evt.target as AudioBufferSourceNode;
         target.disconnect();
+        if (!this.isPlaying()) {
+          this.audioContext.suspend();
+        }
       });
     });
   }
 
+  private isPlaying() {
+    return this.playButton.classList.contains(CLASS_NAMES.ACTIVE);
+  }
+
   play() {
-    if (this.playButton.classList.contains("active")) {
+    if (this.isPlaying()) {
       return;
     }
-    this.playButton.classList.add("active");
+    this.playButton.classList.add(CLASS_NAMES.ACTIVE);
     this.requestId = requestAnimationFrame(this.playing.bind(this));
   }
 
@@ -141,8 +149,7 @@ export class MDPlayer {
       this.beatIndex = 0;
       this.positionIndex = 0;
       this.beatCount = 0;
-      this.audioContext.suspend();
-      this.playButton.classList.remove("active");
+      this.playButton.classList.remove(CLASS_NAMES.ACTIVE);
     }
   }
 }
