@@ -70,16 +70,7 @@ export class MDPlayer {
         ["Fs1"],
         [""],
       ],
-      repeat: 7,
-    },
-    {
-      beats: [
-        ["Fs2"], //
-        [""],
-        ["Fs2"],
-        [""],
-      ],
-      repeat: 2,
+      repeat: 3,
     },
   ];
 
@@ -106,8 +97,29 @@ export class MDPlayer {
 
   private async playStep() {
     await this.audioContext.resume();
-    const beats = this.song[this.beatIndex];
+    let beats = this.song[this.beatIndex];
+    let tryNumber = 1;
+    while (!beats || beats.repeat < 1) {
+      this.beatIndex = (this.beatIndex + 1) % this.song.length;
+      this.positionIndex = 0;
+      this.beatCount = 0;
+      beats = this.song[this.beatIndex];
+      tryNumber++;
+      if (tryNumber > this.song.length) {
+        this.stop(document.getElementById("play-button"));
+        return;
+      }
+    }
     const step = beats.beats[this.positionIndex];
+    this.positionIndex++;
+    if (this.positionIndex >= beats.beats.length) {
+      if (++this.beatCount >= beats.repeat) {
+        this.beatIndex = (this.beatIndex + 1) % this.song.length;
+        this.beatCount = 0;
+      }
+      this.positionIndex = 0;
+    }
+
     const audioBuffers = step.filter((name) => name != "").map((name) => this.AUDIO_BUFFERS[name]);
     audioBuffers.forEach(async (buffer) => {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
@@ -115,17 +127,11 @@ export class MDPlayer {
       this.gainNode.gain.value = parseFloat(this.volumeControl.value);
       source.connect(this.gainNode);
       source.start();
+      source.addEventListener("ended", (evt: Event) => {
+        const target = evt.target as AudioBufferSourceNode;
+        target.disconnect();
+      });
     });
-    this.positionIndex++;
-    if (this.positionIndex >= beats.beats.length) {
-      this.positionIndex = 0;
-      if (this.beatCount < beats.repeat - 1) {
-        this.beatCount++;
-      } else {
-        this.beatCount = 0;
-        this.beatIndex = (this.beatIndex + 1) % this.song.length;
-      }
-    }
   }
 
   play(playButton: Element) {

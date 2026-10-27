@@ -7,7 +7,7 @@
 }
 
 html {
-    background-color: #ebd7d7;
+    background-color: #d7d9eb;
     padding: var(--main-padding);
     height: calc(100% - var(--main-padding)*2);
     display: flex;
@@ -21,7 +21,7 @@ body {
     text-align: center;
     width: fit-content;
     margin: auto;
-    box-shadow: 2px 2px 0px gray;
+    box-shadow: 3px 3px 5px gray;
 }
 
 button {
@@ -31,6 +31,7 @@ button {
     height: 100px;
     width: 100px;
     padding: 0;
+    box-shadow: 2px 2px 15px 0px gray;
 }
 
 div.buttons {
@@ -44,6 +45,7 @@ button.active {
     background-color: #e0e0e0;
     padding-top: 3px;
     color: color-mix(in srgb, currentColor 75%, transparent);
+    box-shadow: inset 2px 2px 5px 0px gray;
 }
 
 input[type="range"] {

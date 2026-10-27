@@ -20,11 +20,19 @@ clean() {
 }
 
 transpile() {
-    tsc
+    echo ''
+    echo 'npx tsc --listEmittedFiles'
+    echo ''
+    tsc --listEmittedFiles
+    echo ''
 }
 
 transpileAndWatch() {
-    npx tsc --watch
+    echo ''
+    echo 'npx tsc --listEmittedFiles --watch'
+    echo ''
+    npx tsc --listEmittedFiles --watch
+    echo ''
 }
 
 minifyJS() {
