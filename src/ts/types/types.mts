@@ -1,4 +1,6 @@
 export type MDSong = {
+  time: number;
+  bpm: number;
   repeat: boolean;
   data: MDSongBeats[];
 };

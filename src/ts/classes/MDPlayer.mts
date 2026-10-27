@@ -1,3 +1,4 @@
+import { song1 } from "../songs/song1.mjs";
 import { MDAudioBufferMap, MDSong } from "../types/types.mjs";
 
 export class MDPlayer {
@@ -43,40 +44,9 @@ export class MDPlayer {
   private positionIndex = 0;
   private beatCount = 0;
 
-  private bpm = 120;
-  private stepDuration = (1000 * 60) / (4 * this.bpm);
+  private readonly song: MDSong = song1;
 
-  private readonly song: MDSong = {
-    repeat: true, // not implemented!!!
-    data: [
-      {
-        beats: [
-          ["A2", "Fs1", "B0"], //
-          [""],
-          ["Fs1"],
-          [""],
-          ["Fs1", "D1"],
-          [""],
-          ["Fs1"],
-          [""],
-        ],
-        repeat: 1,
-      },
-      {
-        beats: [
-          ["Fs1", "B0"], //
-          [""],
-          ["Fs1"],
-          [""],
-          ["Fs1", "D1"],
-          [""],
-          ["Fs1"],
-          [""],
-        ],
-        repeat: 3,
-      },
-    ],
-  };
+  private stepDuration = (1000 * 60) / (this.song.time * this.song.bpm);
 
   constructor(volumeControl: HTMLInputElement, playButton: HTMLButtonElement) {
     this.volumeControl = volumeControl;
@@ -94,18 +64,31 @@ export class MDPlayer {
 
   private async playing(timestamp: number) {
     if (timestamp - this.timeControl >= this.stepDuration) {
-      this.playStep();
+      await this.playStep();
       this.timeControl = timestamp;
     }
-    this.requestId = requestAnimationFrame(this.playing.bind(this));
+    if (this.playButton.classList.contains("active")) {
+      this.requestId = requestAnimationFrame(this.playing.bind(this));
+    }
   }
 
   private async playStep() {
+    if (this.beatIndex >= this.song.data.length) {
+      this.stop();
+      return;
+    }
     await this.audioContext.resume();
     let beats = this.song.data[this.beatIndex];
     let tryNumber = 1;
     while (!beats.repeat || beats.repeat < 1) {
-      this.beatIndex = (this.beatIndex + 1) % this.song.data.length;
+      this.beatIndex++;
+      if (this.beatIndex >= this.song.data.length) {
+        if (!this.song.repeat) {
+          this.stop();
+          return;
+        }
+        this.beatIndex = 0;
+      }
       this.positionIndex = 0;
       this.beatCount = 0;
       beats = this.song.data[this.beatIndex];
@@ -119,12 +102,17 @@ export class MDPlayer {
     this.positionIndex++;
     if (this.positionIndex >= beats.beats.length) {
       if (++this.beatCount >= beats.repeat) {
-        this.beatIndex = (this.beatIndex + 1) % this.song.data.length;
+        this.beatIndex++;
+        if (this.beatIndex >= this.song.data.length && this.song.repeat) {
+          this.beatIndex = 0;
+        }
         this.beatCount = 0;
       }
       this.positionIndex = 0;
     }
-    const audioBuffers = step.filter((name) => name != "").map((name) => this.AUDIO_BUFFERS[name]);
+    const audioBuffers = step //
+      .filter((name) => name != "")
+      .map((name) => this.AUDIO_BUFFERS[name]);
     audioBuffers.forEach(async (buffer) => {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
       source.buffer = buffer;
