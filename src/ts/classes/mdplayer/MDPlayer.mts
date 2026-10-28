@@ -1,6 +1,6 @@
 import { AUDIO_FILES } from "../../config/config.mjs";
 import { CLASS_NAMES } from "../../enums/enums.mjs";
-import { song1 } from "../../songs/song1.mjs";
+import { song_03 } from "../../songs/song-03.mjs";
 import { MDSong } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
@@ -15,9 +15,13 @@ export class MDPlayer extends MDPlayerConstants {
   private positionIndex = 0;
   private beatCount = 0;
 
-  private readonly song: MDSong = song1;
+  private readonly song: MDSong = song_03;
 
-  private readonly stepDuration = (1000 * 60) / (this.song.time * this.song.bpm * 2);
+  private readonly stepDuration = this.calcStepDuration();
+
+  private calcStepDuration() {
+    return (1000 * 60) / (this.song.time * this.song.bpm * 2);
+  }
 
   constructor(volumeControl: HTMLInputElement, playButton: HTMLButtonElement) {
     super();

@@ -1,6 +1,8 @@
+import { SONG_GENDERS } from "../enums/enums.mjs";
 import { MDSong } from "../types/types.mjs";
 
-export const song2: MDSong = {
+export const song_02: MDSong = {
+  gender: SONG_GENDERS.BLUES,
   time: 4,
   bpm: 90,
   repeat: true,
