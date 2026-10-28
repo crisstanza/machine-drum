@@ -34,6 +34,8 @@ A kind of drum machine 🡆 https://crisstanza.github.io/machine-drum/
 | ~~A#2~~   | ~~Vibraslap~~        | ~~Vibra-slap~~                |
 | B2        | Ride Cymbal 2        | Prato de Condução 2           |
 
+_Do not use G2 and A#2 (they are empty sound files)._
+
 <br>
 
 ## 🪘 Auxiliary and Latin Percussion
@@ -70,3 +72,4 @@ For GarageBand's more complex or percussion-oriented kits, the higher-pitched no
 ## Cool Links:
 
 - https://fsymbols.com/signs/arrow/
+- https://www.musicca.com/pt/metronomo/

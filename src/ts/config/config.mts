@@ -1,0 +1,27 @@
+export const AUDIO_FILES = [
+  "B0",
+  "C1",
+  "Cs1",
+  "D1",
+  "Ds1",
+  "E1",
+  "F1",
+  "Fs1",
+  "G1",
+  "Gs1",
+  "A1",
+  "As1",
+  "B1",
+  "C2",
+  "Cs2",
+  "D2",
+  "Ds2",
+  "E2",
+  "F2",
+  "Fs2",
+  "G2", // empty
+  "Gs2",
+  "A2",
+  "As2", // empty
+  "B2",
+];

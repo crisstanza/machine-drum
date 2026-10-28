@@ -3,6 +3,7 @@ export type MDSong = {
   bpm: number;
   repeat: boolean;
   data: MDSongBeats[];
+  prompt?: string;
 };
 
 export type MDSongBeats = {

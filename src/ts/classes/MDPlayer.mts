@@ -1,42 +1,12 @@
+import { AUDIO_FILES } from "../config/config.mjs";
 import { CLASS_NAMES } from "../enums/enums.mjs";
-import { song8 } from "../songs/song8.mjs";
-import { MDAudioBufferMap, MDSong } from "../types/types.mjs";
+import { song1 } from "../songs/song1.mjs";
+import { MDSong } from "../types/types.mjs";
+import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
-export class MDPlayer {
-  private readonly audioContext = new AudioContext();
-  private readonly gainNode: GainNode = this.audioContext.createGain();
-
+export class MDPlayer extends MDPlayerConstants {
   private readonly volumeControl: HTMLInputElement;
   private readonly playButton: HTMLButtonElement;
-
-  private readonly AUDIO_FILES = [
-    "B0",
-    "C1",
-    "Cs1",
-    "D1",
-    "Ds1",
-    "E1",
-    "F1",
-    "Fs1",
-    "G1",
-    "Gs1",
-    "A1",
-    "As1",
-    "B1",
-    "C2",
-    "Cs2",
-    "D2",
-    "Ds2",
-    "E2",
-    "F2",
-    "Fs2",
-    "G2", // empty
-    "Gs2",
-    "A2",
-    "As2", // empty
-    "B2",
-  ];
-  private readonly AUDIO_BUFFERS: MDAudioBufferMap = {};
 
   private requestId = 0;
   private timeControl = 0;
@@ -45,17 +15,18 @@ export class MDPlayer {
   private positionIndex = 0;
   private beatCount = 0;
 
-  private readonly song: MDSong = song8;
+  private readonly song: MDSong = song1;
 
-  private stepDuration = (1000 * 60) / (this.song.time * this.song.bpm);
+  private readonly stepDuration = (1000 * 60) / (this.song.time * this.song.bpm * 2);
 
   constructor(volumeControl: HTMLInputElement, playButton: HTMLButtonElement) {
+    super();
     this.volumeControl = volumeControl;
     this.playButton = playButton;
   }
 
   async init() {
-    this.AUDIO_FILES.map(async (name) => {
+    AUDIO_FILES.map(async (name) => {
       const response = await fetch(new URL(`audio/${name}.wav`, window.location.href));
       const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
       this.AUDIO_BUFFERS[name] = buffer;
@@ -102,7 +73,8 @@ export class MDPlayer {
     const step = beats.beats[this.positionIndex];
     this.positionIndex++;
     if (this.positionIndex >= beats.beats.length) {
-      if (++this.beatCount >= beats.repeat) {
+      this.beatCount++;
+      if (this.beatCount >= beats.repeat) {
         this.beatIndex++;
         if (this.beatIndex >= this.song.data.length && this.song.repeat) {
           this.beatIndex = 0;
