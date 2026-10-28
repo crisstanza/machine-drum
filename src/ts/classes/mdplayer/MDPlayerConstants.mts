@@ -1,4 +1,4 @@
-import { MDAudioBufferMap } from "../types/types.mjs";
+import { MDAudioBufferMap } from "../../types/types.mjs";
 
 export abstract class MDPlayerConstants {
   protected readonly audioContext = new AudioContext();

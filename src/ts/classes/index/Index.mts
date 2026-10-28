@@ -1,4 +1,4 @@
-import { MDPlayer } from "./MDPlayer.mjs";
+import { MDPlayer } from "../mdplayer/MDPlayer.mjs";
 
 export class Index {
   private readonly player;

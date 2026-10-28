@@ -1,7 +1,7 @@
-import { AUDIO_FILES } from "../config/config.mjs";
-import { CLASS_NAMES } from "../enums/enums.mjs";
-import { song1 } from "../songs/song1.mjs";
-import { MDSong } from "../types/types.mjs";
+import { AUDIO_FILES } from "../../config/config.mjs";
+import { CLASS_NAMES } from "../../enums/enums.mjs";
+import { song1 } from "../../songs/song1.mjs";
+import { MDSong } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
 export class MDPlayer extends MDPlayerConstants {
