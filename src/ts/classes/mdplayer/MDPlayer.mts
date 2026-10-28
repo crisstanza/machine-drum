@@ -1,6 +1,6 @@
 import { AUDIO_FILES } from "../../config/config.mjs";
 import { CLASS_NAMES } from "../../enums/enums.mjs";
-import { song_03 } from "../../songs/song-03.mjs";
+import { song_00 } from "../../songs/song-00.mjs";
 import { MDSong } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
@@ -11,11 +11,14 @@ export class MDPlayer extends MDPlayerConstants {
   private requestId = 0;
   private timeControl = 0;
 
+  private partIndex = 0;
   private beatIndex = 0;
   private positionIndex = 0;
+
+  private partCount = 0;
   private beatCount = 0;
 
-  private readonly song: MDSong = song_03;
+  private readonly song: MDSong = song_00;
 
   private readonly stepDuration = this.calcStepDuration();
 
@@ -48,42 +51,81 @@ export class MDPlayer extends MDPlayerConstants {
     }
   }
 
-  private async playStep() {
-    if (this.beatIndex >= this.song.data.length) {
-      this.stop();
-      return;
+  private moveToNextPart() {
+    this.partIndex++;
+    this.partCount = 0;
+    this.beatIndex = 0;
+    this.beatCount = 0;
+    this.positionIndex = 0;
+    if (this.partIndex >= this.song.data.parts.length && this.song.repeat) {
+      this.partIndex = 0;
     }
-    await this.audioContext.resume();
-    let beats = this.song.data[this.beatIndex];
-    let tryNumber = 1;
-    while (!beats.repeat || beats.repeat < 1) {
-      this.beatIndex++;
-      if (this.beatIndex >= this.song.data.length) {
-        if (!this.song.repeat) {
-          this.stop();
-          return;
-        }
-        this.beatIndex = 0;
+  }
+
+  private skipBeatGroup(part: MDSong["data"]["parts"][number]) {
+    this.beatIndex++;
+    this.beatCount = 0;
+    this.positionIndex = 0;
+    if (this.beatIndex >= part.beats.length) {
+      this.beatIndex = 0;
+      this.partCount++;
+      if (this.partCount >= part.repeat) {
+        this.moveToNextPart();
       }
-      this.positionIndex = 0;
-      this.beatCount = 0;
-      beats = this.song.data[this.beatIndex];
-      tryNumber++;
-      if (tryNumber > this.song.data.length) {
+    }
+  }
+
+  private async playStep() {
+    const parts = this.song.data.parts;
+    let skippedPartCount = 0;
+    let part = parts[this.partIndex];
+    let beats = part?.beats[this.beatIndex];
+    while (true) {
+      if (this.partIndex >= parts.length) {
         this.stop();
         return;
       }
+      part = parts[this.partIndex];
+      if (!part) {
+        this.stop();
+        return;
+      }
+      if (
+        !part.repeat ||
+        part.repeat < 1 ||
+        !part.beats.some((group) => group.repeat >= 1 && group.data.length > 0)
+      ) {
+        skippedPartCount++;
+        if (skippedPartCount >= parts.length) {
+          this.stop();
+          return;
+        }
+        this.moveToNextPart();
+        continue;
+      }
+      skippedPartCount = 0;
+      beats = part.beats[this.beatIndex];
+      if (!beats || !beats.repeat || beats.repeat < 1 || beats.data.length < 1) {
+        this.skipBeatGroup(part);
+        continue;
+      }
+      break;
     }
-    const step = beats.beats[this.positionIndex];
+    await this.audioContext.resume();
+    const step = beats.data[this.positionIndex];
     this.positionIndex++;
-    if (this.positionIndex >= beats.beats.length) {
+    if (this.positionIndex >= beats.data.length) {
       this.beatCount++;
       if (this.beatCount >= beats.repeat) {
         this.beatIndex++;
-        if (this.beatIndex >= this.song.data.length && this.song.repeat) {
-          this.beatIndex = 0;
-        }
         this.beatCount = 0;
+        if (this.beatIndex >= part.beats.length) {
+          this.beatIndex = 0;
+          this.partCount++;
+          if (this.partCount >= part.repeat) {
+            this.moveToNextPart();
+          }
+        }
       }
       this.positionIndex = 0;
     }
@@ -122,8 +164,10 @@ export class MDPlayer extends MDPlayerConstants {
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
       this.requestId = 0;
+      this.partIndex = 0;
       this.beatIndex = 0;
       this.positionIndex = 0;
+      this.partCount = 0;
       this.beatCount = 0;
       this.playButton.classList.remove(CLASS_NAMES.ACTIVE);
     }
