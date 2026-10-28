@@ -39,7 +39,7 @@ div.buttons {
     gap: 20px;
 }
 
-button:active,
+button:active:not([disabled]),
 button.active {
     border-style: inset;
     background-color: #e0e0e0;

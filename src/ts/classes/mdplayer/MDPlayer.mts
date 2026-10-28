@@ -1,13 +1,10 @@
 import { AUDIO_FILES } from "../../config/config.mjs";
-import { CLASS_NAMES } from "../../enums/enums.mjs";
+import { HTML } from "../../enums/enums.mjs";
 import { song_01 } from "../../songs/song-01.mjs";
 import { MDSong } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
 export class MDPlayer extends MDPlayerConstants {
-  private readonly volumeControl: HTMLInputElement;
-  private readonly playButton: HTMLButtonElement;
-
   private requestId = 0;
   private timeControl = 0;
 
@@ -25,12 +22,6 @@ export class MDPlayer extends MDPlayerConstants {
 
   private calcStepDuration() {
     return (1000 * 60) / (this.song.time * this.song.bpm * 2);
-  }
-
-  constructor(volumeControl: HTMLInputElement, playButton: HTMLButtonElement) {
-    super();
-    this.volumeControl = volumeControl;
-    this.playButton = playButton;
   }
 
   async init() {
@@ -150,14 +141,15 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private isPlaying() {
-    return this.playButton.classList.contains(CLASS_NAMES.ACTIVE);
+    return this.playButton.classList.contains(HTML.CLASS_NAMES.ACTIVE);
   }
 
   play() {
     if (this.isPlaying()) {
       return;
     }
-    this.playButton.classList.add(CLASS_NAMES.ACTIVE);
+    this.playButton.classList.add(HTML.CLASS_NAMES.ACTIVE);
+    this.stopButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.requestId = requestAnimationFrame(this.playing.bind(this));
   }
 
@@ -170,7 +162,8 @@ export class MDPlayer extends MDPlayerConstants {
       this.positionIndex = 0;
       this.partCount = 0;
       this.beatCount = 0;
-      this.playButton.classList.remove(CLASS_NAMES.ACTIVE);
+      this.playButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
+      this.stopButton.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
     }
   }
 }
