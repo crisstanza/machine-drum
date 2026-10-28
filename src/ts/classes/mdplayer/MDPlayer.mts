@@ -1,6 +1,6 @@
 import { AUDIO_FILES } from "../../config/config.mjs";
 import { CLASS_NAMES } from "../../enums/enums.mjs";
-import { song_00 } from "../../songs/song-00.mjs";
+import { song_01 } from "../../songs/song-01.mjs";
 import { MDSong } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
@@ -11,6 +11,7 @@ export class MDPlayer extends MDPlayerConstants {
   private requestId = 0;
   private timeControl = 0;
 
+  private activeSources = 0;
   private partIndex = 0;
   private beatIndex = 0;
   private positionIndex = 0;
@@ -18,7 +19,7 @@ export class MDPlayer extends MDPlayerConstants {
   private partCount = 0;
   private beatCount = 0;
 
-  private readonly song: MDSong = song_00;
+  private readonly song: MDSong = song_01;
 
   private readonly stepDuration = this.calcStepDuration();
 
@@ -90,11 +91,7 @@ export class MDPlayer extends MDPlayerConstants {
         this.stop();
         return;
       }
-      if (
-        !part.repeat ||
-        part.repeat < 1 ||
-        !part.beats.some((group) => group.repeat >= 1 && group.data.length > 0)
-      ) {
+      if (!part.repeat || part.repeat < 1 || !part.beats.some((group) => group.repeat >= 1 && group.data.length > 0)) {
         skippedPartCount++;
         if (skippedPartCount >= parts.length) {
           this.stop();
@@ -138,11 +135,15 @@ export class MDPlayer extends MDPlayerConstants {
       this.gainNode.gain.value = parseFloat(this.volumeControl.value);
       source.connect(this.gainNode);
       source.start();
+      this.activeSources++;
       source.addEventListener("ended", (evt: Event) => {
         const target = evt.target as AudioBufferSourceNode;
         target.disconnect();
+        this.activeSources--;
         if (!this.isPlaying()) {
-          this.audioContext.suspend();
+          if (this.activeSources == 0) {
+            this.audioContext.suspend();
+          }
         }
       });
     });
