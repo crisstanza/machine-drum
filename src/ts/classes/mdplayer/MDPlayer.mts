@@ -36,7 +36,8 @@ export class MDPlayer extends MDPlayerConstants {
         const module = (await import(`../../songs/song-${i.toString().padStart(2, "0")}.mjs`)) as Record<string, MDSong>;
         Object.keys(module).forEach((exportedObject) => this.songs.push(module[exportedObject]));
       } catch (exc) {
-        console.info("End of songs loading.");
+        console.info(`End of songs loading. Total: ${this.songs.length}.`);
+        break;
       }
     }
 
