@@ -31,7 +31,7 @@ export class MDPlayer extends MDPlayerConstants {
     });
     this.gainNode.connect(this.audioContext.destination);
 
-    for (let i = 0; i <= 9; i++) {
+    for (let i = 0; i <= 99; i++) {
       try {
         const module = (await import(`../../songs/song-${i.toString().padStart(2, "0")}.mjs`)) as Record<string, MDSong>;
         Object.keys(module).forEach((exportedObject) => this.songs.push(module[exportedObject]));
