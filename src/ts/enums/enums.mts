@@ -1,6 +1,7 @@
 export const HTML = Object.freeze({
   CLASS_NAMES: Object.freeze({
     ACTIVE: "active",
+    LOADING: "loading",
   }),
   ATTRIBUTE_NAMES: Object.freeze({
     DISABLED: "disabled",

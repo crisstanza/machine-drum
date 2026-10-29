@@ -4,7 +4,7 @@
 
 * {
     font-size: 20pt;
-    font-family: Tahoma;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 html {
@@ -17,11 +17,12 @@ html {
 
 body {
     margin: auto;
+    display: flex;
+    row-gap: 30px;
     text-align: center;
     align-items: center;
-    display: flex;
     flex-direction: column;
-    row-gap: 30px;
+    width: calc(100% - var(--main-padding)*2);
 }
 
 section {
@@ -41,22 +42,42 @@ section.player * {
 
 section.songs {
     background-color: rgb(197, 213, 195);
+    min-width: 350px;
+}
+
+section.songs>div.song-info.loading {
+    opacity: 0.25;
 }
 
 section.songs>div.song-info {
     padding-top: 10px;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    justify-items: start;
+    text-align: left;
+}
+
+section.songs>div.song-info>span {
+    white-space: nowrap;
 }
 
 section.songs>div.song-info>span:nth-child(2n+1) {
     font-weight: bold;
 }
 
-section.songs>div.song-info>input[type=checkbox] {
-    margin: 0;
-    width: 20px;
+section.songs>div.song-info>span>input[type=checkbox] {
+    transform: scale(1.75);
+}
+
+div.buttons {
+    display: flex;
+    gap: 20px;
+}
+
+button:not(:disabled):not(.active),
+input[type=range],
+input[type=checkbox],
+select:not(:disabled) {
+    cursor: pointer;
 }
 
 button {
@@ -69,9 +90,8 @@ button {
     box-shadow: 2px 2px 10px 0px gray;
 }
 
-div.buttons {
-    display: flex;
-    gap: 20px;
+button[disabled] {
+    opacity: 0.75;
 }
 
 button:active:not([disabled]),

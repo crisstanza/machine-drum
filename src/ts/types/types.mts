@@ -30,3 +30,4 @@ export type MDSongDataPartSongBeats = {
 };
 
 export type MDAudioBufferMap = Record<string, AudioBuffer>;
+export type MDSongMap = Record<string, MDSong>;

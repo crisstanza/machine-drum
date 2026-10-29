@@ -13,7 +13,7 @@ const soloFill = [["Cs2", "B0", "Ds2"], [], ["Ds2"], ["B0"], ["Ds2", "D1"], [], 
 
 const expandBar = (beats: string[][]): string[][] =>
   beats.reduce<string[][]>((expanded, beat) => {
-    expanded.push(beat, [""]);
+    expanded.push(beat, []);
     return expanded;
   }, []);
 

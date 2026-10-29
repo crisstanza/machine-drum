@@ -1,6 +1,6 @@
 import { AUDIO_FILES } from "../../config/config.mjs";
 import { HTML, SONG_NAMES } from "../../enums/enums.mjs";
-import { MDSong } from "../../types/types.mjs";
+import { MDSong, MDSongDataPart, MDSongMap } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
 export class MDPlayer extends MDPlayerConstants {
@@ -15,32 +15,54 @@ export class MDPlayer extends MDPlayerConstants {
   private partCount = 0;
   private beatCount = 0;
 
-  private stepDuration = 0;
+  private beatInterval = 0;
 
   private song?: MDSong;
 
-  private calcStepDuration(song: MDSong) {
+  private calcBeatInterval(song: MDSong) {
     return (1000 * 60) / (song.time * song.bpm * 2);
   }
 
-  async init() {
+  private calcSongDuration(song: MDSong) {
+    const steps = song.data.parts.reduce((partTotal, part) => {
+      if (part.repeat < 1 || !part.beats.some((beat) => beat.repeat >= 1 && beat.data.length > 0)) {
+        return partTotal;
+      }
+      const partSteps = part.beats.reduce((beatTotal, beat) => {
+        if (beat.repeat < 1 || beat.data.length < 1) {
+          return beatTotal;
+        }
+        return beatTotal + beat.data.length * Math.ceil(beat.repeat);
+      }, 0);
+      return partTotal + partSteps * Math.ceil(part.repeat);
+    }, 0);
+    const durationInSeconds = Math.floor((steps * this.calcBeatInterval(song)) / 1000);
+    const minutes = Math.floor(durationInSeconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const seconds = (durationInSeconds % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  }
+
+  async initAudios() {
     AUDIO_FILES.map(async (name) => {
       const response = await fetch(new URL(`audio/${name}.wav`, window.location.href));
       const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
       this.AUDIO_BUFFERS[name] = buffer;
     });
     this.gainNode.connect(this.audioContext.destination);
+  }
 
+  async initUserInterface() {
     for (let i = 0; i <= 99; i++) {
       try {
-        const module = (await import(`../../songs/song-${i.toString().padStart(2, "0")}.mjs`)) as Record<string, MDSong>;
+        const module = (await import(`../../songs/song-${i.toString().padStart(2, "0")}.mjs`)) as MDSongMap;
         Object.keys(module).forEach((exportedObject) => this.songs.push(module[exportedObject]));
       } catch (exc) {
         console.info(`End of songs loading. Total: ${this.songs.length}.`);
         break;
       }
     }
-
     this.availableSongs.options.length = 0;
     this.songs.forEach((song, i) => {
       const newOption = document.createElement("option");
@@ -49,12 +71,11 @@ export class MDPlayer extends MDPlayerConstants {
       this.availableSongs.add(newOption);
     });
     this.songChanged();
-
     this.playButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
   }
 
   private async playing(timestamp: number) {
-    if (timestamp - this.timeControl >= this.stepDuration) {
+    if (timestamp - this.timeControl >= this.beatInterval) {
       await this.playStep();
       this.timeControl = timestamp;
     }
@@ -74,7 +95,7 @@ export class MDPlayer extends MDPlayerConstants {
     }
   }
 
-  private skipBeatGroup(part: MDSong["data"]["parts"][number]) {
+  private skipBeatGroup(part: MDSongDataPart) {
     this.beatIndex++;
     this.beatCount = 0;
     this.positionIndex = 0;
@@ -137,9 +158,7 @@ export class MDPlayer extends MDPlayerConstants {
       }
       this.positionIndex = 0;
     }
-    const audioBuffers = step //
-      .filter((name) => name != "")
-      .map((name) => this.AUDIO_BUFFERS[name]);
+    const audioBuffers = step.map((name) => this.AUDIO_BUFFERS[name]);
     audioBuffers.forEach(async (buffer) => {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
       source.buffer = buffer;
@@ -197,11 +216,13 @@ export class MDPlayer extends MDPlayerConstants {
 
   songChanged() {
     this.song = this.songs[this.availableSongs.selectedIndex];
-    this.stepDuration = this.calcStepDuration(this.song);
+    this.beatInterval = this.calcBeatInterval(this.song);
+    this.songDuration.innerText = this.calcSongDuration(this.song);
     this.songSpeed.innerText = this.song.bpm.toString();
     this.songName.innerText = this.song.name ?? SONG_NAMES._;
     this.songGenre.innerText = this.song.gender;
     this.songRepeat.checked = this.song.repeat ?? false;
     this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
+    this.songInfo.classList.remove(HTML.CLASS_NAMES.LOADING);
   }
 }
