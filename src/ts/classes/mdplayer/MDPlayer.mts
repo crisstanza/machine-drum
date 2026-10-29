@@ -67,7 +67,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.songs.forEach((song, i) => {
       const newOption = document.createElement("option");
       newOption.value = i.toString();
-      newOption.text = `${song.name ?? SONG_NAMES._} (${song.gender})`;
+      newOption.text = `${song.name ?? SONG_NAMES._} | ${song.gender}`;
       this.availableSongs.add(newOption);
     });
     this.songChanged();
