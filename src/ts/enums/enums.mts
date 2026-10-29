@@ -12,6 +12,7 @@ export const SONG_GENDERS = Object.freeze({
   _: "no gender",
   BALLAD: "Ballad",
   BLUES: "Blues",
+  BOSSA_NOVA: "Bossa nova",
   POP_ROCK: "Pop/rock",
   ROCK: "Rock",
 });
