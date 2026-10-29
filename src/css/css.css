@@ -3,11 +3,12 @@
 }
 
 * {
-    font-size: 50pt;
+    font-size: 20pt;
+    font-family: Tahoma;
 }
 
 html {
-    background-color: #ebd7e4;
+    background-color: rgb(213, 195, 195);
     padding: var(--main-padding);
     height: calc(100% - var(--main-padding)*2);
     display: flex;
@@ -15,13 +16,47 @@ html {
 }
 
 body {
-    background-color: rgb(195, 210, 213);
+    margin: auto;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    row-gap: 30px;
+}
+
+section {
     padding: var(--main-padding);
     border: 1px solid #696969;
-    text-align: center;
     width: fit-content;
-    margin: auto;
     box-shadow: 3px 3px 20px gray;
+}
+
+section.player {
+    background-color: rgb(195, 210, 213);
+}
+
+section.player * {
+    font-size: 50pt;
+}
+
+section.songs {
+    background-color: rgb(197, 213, 195);
+}
+
+section.songs>div.song-info {
+    padding-top: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: start;
+}
+
+section.songs>div.song-info>span:nth-child(2n+1) {
+    font-weight: bold;
+}
+
+section.songs>div.song-info>input[type=checkbox] {
+    margin: 0;
+    width: 20px;
 }
 
 button {

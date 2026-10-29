@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "ES6",
+    "target": "es2025",
+    "module": "esnext",
     "rootDir": "src/ts",
     "outDir": "src/js"
   },

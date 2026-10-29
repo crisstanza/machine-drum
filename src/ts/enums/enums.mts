@@ -8,9 +8,13 @@ export const HTML = Object.freeze({
 });
 
 export const SONG_GENDERS = Object.freeze({
-  _: "Indefinido",
-  BALLAD: "Balada",
+  _: "no gender",
+  BALLAD: "Ballad",
   BLUES: "Blues",
   POP_ROCK: "Pop/rock",
   ROCK: "Rock",
+});
+
+export const SONG_NAMES = Object.freeze({
+  _: "no name",
 });

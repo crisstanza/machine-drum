@@ -1,6 +1,5 @@
 import { AUDIO_FILES } from "../../config/config.mjs";
-import { HTML } from "../../enums/enums.mjs";
-import { song_01 } from "../../songs/song-01.mjs";
+import { HTML, SONG_NAMES } from "../../enums/enums.mjs";
 import { MDSong } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
@@ -16,12 +15,12 @@ export class MDPlayer extends MDPlayerConstants {
   private partCount = 0;
   private beatCount = 0;
 
-  private readonly song: MDSong = song_01;
+  private stepDuration = 0;
 
-  private readonly stepDuration = this.calcStepDuration();
+  private song?: MDSong;
 
-  private calcStepDuration() {
-    return (1000 * 60) / (this.song.time * this.song.bpm * 2);
+  private calcStepDuration(song: MDSong) {
+    return (1000 * 60) / (song.time * song.bpm * 2);
   }
 
   async init() {
@@ -31,6 +30,26 @@ export class MDPlayer extends MDPlayerConstants {
       this.AUDIO_BUFFERS[name] = buffer;
     });
     this.gainNode.connect(this.audioContext.destination);
+
+    for (let i = 0; i <= 9; i++) {
+      try {
+        const module = (await import(`../../songs/song-${i.toString().padStart(2, "0")}.mjs`)) as Record<string, MDSong>;
+        Object.keys(module).forEach((exportedObject) => this.songs.push(module[exportedObject]));
+      } catch (exc) {
+        console.info("End of songs loading.");
+      }
+    }
+
+    this.availableSongs.options.length = 0;
+    this.songs.forEach((song, i) => {
+      const newOption = document.createElement("option");
+      newOption.value = i.toString();
+      newOption.text = `${song.name ?? SONG_NAMES._} (${song.gender})`;
+      this.availableSongs.add(newOption);
+    });
+    this.songChanged();
+
+    this.playButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
   }
 
   private async playing(timestamp: number) {
@@ -49,7 +68,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.beatIndex = 0;
     this.beatCount = 0;
     this.positionIndex = 0;
-    if (this.partIndex >= this.song.data.parts.length && this.song.repeat) {
+    if (this.partIndex >= this.song!.data.parts.length && this.song!.repeat) {
       this.partIndex = 0;
     }
   }
@@ -68,7 +87,7 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private async playStep() {
-    const parts = this.song.data.parts;
+    const parts = this.song!.data.parts;
     let skippedPartCount = 0;
     let part = parts[this.partIndex];
     let beats = part?.beats[this.beatIndex];
@@ -150,6 +169,7 @@ export class MDPlayer extends MDPlayerConstants {
     }
     this.playButton.classList.add(HTML.CLASS_NAMES.ACTIVE);
     this.stopButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
+    this.availableSongs.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
     this.requestId = requestAnimationFrame(this.playing.bind(this));
   }
 
@@ -164,6 +184,23 @@ export class MDPlayer extends MDPlayerConstants {
       this.beatCount = 0;
       this.playButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
       this.stopButton.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
+      this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     }
+  }
+
+  songRepeatChanged() {
+    if (this.song) {
+      this.song.repeat = this.songRepeat.checked;
+    }
+  }
+
+  songChanged() {
+    this.song = this.songs[this.availableSongs.selectedIndex];
+    this.stepDuration = this.calcStepDuration(this.song);
+    this.songSpeed.innerText = this.song.bpm.toString();
+    this.songName.innerText = this.song.name ?? SONG_NAMES._;
+    this.songGenre.innerText = this.song.gender;
+    this.songRepeat.checked = this.song.repeat ?? false;
+    this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
   }
 }

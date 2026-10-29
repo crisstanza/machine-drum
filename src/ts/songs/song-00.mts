@@ -8,7 +8,7 @@ export const song_00: MDSong = {
   time: 4,
   bpm: 60,
 
-  repeat: true,
+  repeat: false,
 
   data: {
     parts: [

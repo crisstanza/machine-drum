@@ -6,14 +6,33 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="css/css.css" />
     <script type="module" src="js/index.mjs"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
   </head>
   <body>
-    <div class="buttons">
-      <button id="play-button">▶️</button>
-      <button id="stop-button" disabled>⏹️</button>
-    </div>
-    <div class="volume">
-      <input id="volume-control" type="range" min="0" max="1" step="0.01" value="0.5" />
-    </div>
+    <section class="songs">
+      <select id="available-songs" disabled>
+        <option>loading</option>
+      </select>
+      <div class="song-info">
+        <span>BPM:</span>
+        <span id="song-speed"></span>
+        <span>Name:</span>
+        <span id="song-name"></span>
+        <span>Genre:</span>
+        <span id="song-genre"></span>
+        <span>Repeat?</span>
+        <input type="checkbox" id="song-repeat" />
+      </div>
+    </section>
+
+    <section class="player">
+      <div class="buttons">
+        <button title="play" id="play-button" disabled>▶️</button>
+        <button title="stop" id="stop-button" disabled>⏹️</button>
+      </div>
+      <div class="volume">
+        <input title="volume" id="volume-control" type="range" min="0" max="1" step="0.01" value="0.5" />
+      </div>
+    </section>
   </body>
 </html>

@@ -9,7 +9,16 @@ export const song_01: MDSong = {
   data: {
     parts: [
       {
-        repeat: 2,
+        repeat: 1,
+        beats: [
+          {
+            data: [["Gs2"], [""], [""], [""], [""], [""], [""], [""]],
+            repeat: 4,
+          },
+        ],
+      },
+      {
+        repeat: 4,
         beats: [
           {
             data: [
