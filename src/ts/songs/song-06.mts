@@ -109,31 +109,35 @@ export const song_06: MDSong = {
   repeat: false,
   prompt: "Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-XX.mts` que seja um ritmo de BOSSA NOVA.\n\nFaça uma música completa de aproximadamente 1 minuto e meio, com introdução, verso e refrão, na ordem que você achar melhor.\n\nPara saber os códigos das partes da bateria, leia o arquivo `README.md` (lembrando de nunca usar `G2`e `A#2`).\n\nNo novo arquivo criado, preencha a propriedade `prompt` do objeto `MDSong` com este prompt que você usou. Você deve usar EXATAMENTE este prompt que eu estou lhe passando, não a sua versão.\n\nNesta sessão, não edite a classe `MDPlayer`.",
   data: {
-    parts: [
+    tracks: [
       {
-        repeat: 1,
-        beats: [
+        parts: [
           {
-            repeat: 4,
-            data: [["Gs2"], [], [], [], [], [], [], []],
+            repeat: 1,
+            beats: [
+              {
+                repeat: 4,
+                data: [["Gs2"], [], [], [], [], [], [], []],
+              },
+            ],
           },
-        ],
-      },
-      {
-        repeat: 1,
-        beats: [
-          { data: buildFourBarPattern(introGroove, introFill), repeat: 1 },
-          { data: buildFourBarPattern(verseGroove, verseFill), repeat: 1 },
-          { data: buildFourBarPattern(verseGroove, verseFillAlt), repeat: 1 },
-          { data: buildFourBarPattern(verseGroove, verseFill), repeat: 1 },
-          { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 1 },
-          { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 1 },
-          { data: buildFourBarPattern(verseGroove, verseFillAlt), repeat: 1 },
-          { data: buildFourBarPattern(verseGroove, verseFill), repeat: 1 },
-          { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 1 },
-          { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 1 },
-          { data: buildFourBarPattern(outroGroove, outroGroove), repeat: 1 },
-          { data: outroBar, repeat: 1 },
+          {
+            repeat: 1,
+            beats: [
+              { data: buildFourBarPattern(introGroove, introFill), repeat: 1 },
+              { data: buildFourBarPattern(verseGroove, verseFill), repeat: 1 },
+              { data: buildFourBarPattern(verseGroove, verseFillAlt), repeat: 1 },
+              { data: buildFourBarPattern(verseGroove, verseFill), repeat: 1 },
+              { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 1 },
+              { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 1 },
+              { data: buildFourBarPattern(verseGroove, verseFillAlt), repeat: 1 },
+              { data: buildFourBarPattern(verseGroove, verseFill), repeat: 1 },
+              { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 1 },
+              { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 1 },
+              { data: buildFourBarPattern(outroGroove, outroGroove), repeat: 1 },
+              { data: outroBar, repeat: 1 },
+            ],
+          },
         ],
       },
     ],

@@ -31,19 +31,23 @@ export const song_03: MDSong = {
   repeat: false,
   prompt: "Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-03.mts` que seja um ritmo de bateria pop/rock, com viradas e ataques.\n\nFaça uma música completa de aproximadamente 4 minutos, com introdução, verso, variação, refrão e solo, na ordem que você desejar.\n\nPara saber os códigos das partes da bateria, leia o arquivo `README.md` (lembrando de nunca usar `G2`e `A#2`).\n\nNo novo arquivo criado, preencha a propriedade `prompt` do objeto `MDSong` com este prompt que você usou. Você deve usar EXATAMENTE este prompt que eu estou lhe passando, não a sua versão.\n\nEdite a classe `MDPlayer` para ela referenciar o novo objeto `song` criado. Porém, nesta classe, jamais altere o método `calcStepDuration()`.",
   data: {
-    parts: [
+    tracks: [
       {
-        repeat: 1,
-        beats: [
-          { data: buildFourBarPattern(introGroove, introGroove), repeat: 1 },
-          { data: buildFourBarPattern(verseGroove, verseFill), repeat: 4 },
-          { data: buildFourBarPattern(variationGroove, variationFill), repeat: 2 },
-          { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 4 },
-          { data: buildFourBarPattern(verseGroove, verseFill), repeat: 4 },
-          { data: buildFourBarPattern(variationGroove, variationFill), repeat: 2 },
-          { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 4 },
-          { data: buildFourBarPattern(soloGroove, soloFill), repeat: 4 },
-          { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 4 },
+        parts: [
+          {
+            repeat: 1,
+            beats: [
+              { data: buildFourBarPattern(introGroove, introGroove), repeat: 1 },
+              { data: buildFourBarPattern(verseGroove, verseFill), repeat: 4 },
+              { data: buildFourBarPattern(variationGroove, variationFill), repeat: 2 },
+              { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 4 },
+              { data: buildFourBarPattern(verseGroove, verseFill), repeat: 4 },
+              { data: buildFourBarPattern(variationGroove, variationFill), repeat: 2 },
+              { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 4 },
+              { data: buildFourBarPattern(soloGroove, soloFill), repeat: 4 },
+              { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 4 },
+            ],
+          },
         ],
       },
     ],

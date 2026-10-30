@@ -89,31 +89,35 @@ export const song_07: MDSong = {
   repeat: false,
   prompt: "Crie uma versão de Brisa de Copacabana com a mesma estrutura e pegada de Bossa Nova, usando uma base fácil de acompanhar no violão, com síncopes leves no bumbo e sem subdivisões curtas.",
   data: {
-    parts: [
+    tracks: [
       {
-        repeat: 1,
-        beats: [
+        parts: [
           {
-            repeat: 4,
-            data: [["Gs2"], [], [], [], [], [], [], []],
+            repeat: 1,
+            beats: [
+              {
+                repeat: 4,
+                data: [["Gs2"], [], [], [], [], [], [], []],
+              },
+            ],
           },
-        ],
-      },
-      {
-        repeat: 1,
-        beats: [
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, introFill), repeat: 1 },
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, verseFill), repeat: 1 },
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, verseFillAlt), repeat: 1 },
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, verseFill), repeat: 1 },
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, chorusFill), repeat: 1 },
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, chorusFill), repeat: 1 },
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, verseFillAlt), repeat: 1 },
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, verseFill), repeat: 1 },
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, chorusFill), repeat: 1 },
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, chorusFill), repeat: 1 },
-          { data: buildFourBarPattern(bossaGroove, bossaVariation, bossaGroove), repeat: 1 },
-          { data: outroBar, repeat: 1 },
+          {
+            repeat: 1,
+            beats: [
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, introFill), repeat: 1 },
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, verseFill), repeat: 1 },
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, verseFillAlt), repeat: 1 },
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, verseFill), repeat: 1 },
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, chorusFill), repeat: 1 },
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, chorusFill), repeat: 1 },
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, verseFillAlt), repeat: 1 },
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, verseFill), repeat: 1 },
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, chorusFill), repeat: 1 },
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, chorusFill), repeat: 1 },
+              { data: buildFourBarPattern(bossaGroove, bossaVariation, bossaGroove), repeat: 1 },
+              { data: outroBar, repeat: 1 },
+            ],
+          },
         ],
       },
     ],

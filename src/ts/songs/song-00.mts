@@ -11,17 +11,34 @@ export const song_00: MDSong = {
   repeat: false,
 
   data: {
-    parts: [
+    tracks: [
       {
-        repeat: 1,
-        beats: [
-          {
-            repeat: 3,
-            data: [["Fs1"], [], [], [], [], [], [], []],
-          },
+        parts: [
           {
             repeat: 1,
-            data: [["Gs2"], [], [], [], [], [], [], []],
+            beats: [
+              {
+                repeat: 3,
+                data: [["Fs1"], [], [], [], [], [], [], []],
+              },
+              {
+                repeat: 1,
+                data: [["Gs2"], [], [], [], [], [], [], []],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        parts: [
+          {
+            repeat: 1,
+            beats: [
+              {
+                repeat: 2,
+                data: [["E2"], [], [], [], [], [], [], []],
+              },
+            ],
           },
         ],
       },

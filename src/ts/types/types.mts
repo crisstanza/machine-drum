@@ -16,15 +16,19 @@ export type MDSong = {
 };
 
 export type MDSongData = {
-  parts: MDSongDataPart[];
+  tracks: MDSongDataTrack[];
 };
 
-export type MDSongDataPart = {
+export type MDSongDataTrack = {
+  parts: MDSongDataTrackPart[];
+};
+
+export type MDSongDataTrackPart = {
   repeat: number;
-  beats: MDSongDataPartSongBeats[];
+  beats: MDSongDataTrackPartSongBeats[];
 };
 
-export type MDSongDataPartSongBeats = {
+export type MDSongDataTrackPartSongBeats = {
   repeat: number;
   data: string[][];
 };
