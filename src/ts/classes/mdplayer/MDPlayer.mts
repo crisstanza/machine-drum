@@ -52,7 +52,37 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private calcSongTracks(song: MDSong) {
-    return song.data.tracks.map((track) => track.instrument).join(", ");
+    this.songTracks.innerText = "";
+    const trackNames = song.data.tracks.map((track) => track.instrument);
+    trackNames.forEach((trackName, i) => {
+      const link: HTMLAnchorElement = document.createElement("a");
+      link.textContent = trackName;
+      const track: MDSongDataTrack = song.data.tracks[i];
+      if (track.mute) {
+        link.classList.add(HTML.CLASS_NAMES.MUTED);
+        link.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.UNMUTE);
+      } else {
+        link.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.MUTE);
+      }
+      link.addEventListener("click", () => this.trackNameClicked(link, song, i));
+      this.songTracks.appendChild(link);
+      if (i < trackNames.length - 1) {
+        this.songTracks.appendChild(document.createTextNode(", "));
+      }
+    });
+  }
+
+  private trackNameClicked(link: HTMLAnchorElement, song: MDSong, i: number) {
+    const track: MDSongDataTrack = song.data.tracks[i];
+    if (link.classList.contains(HTML.CLASS_NAMES.MUTED)) {
+      link.classList.remove(HTML.CLASS_NAMES.MUTED);
+      link.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.MUTE);
+      track.mute = false;
+    } else {
+      link.classList.add(HTML.CLASS_NAMES.MUTED);
+      link.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.UNMUTE);
+      track.mute = true;
+    }
   }
 
   private calcSongDuration(song: MDSong) {
@@ -294,7 +324,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.songName.innerText = this.song.name ?? SONG_NAMES._;
     this.songGenre.innerText = this.song.gender;
     this.songInstruments.innerText = this.calcSongInstruments(this.song);
-    this.songTracks.innerText = this.calcSongTracks(this.song);
+    this.calcSongTracks(this.song);
     this.songRepeat.checked = this.song.repeat ?? false;
     this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.songInfo.classList.remove(HTML.CLASS_NAMES.LOADING);

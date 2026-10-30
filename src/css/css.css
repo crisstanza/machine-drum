@@ -1,10 +1,12 @@
 :root {
     --main-padding: 20px;
+    --text-color: #111;
 }
 
 * {
     font-size: 20pt;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: var(--text-color);
 }
 
 html {
@@ -22,6 +24,24 @@ body {
     text-align: center;
     align-items: center;
     flex-direction: column;
+}
+
+a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #777;
+}
+
+a.muted {
+    opacity: 0.25;
+}
+
+a.muted:hover {
+    opacity: 0.75;
 }
 
 section {
@@ -72,7 +92,8 @@ div.buttons {
     gap: 20px;
 }
 
-button:not(:disabled):not(.active),
+a:not([href]),
+button:not([disabled]):not(.active),
 input[type=range],
 input[type=checkbox],
 select:not(:disabled) {
