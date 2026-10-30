@@ -19,15 +19,15 @@ clean() {
     rm -Rf src/js
 }
 
-transpile() {
+transpileJS() {
     echo ''
     echo 'npx tsc --listEmittedFiles'
     echo ''
-    tsc --listEmittedFiles
+    tsc --listEmittedFiles || exit 1
     echo ''
 }
 
-transpileAndWatch() {
+transpileJSAndWatch() {
     echo ''
     echo 'npx tsc --listEmittedFiles --watch'
     echo ''
@@ -36,11 +36,11 @@ transpileAndWatch() {
 }
 
 minifyJS() {
-    npx esbuild `find . -wholename '*/src/js/*.mjs'` --outdir=build/js --minify --format=esm --out-extension:.js=.mjs
+    npx esbuild `find . -wholename '*/src/js/*.mjs'` --outdir=build/js --minify --format=esm --out-extension:.js=.mjs || exit 1
 }
 
 minifyCSS() {
-    npx esbuild `find . -wholename '*/src/css/*.css'` --outdir=build/css --minify
+    npx esbuild `find . -wholename '*/src/css/*.css'` --outdir=build/css --minify || exit 1
 }
 
 viteHelp() {
@@ -59,7 +59,7 @@ build() {
     mkdir build/audio
     
     minifyCSS
-    transpile
+    transpileJS
     minifyJS
     
     cp src/*.* build --verbose
