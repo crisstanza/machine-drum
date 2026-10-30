@@ -23,10 +23,6 @@ export class MDPlayer extends MDPlayerConstants {
 
   private song?: MDSong;
 
-  private calcBeatInterval(song: MDSong) {
-    return (1000 * 60) / (song.time * song.bpm * 2);
-  }
-
   private hasPlayableData(track: MDSongDataTrack) {
     return track.parts.some((part) => part.repeat >= 1 && part.beats.some((beat) => beat.repeat >= 1 && beat.data.length > 0));
   }
@@ -40,6 +36,14 @@ export class MDPlayer extends MDPlayerConstants {
       beatCount: 0,
       finished: false,
     }));
+  }
+
+  private calcBeatInterval(song: MDSong) {
+    return (1000 * 60) / (song.time * song.bpm * 2);
+  }
+
+  private calcSongInstruments(song: MDSong) {
+    return [...new Set(song.data.tracks.map((track) => track.instrument))].join(", ");
   }
 
   private calcSongDuration(song: MDSong) {
@@ -175,9 +179,7 @@ export class MDPlayer extends MDPlayerConstants {
     const steps = this.song!.data.tracks.map((track, index) => this.nextTrackStep(track, this.trackStates[index]));
     const allTracksFinished = this.trackStates.every((state) => state.finished);
     const shouldRepeat = allTracksFinished && this.song!.repeat && this.song!.data.tracks.some((track) => this.hasPlayableData(track));
-    const audioBuffers = this.song!.data.tracks.flatMap((track, index) =>
-      (steps[index] ?? []).map((name) => this.AUDIO_BUFFERS[track.instrument][name]),
-    );
+    const audioBuffers = this.song!.data.tracks.flatMap((track, index) => (steps[index] ?? []).map((name) => this.AUDIO_BUFFERS[track.instrument][name]));
     if (allTracksFinished && audioBuffers.length === 0) {
       if (shouldRepeat) {
         this.resetTrackStates();
@@ -253,6 +255,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.songSpeed.innerText = this.song.bpm.toString();
     this.songName.innerText = this.song.name ?? SONG_NAMES._;
     this.songGenre.innerText = this.song.gender;
+    this.songInstruments.innerText = this.calcSongInstruments(this.song);
     this.songRepeat.checked = this.song.repeat ?? false;
     this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.songInfo.classList.remove(HTML.CLASS_NAMES.LOADING);

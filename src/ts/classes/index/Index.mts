@@ -11,6 +11,7 @@ export class Index {
   private readonly songSpeed;
   private readonly songName;
   private readonly songGenre;
+  private readonly songInstruments;
   private readonly songRepeat;
 
   private readonly player;
@@ -26,6 +27,7 @@ export class Index {
     this.songSpeed = document.getElementById("song-speed") as HTMLSpanElement;
     this.songName = document.getElementById("song-name") as HTMLSpanElement;
     this.songGenre = document.getElementById("song-genre") as HTMLSpanElement;
+    this.songInstruments = document.getElementById("song-instruments") as HTMLSpanElement;
     this.songRepeat = document.getElementById("song-repeat") as HTMLInputElement;
 
     this.player = new MDPlayer(
@@ -39,6 +41,7 @@ export class Index {
       this.songSpeed,
       this.songName,
       this.songGenre,
+      this.songInstruments,
       this.songRepeat,
     );
   }
