@@ -1,6 +1,14 @@
 # Machine Drum
 
-A kind of drum machine 🡆 https://crisstanza.github.io/machine-drum/
+A multi-track and multi-instrument kind of drum machine where the songs can be AI generated.
+
+https://crisstanza.github.io/machine-drum/
+
+## Supported Instruments:
+
+- drums
+- bass
+- ~~guitar~~ (_work in progress_)
 
 <br>
 
