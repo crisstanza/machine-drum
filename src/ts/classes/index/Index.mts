@@ -52,9 +52,11 @@ export class Index {
   async init() {
     this.availableSongs.addEventListener("change", () => this.player.songChanged());
     this.songRepeat.addEventListener("change", () => this.player.songRepeatChanged());
-    this.playButton.addEventListener("mousedown", () => this.player.play());
+    this.playButton.addEventListener("mousedown", () => {
+      void this.player.play().catch((error: unknown) => console.error("Could not start audio playback.", error));
+    });
     this.stopButton.addEventListener("mousedown", () => this.player.stop());
-    this.player.initAudios();
-    this.player.initUserInterface();
+    await Promise.all([this.player.initAudios(), this.player.initUserInterface()]);
+    this.playButton.disabled = false;
   }
 }

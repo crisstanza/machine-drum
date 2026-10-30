@@ -4,11 +4,13 @@ import { MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongDataTrackState, MDS
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
 export class MDPlayer extends MDPlayerConstants {
-  private requestId = 0;
-  private timeControl = 0;
+  private schedulerId = 0;
+  private nextStepTime = 0;
 
   private activeSources = 0;
   private beatInterval = 0;
+  private readonly schedulerInterval = 25;
+  private readonly scheduleAheadTime = 0.1;
 
   private song?: MDSong;
 
@@ -109,16 +111,24 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   async initAudios() {
-    DRUMS_AUDIO_FILES.map(async (name) => {
-      const response = await fetch(new URL(`audio/${INSTRUMENTS.DRUMS}/${name}.wav`, window.location.href));
-      const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
-      this.AUDIO_BUFFERS[INSTRUMENTS.DRUMS][name] = buffer;
-    });
-    BASS_AUDIO_FILES.map(async (name) => {
-      const response = await fetch(new URL(`audio/${INSTRUMENTS.BASS}/${name}.wav`, window.location.href));
-      const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
-      this.AUDIO_BUFFERS[INSTRUMENTS.BASS][name] = buffer;
-    });
+    await Promise.all([
+      ...DRUMS_AUDIO_FILES.map(async (name) => {
+        const response = await fetch(new URL(`audio/${INSTRUMENTS.DRUMS}/${name}.wav`, window.location.href));
+        if (!response.ok) {
+          throw new Error(`Failed to load ${INSTRUMENTS.DRUMS} sample ${name}: ${response.status}`);
+        }
+        const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
+        this.AUDIO_BUFFERS[INSTRUMENTS.DRUMS][name] = buffer;
+      }),
+      ...BASS_AUDIO_FILES.map(async (name) => {
+        const response = await fetch(new URL(`audio/${INSTRUMENTS.BASS}/${name}.wav`, window.location.href));
+        if (!response.ok) {
+          throw new Error(`Failed to load ${INSTRUMENTS.BASS} sample ${name}: ${response.status}`);
+        }
+        const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
+        this.AUDIO_BUFFERS[INSTRUMENTS.BASS][name] = buffer;
+      }),
+    ]);
     this.gainNode.connect(this.audioContext.destination);
   }
 
@@ -140,17 +150,14 @@ export class MDPlayer extends MDPlayerConstants {
       this.availableSongs.add(newOption);
     });
     this.songChanged();
-    this.playButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
   }
 
-  private async playing(timestamp: number) {
+  private scheduleSteps() {
     this.syncTrackMutes();
-    if (timestamp - this.timeControl >= this.beatInterval) {
-      await this.playStep();
-      this.timeControl = timestamp;
-    }
-    if (this.isPlaying()) {
-      this.requestId = requestAnimationFrame(this.playing.bind(this));
+    const scheduleUntil = this.audioContext.currentTime + this.scheduleAheadTime;
+    while (this.isPlaying() && this.nextStepTime < scheduleUntil) {
+      this.playStep(this.nextStepTime);
+      this.nextStepTime += this.beatInterval / 1000;
     }
   }
 
@@ -214,7 +221,7 @@ export class MDPlayer extends MDPlayerConstants {
     }
   }
 
-  private async playStep() {
+  private playStep(stepTime: number) {
     this.syncTrackMutes();
     const steps = this.song!.data.tracks.map((track, index) => this.nextTrackStep(track, this.trackStates[index]));
     const allTracksFinished = this.trackStates.every((state) => state.finished);
@@ -230,17 +237,15 @@ export class MDPlayer extends MDPlayerConstants {
       if (shouldRepeat) {
         this.resetTrackStates();
       } else {
-        this.stop();
+        this.stop(false);
       }
       return;
     }
-    await this.audioContext.resume();
     if (this.song!.data.tracks.some((track, index) => !track.mute && track.instrument === INSTRUMENTS.BASS && (steps[index]?.length ?? 0) > 0)) {
-      const now = this.audioContext.currentTime;
-      const fadeOutEnd = now + this.bassFadeOutDuration;
+      const fadeOutEnd = stepTime + this.bassFadeOutDuration;
       this.bassVoices.forEach((gain, source) => {
-        gain.gain.cancelScheduledValues(now);
-        gain.gain.setValueAtTime(gain.gain.value, now);
+        gain.gain.cancelScheduledValues(stepTime);
+        gain.gain.setValueAtTime(gain.gain.value, stepTime);
         gain.gain.linearRampToValueAtTime(0, fadeOutEnd);
         source.stop(fadeOutEnd);
       });
@@ -250,21 +255,22 @@ export class MDPlayer extends MDPlayerConstants {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
       source.buffer = buffer;
       this.gainNode.gain.value = parseFloat(this.volumeControl.value);
-      let sourceGain: GainNode | undefined;
+      const sourceGain = this.audioContext.createGain();
+      sourceGain.gain.value = 1;
+      sourceGain.connect(this.trackGainNodes[trackIndex]);
+      source.connect(sourceGain);
+      this.sourceGainNodes.set(source, sourceGain);
       if (instrument === INSTRUMENTS.BASS) {
-        sourceGain = this.audioContext.createGain();
-        sourceGain.gain.value = 1;
-        sourceGain.connect(this.trackGainNodes[trackIndex]);
-        source.connect(sourceGain);
         this.bassVoices.set(source, sourceGain);
-      } else {
-        source.connect(this.trackGainNodes[trackIndex]);
       }
-      source.start();
+      source.start(stepTime);
+      this.activeAudioSources.add(source);
       this.activeSources++;
       source.addEventListener("ended", () => {
         source.disconnect();
-        sourceGain?.disconnect();
+        sourceGain.disconnect();
+        this.activeAudioSources.delete(source);
+        this.sourceGainNodes.delete(source);
         this.bassVoices.delete(source);
         this.activeSources--;
         if (!this.isPlaying()) {
@@ -278,7 +284,7 @@ export class MDPlayer extends MDPlayerConstants {
       if (shouldRepeat) {
         this.resetTrackStates();
       } else {
-        this.stop();
+        this.stop(false);
       }
     }
   }
@@ -287,7 +293,7 @@ export class MDPlayer extends MDPlayerConstants {
     return this.playButton.classList.contains(HTML.CLASS_NAMES.ACTIVE);
   }
 
-  play() {
+  async play(): Promise<void> {
     if (this.isPlaying()) {
       return;
     }
@@ -295,18 +301,46 @@ export class MDPlayer extends MDPlayerConstants {
     this.stopButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.availableSongs.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
     this.resetTrackStates();
-    this.requestId = requestAnimationFrame(this.playing.bind(this));
+    await this.startPlayback();
   }
 
-  stop() {
-    if (this.requestId) {
-      cancelAnimationFrame(this.requestId);
-      this.requestId = 0;
-      this.trackStates.length = 0;
-      this.playButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
-      this.stopButton.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
-      this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
+  private async startPlayback() {
+    try {
+      await this.audioContext.resume();
+    } catch (error) {
+      this.stop();
+      throw error;
     }
+    if (!this.isPlaying()) {
+      return;
+    }
+    this.nextStepTime = this.audioContext.currentTime + this.scheduleAheadTime / 2;
+    this.scheduleSteps();
+    if (this.isPlaying()) {
+      this.schedulerId = window.setInterval(() => this.scheduleSteps(), this.schedulerInterval);
+    }
+  }
+
+  stop(stopAudio = true) {
+    if (this.schedulerId) {
+      window.clearInterval(this.schedulerId);
+      this.schedulerId = 0;
+    }
+    if (stopAudio) {
+      const now = this.audioContext.currentTime;
+      const stopAt = now + 0.01;
+      this.activeAudioSources.forEach((source) => {
+        const gain = this.sourceGainNodes.get(source)!;
+        gain.gain.cancelScheduledValues(now);
+        gain.gain.setValueAtTime(gain.gain.value, now);
+        gain.gain.linearRampToValueAtTime(0, stopAt);
+        source.stop(stopAt);
+      });
+    }
+    this.trackStates.length = 0;
+    this.playButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
+    this.stopButton.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
+    this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
   }
 
   songRepeatChanged() {
