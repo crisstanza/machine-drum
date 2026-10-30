@@ -12,6 +12,7 @@ export abstract class MDPlayerConstants {
   protected readonly songName;
   protected readonly songGenre;
   protected readonly songInstruments;
+  protected readonly songTracks;
   protected readonly songRepeat;
 
   protected readonly audioContext = new AudioContext();
@@ -37,6 +38,7 @@ export abstract class MDPlayerConstants {
     songName: HTMLSpanElement,
     songGenre: HTMLSpanElement,
     songInstruments: HTMLSpanElement,
+    songTracks: HTMLSpanElement,
     songRepeat: HTMLInputElement,
   ) {
     this.volumeControl = volumeControl;
@@ -50,6 +52,7 @@ export abstract class MDPlayerConstants {
     this.songName = songName;
     this.songGenre = songGenre;
     this.songInstruments = songInstruments;
+    this.songTracks = songTracks;
     this.songRepeat = songRepeat;
   }
 }

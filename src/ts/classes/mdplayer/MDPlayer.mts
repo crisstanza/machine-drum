@@ -51,6 +51,10 @@ export class MDPlayer extends MDPlayerConstants {
     return [...new Set(song.data.tracks.map((track) => track.instrument))].join(", ");
   }
 
+  private calcSongTracks(song: MDSong) {
+    return song.data.tracks.map((track) => track.instrument).join(", ");
+  }
+
   private calcSongDuration(song: MDSong) {
     const trackSteps = song.data.tracks.map((track) =>
       track.parts.reduce((partTotal, part) => {
@@ -290,6 +294,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.songName.innerText = this.song.name ?? SONG_NAMES._;
     this.songGenre.innerText = this.song.gender;
     this.songInstruments.innerText = this.calcSongInstruments(this.song);
+    this.songTracks.innerText = this.calcSongTracks(this.song);
     this.songRepeat.checked = this.song.repeat ?? false;
     this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.songInfo.classList.remove(HTML.CLASS_NAMES.LOADING);
