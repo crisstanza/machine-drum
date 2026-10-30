@@ -58,35 +58,16 @@ export const song_08: MDSong = {
   time: 4,
   bpm: 80,
   repeat: false,
-  prompt:
-    "Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-XX.mts` que seja uma música no estilo REGGAE com baixo e bateria.\n\nFaça uma música completa de aproximadamente 4 minutos, com introdução, verso, variação, refrão e solo, na ordem que você desejar.\n\nPara saber os códigos das partes da bateria, leia o arquivo `README.md` (lembrando de nunca usar `G2`e `A#2`).\n\nAs notas de baixo são os arquivos na pasta `src/audio/bass`, onde os números representam a oitava e a letra `s` significa \"sustenido\". Caso você precise utilizar alguma nota \"bemol\", utilize o arquivo de som equivalente, por exemplo, se você precisa de um sol bemol, utilize a marcação do fá sustenido.\n\nNo novo arquivo criado, preencha a propriedade `prompt` do objeto `MDSong` com este prompt que você usou. Você deve usar EXATAMENTE este prompt que eu estou lhe passando, não a sua versão.\n\nNesta sessão, não altere a classe `MDPlayer` em absolutamente nada.",
+  prompt: 'Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-XX.mts` que seja uma música no estilo REGGAE com baixo e bateria.\n\nFaça uma música completa de aproximadamente 4 minutos, com introdução, verso, variação, refrão e solo, na ordem que você desejar.\n\nPara saber os códigos das partes da bateria, leia o arquivo `README.md` (lembrando de nunca usar `G2`e `A#2`).\n\nAs notas de baixo são os arquivos na pasta `src/audio/bass`, onde os números representam a oitava e a letra `s` significa "sustenido". Caso você precise utilizar alguma nota "bemol", utilize o arquivo de som equivalente, por exemplo, se você precisa de um sol bemol, utilize a marcação do fá sustenido.\n\nNo novo arquivo criado, preencha a propriedade `prompt` do objeto `MDSong` com este prompt que você usou. Você deve usar EXATAMENTE este prompt que eu estou lhe passando, não a sua versão.\n\nNesta sessão, não altere a classe `MDPlayer` em absolutamente nada.',
   data: {
     tracks: [
       {
         instrument: INSTRUMENTS.DRUMS,
-        parts: [
-          part(introDrums),
-          part(verseDrums, 4),
-          part(variationDrums, 2),
-          part(chorusDrums, 4),
-          part(verseDrums, 2),
-          part(soloDrums, 3),
-          part(chorusDrums, 3),
-          part(outroDrums),
-        ],
+        parts: [part(introDrums), part(verseDrums, 4), part(variationDrums, 2), part(chorusDrums, 4), part(verseDrums, 2), part(soloDrums, 3), part(chorusDrums, 3), part(outroDrums)],
       },
       {
         instrument: INSTRUMENTS.BASS,
-        parts: [
-          part(introBass),
-          part(verseBass, 4),
-          part(variationBass, 2),
-          part(chorusBass, 4),
-          part(verseBass, 2),
-          part(soloBass, 3),
-          part(chorusBass, 3),
-          part(outroBass),
-        ],
+        parts: [part(introBass), part(verseBass, 4), part(variationBass, 2), part(chorusBass, 4), part(verseBass, 2), part(soloBass, 3), part(chorusBass, 3), part(outroBass)],
       },
     ],
   },

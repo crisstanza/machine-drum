@@ -39,70 +39,37 @@ const bassBar = (root: string, fifth: string, octave: string, variation = false)
   return data;
 };
 
+const melodyBar = (notes: (string | null)[]): string[][] => {
+  const data: string[][] = Array.from({ length: 32 }, () => []);
+  notes.forEach((note, index) => {
+    if (note) {
+      data[index * 4].push(note);
+    }
+  });
+  return data;
+};
+
 const fourBars = (bars: string[][][]): string[][] => bars.flat();
 const part = (data: string[][], repeat = 1) => ({ repeat, beats: [{ repeat: 1, data }] });
 
-const introDrums = fourBars([
-  drumBar([], true),
-  drumBar([12]),
-  drumBar([12, 28]),
-  drumBar([12], true, true),
-]);
-const verseDrums = fourBars([
-  drumBar([12]),
-  drumBar([28]),
-  drumBar([12, 28]),
-  drumBar([12], false, true),
-]);
-const chorusDrums = fourBars([
-  drumBar([12], true),
-  drumBar([12, 28]),
-  drumBar([12], true),
-  drumBar([12, 28], true, true),
-]);
-const soloDrums = fourBars([
-  drumBar([12], true, false, true),
-  drumBar([12, 28], false, false, true),
-  drumBar([12], false, false, true),
-  drumBar([12, 28], true, true, true),
-]);
-const outroDrums = fourBars([
-  drumBar([12], true),
-  drumBar([12, 28]),
-  drumBar([12], true),
-  drumBar([], true, true),
-]);
+const introDrums = fourBars([drumBar([], true), drumBar([12]), drumBar([12, 28]), drumBar([12], true, true)]);
+const verseDrums = fourBars([drumBar([12]), drumBar([28]), drumBar([12, 28]), drumBar([12], false, true)]);
+const chorusDrums = fourBars([drumBar([12], true), drumBar([12, 28]), drumBar([12], true), drumBar([12, 28], true, true)]);
+const soloDrums = fourBars([drumBar([12], true, false, true), drumBar([12, 28], false, false, true), drumBar([12], false, false, true), drumBar([12, 28], true, true, true)]);
+const outroDrums = fourBars([drumBar([12], true), drumBar([12, 28]), drumBar([12], true), drumBar([], true, true)]);
 
-const introBass = fourBars([
-  bassBar("E1", "B1", "E2"),
-  bassBar("E1", "B1", "E2"),
-  bassBar("G1", "D2", "G2"),
-  bassBar("D2", "A2", "D3", true),
-]);
-const verseBass = fourBars([
-  bassBar("E1", "B1", "E2"),
-  bassBar("G1", "D2", "G2"),
-  bassBar("A1", "E2", "A2"),
-  bassBar("D2", "A2", "D3", true),
-]);
-const chorusBass = fourBars([
-  bassBar("C2", "G2", "C3"),
-  bassBar("G1", "D2", "G2"),
-  bassBar("D2", "A2", "D3"),
-  bassBar("E1", "B1", "E2", true),
-]);
-const soloBass = fourBars([
-  bassBar("E1", "B1", "E2", true),
-  bassBar("G1", "D2", "G2", true),
-  bassBar("A1", "E2", "A2", true),
-  bassBar("D2", "A2", "D3", true),
-]);
-const outroBass = fourBars([
-  bassBar("C2", "G2", "C3"),
-  bassBar("D2", "A2", "D3"),
-  bassBar("E1", "B1", "E2", true),
-  bassBar("E1", "B1", "E2"),
-]);
+const introBass = fourBars([bassBar("E1", "B1", "E2"), bassBar("E1", "B1", "E2"), bassBar("G1", "D2", "G2"), bassBar("D2", "A2", "D3", true)]);
+const verseBass = fourBars([bassBar("E1", "B1", "E2"), bassBar("G1", "D2", "G2"), bassBar("A1", "E2", "A2"), bassBar("D2", "A2", "D3", true)]);
+const chorusBass = fourBars([bassBar("C2", "G2", "C3"), bassBar("G1", "D2", "G2"), bassBar("D2", "A2", "D3"), bassBar("E1", "B1", "E2", true)]);
+const soloBass = fourBars([bassBar("E1", "B1", "E2", true), bassBar("G1", "D2", "G2", true), bassBar("A1", "E2", "A2", true), bassBar("D2", "A2", "D3", true)]);
+const outroBass = fourBars([bassBar("C2", "G2", "C3"), bassBar("D2", "A2", "D3"), bassBar("E1", "B1", "E2", true), bassBar("E1", "B1", "E2")]);
+
+const introMelody = fourBars([melodyBar([null, "E3", "G3", "Fs3", "E3", null, "D3", "E3"]), melodyBar([null, null, "E3", "G3", "Fs3", "E3", "D3", "E3"]), melodyBar(["G3", null, "Fs3", "E3", "D3", null, "E3", "G3"]), melodyBar(["Fs3", "E3", "D3", "E3", "G3", "Fs3", "E3", null])]);
+const verseMelody = fourBars([melodyBar(["E3", "E3", "G3", "Fs3", "E3", "D3", "E3", "G3"]), melodyBar(["G3", "G3", "Fs3", "E3", "D3", "E3", "Fs3", "G3"]), melodyBar(["C3", "C3", "E3", "E3", "G3", "Fs3", "E3", "D3"]), melodyBar(["D3", "D3", "Fs3", "E3", "D3", "E3", "Fs3", "E3"])]);
+const chorusMelody = fourBars([melodyBar(["G3", "G3", "E3", "G3", "Fs3", "E3", "D3", "E3"]), melodyBar(["G3", "G3", "Fs3", "E3", "D3", "E3", "G3", "Fs3"]), melodyBar(["E3", "E3", "G3", "Fs3", "E3", "D3", "E3", "G3"]), melodyBar(["Fs3", "Fs3", "E3", "D3", "E3", "Fs3", "E3", null])]);
+const verseTwoMelody = fourBars([melodyBar(["E3", "G3", "G3", "Fs3", "E3", "D3", "E3", "G3"]), melodyBar(["G3", "G3", "Fs3", "E3", "D3", "E3", "Fs3", "G3"]), melodyBar(["C3", "C3", "E3", "G3", "Fs3", "E3", "D3", "E3"]), melodyBar(["D3", "Fs3", "E3", "D3", "E3", "G3", "Fs3", "E3"])]);
+const soloMelody = fourBars([melodyBar(["E3", "G3", "Fs3", "G3", "E3", "D3", "E3", "G3"]), melodyBar(["G3", "Fs3", "E3", "G3", "Fs3", "E3", "D3", "E3"]), melodyBar(["C3", "C3", "E3", "G3", "E3", "Fs3", "G3", "Fs3"]), melodyBar(["D3", "E3", "Fs3", "G3", "Fs3", "E3", "D3", "E3"])]);
+const outroMelody = fourBars([melodyBar(["G3", "G3", "E3", "G3", "Fs3", "E3", "D3", "E3"]), melodyBar(["G3", "Fs3", "E3", "D3", "E3", "G3", "Fs3", "E3"]), melodyBar(["E3", "G3", "Fs3", "E3", "D3", "E3", "Fs3", "E3"]), melodyBar(["E3", null, "D3", null, "E3", null, null, null])]);
 
 export const song_09: MDSong = {
   name: "Aço na Veia",
@@ -122,7 +89,7 @@ export const song_09: MDSong = {
       {
         instrument: INSTRUMENTS.DRUMS,
         parts: [
-          part(introDrums),
+          part(introDrums), //
           part(verseDrums, 4),
           part(chorusDrums, 4),
           part(verseDrums, 3),
@@ -134,13 +101,25 @@ export const song_09: MDSong = {
       {
         instrument: INSTRUMENTS.BASS,
         parts: [
-          part(introBass),
+          part(introBass), //
           part(verseBass, 4),
           part(chorusBass, 4),
           part(verseBass, 3),
           part(chorusBass, 4),
           part(soloBass, 3),
           part(outroBass, 2),
+        ],
+      },
+      {
+        instrument: INSTRUMENTS.BASS,
+        parts: [
+          part(introMelody), //
+          part(verseMelody, 4),
+          part(chorusMelody, 4),
+          part(verseTwoMelody, 3),
+          part(chorusMelody, 4),
+          part(soloMelody, 3),
+          part(outroMelody, 2),
         ],
       },
     ],
