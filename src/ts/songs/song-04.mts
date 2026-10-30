@@ -1,4 +1,4 @@
-import { SONG_GENDERS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS } from "../enums/enums.mjs";
 import { MDSong } from "../types/types.mjs";
 
 const introGroove = [
@@ -115,6 +115,7 @@ export const song_04: MDSong = {
   data: {
     tracks: [
       {
+        instrument: INSTRUMENTS.DRUMS,
         parts: [
           {
             repeat: 1,

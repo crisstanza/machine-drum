@@ -1,5 +1,5 @@
-import { AUDIO_FILES } from "../../config/config.mjs";
-import { HTML, SONG_NAMES } from "../../enums/enums.mjs";
+import { BASS_AUDIO_FILES, DRUMS_AUDIO_FILES } from "../../config/config.mjs";
+import { HTML, INSTRUMENTS, SONG_NAMES } from "../../enums/enums.mjs";
 import { MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongMap } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
@@ -67,10 +67,15 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   async initAudios() {
-    AUDIO_FILES.map(async (name) => {
-      const response = await fetch(new URL(`audio/${name}.wav`, window.location.href));
+    DRUMS_AUDIO_FILES.map(async (name) => {
+      const response = await fetch(new URL(`audio/${INSTRUMENTS.DRUMS}/${name}.wav`, window.location.href));
       const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
-      this.AUDIO_BUFFERS[name] = buffer;
+      this.AUDIO_BUFFERS[INSTRUMENTS.DRUMS][name] = buffer;
+    });
+    BASS_AUDIO_FILES.map(async (name) => {
+      const response = await fetch(new URL(`audio/${INSTRUMENTS.BASS}/${name}.wav`, window.location.href));
+      const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
+      this.AUDIO_BUFFERS[INSTRUMENTS.BASS][name] = buffer;
     });
     this.gainNode.connect(this.audioContext.destination);
   }
@@ -170,7 +175,9 @@ export class MDPlayer extends MDPlayerConstants {
     const steps = this.song!.data.tracks.map((track, index) => this.nextTrackStep(track, this.trackStates[index]));
     const allTracksFinished = this.trackStates.every((state) => state.finished);
     const shouldRepeat = allTracksFinished && this.song!.repeat && this.song!.data.tracks.some((track) => this.hasPlayableData(track));
-    const audioBuffers = steps.flatMap((step) => (step ?? []).map((name) => this.AUDIO_BUFFERS[name]));
+    const audioBuffers = this.song!.data.tracks.flatMap((track, index) =>
+      (steps[index] ?? []).map((name) => this.AUDIO_BUFFERS[track.instrument][name]),
+    );
     if (allTracksFinished && audioBuffers.length === 0) {
       if (shouldRepeat) {
         this.resetTrackStates();

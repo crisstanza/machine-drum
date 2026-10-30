@@ -1,4 +1,4 @@
-import { MDAudioBufferMap, MDSong } from "../../types/types.mjs";
+import { MDAudioBufferMapMap, MDSong } from "../../types/types.mjs";
 
 export abstract class MDPlayerConstants {
   protected readonly volumeControl;
@@ -15,7 +15,10 @@ export abstract class MDPlayerConstants {
 
   protected readonly audioContext = new AudioContext();
   protected readonly gainNode: GainNode = this.audioContext.createGain();
-  protected readonly AUDIO_BUFFERS: MDAudioBufferMap = {};
+  protected readonly AUDIO_BUFFERS: MDAudioBufferMapMap = {
+    drums: {},
+    bass: {},
+  };
   protected readonly songs: MDSong[] = [];
 
   constructor(

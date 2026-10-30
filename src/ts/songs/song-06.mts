@@ -1,4 +1,4 @@
-import { SONG_GENDERS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS } from "../enums/enums.mjs";
 import { MDSong } from "../types/types.mjs";
 
 const pulse = (hit: string[] = [], notes: string[][] = []): string[][] => Array.from({ length: 4 }, (_, index) => (index === 0 ? hit : (notes[index - 1] ?? [])));
@@ -111,6 +111,7 @@ export const song_06: MDSong = {
   data: {
     tracks: [
       {
+        instrument: INSTRUMENTS.DRUMS,
         parts: [
           {
             repeat: 1,

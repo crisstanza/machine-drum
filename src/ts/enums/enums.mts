@@ -20,3 +20,8 @@ export const SONG_GENDERS = Object.freeze({
 export const SONG_NAMES = Object.freeze({
   _: "no name",
 });
+
+export const INSTRUMENTS = Object.freeze({
+  BASS: "bass",
+  DRUMS: "drums",
+});

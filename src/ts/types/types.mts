@@ -1,6 +1,8 @@
-import { SONG_GENDERS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS } from "../enums/enums.mjs";
 
 export type MDSongGender = (typeof SONG_GENDERS)[keyof typeof SONG_GENDERS];
+
+export type MDInstrument = (typeof INSTRUMENTS)[keyof typeof INSTRUMENTS];
 
 export type MDSong = {
   name?: string;
@@ -20,6 +22,7 @@ export type MDSongData = {
 };
 
 export type MDSongDataTrack = {
+  instrument: MDInstrument;
   parts: MDSongDataTrackPart[];
 };
 
@@ -34,4 +37,5 @@ export type MDSongDataTrackPartSongBeats = {
 };
 
 export type MDAudioBufferMap = Record<string, AudioBuffer>;
+export type MDAudioBufferMapMap = Record<MDInstrument, MDAudioBufferMap>;
 export type MDSongMap = Record<string, MDSong>;
