@@ -13,10 +13,12 @@ type MDSongDataTrackState = {
 };
 
 export class MDPlayer extends MDPlayerConstants {
+  private readonly bassFadeOutDuration = 0.03;
   private requestId = 0;
   private timeControl = 0;
 
   private activeSources = 0;
+  private bassVoices = new Map<AudioBufferSourceNode, GainNode>();
   private trackStates: MDSongDataTrackState[] = [];
 
   private beatInterval = 0;
@@ -179,7 +181,12 @@ export class MDPlayer extends MDPlayerConstants {
     const steps = this.song!.data.tracks.map((track, index) => this.nextTrackStep(track, this.trackStates[index]));
     const allTracksFinished = this.trackStates.every((state) => state.finished);
     const shouldRepeat = allTracksFinished && this.song!.repeat && this.song!.data.tracks.some((track) => this.hasPlayableData(track));
-    const audioBuffers = this.song!.data.tracks.flatMap((track, index) => (steps[index] ?? []).map((name) => this.AUDIO_BUFFERS[track.instrument][name]));
+    const audioBuffers = this.song!.data.tracks.flatMap((track, index) =>
+      (steps[index] ?? []).map((name) => ({
+        instrument: track.instrument,
+        buffer: this.AUDIO_BUFFERS[track.instrument][name],
+      })),
+    );
     if (allTracksFinished && audioBuffers.length === 0) {
       if (shouldRepeat) {
         this.resetTrackStates();
@@ -189,16 +196,41 @@ export class MDPlayer extends MDPlayerConstants {
       return;
     }
     await this.audioContext.resume();
-    audioBuffers.forEach(async (buffer) => {
+    if (
+      this.song!.data.tracks.some(
+        (track, index) => track.instrument === INSTRUMENTS.BASS && (steps[index]?.length ?? 0) > 0,
+      )
+    ) {
+      const now = this.audioContext.currentTime;
+      const fadeOutEnd = now + this.bassFadeOutDuration;
+      this.bassVoices.forEach((gain, source) => {
+        gain.gain.cancelScheduledValues(now);
+        gain.gain.setValueAtTime(gain.gain.value, now);
+        gain.gain.linearRampToValueAtTime(0, fadeOutEnd);
+        source.stop(fadeOutEnd);
+      });
+      this.bassVoices.clear();
+    }
+    audioBuffers.forEach(({ instrument, buffer }) => {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
       source.buffer = buffer;
       this.gainNode.gain.value = parseFloat(this.volumeControl.value);
-      source.connect(this.gainNode);
+      let sourceGain: GainNode | undefined;
+      if (instrument === INSTRUMENTS.BASS) {
+        sourceGain = this.audioContext.createGain();
+        sourceGain.gain.value = 1;
+        sourceGain.connect(this.gainNode);
+        source.connect(sourceGain);
+        this.bassVoices.set(source, sourceGain);
+      } else {
+        source.connect(this.gainNode);
+      }
       source.start();
       this.activeSources++;
-      source.addEventListener("ended", (evt: Event) => {
-        const target = evt.target as AudioBufferSourceNode;
-        target.disconnect();
+      source.addEventListener("ended", () => {
+        source.disconnect();
+        sourceGain?.disconnect();
+        this.bassVoices.delete(source);
         this.activeSources--;
         if (!this.isPlaying()) {
           if (this.activeSources == 0) {
