@@ -20,6 +20,7 @@ export abstract class MDPlayerConstants {
   protected readonly AUDIO_BUFFERS: MDAudioBufferMapMap = {
     drums: {},
     bass: {},
+    guitar: {},
   };
   protected readonly songs: MDSong[] = [];
 

@@ -62,8 +62,9 @@ build() {
     transpile
     minifyJS
     
-    cp src/*.* build
-    cp src/audio/* build/audio
+    cp src/*.* build --verbose
+    echo ''
+    cp -r src/audio build --verbose
 }
 
 runBuild() {
