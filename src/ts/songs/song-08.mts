@@ -63,10 +63,12 @@ export const song_08: MDSong = {
     tracks: [
       {
         instrument: INSTRUMENTS.DRUMS,
+        mute: false,
         parts: [part(introDrums), part(verseDrums, 4), part(variationDrums, 2), part(chorusDrums, 4), part(verseDrums, 2), part(soloDrums, 3), part(chorusDrums, 3), part(outroDrums)],
       },
       {
         instrument: INSTRUMENTS.BASS,
+        mute: false,
         parts: [part(introBass), part(verseBass, 4), part(variationBass, 2), part(chorusBass, 4), part(verseBass, 2), part(soloBass, 3), part(chorusBass, 3), part(outroBass)],
       },
     ],

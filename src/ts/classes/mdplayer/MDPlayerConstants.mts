@@ -1,4 +1,4 @@
-import { MDAudioBufferMapMap, MDSong } from "../../types/types.mjs";
+import { MDAudioBufferMapMap, MDSong, MDSongDataTrackState } from "../../types/types.mjs";
 
 export abstract class MDPlayerConstants {
   protected readonly volumeControl;
@@ -21,6 +21,10 @@ export abstract class MDPlayerConstants {
     bass: {},
   };
   protected readonly songs: MDSong[] = [];
+
+  protected readonly bassFadeOutDuration = 0.03;
+  protected readonly bassVoices = new Map<AudioBufferSourceNode, GainNode>();
+  protected readonly trackStates: MDSongDataTrackState[] = [];
 
   constructor(
     volumeControl: HTMLInputElement, //

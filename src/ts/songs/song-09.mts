@@ -88,6 +88,7 @@ export const song_09: MDSong = {
     tracks: [
       {
         instrument: INSTRUMENTS.DRUMS,
+        mute: false,
         parts: [
           part(introDrums), //
           part(verseDrums, 4),
@@ -100,6 +101,7 @@ export const song_09: MDSong = {
       },
       {
         instrument: INSTRUMENTS.BASS,
+        mute: false,
         parts: [
           part(introBass), //
           part(verseBass, 4),
@@ -112,6 +114,7 @@ export const song_09: MDSong = {
       },
       {
         instrument: INSTRUMENTS.BASS,
+        mute: false,
         parts: [
           part(introMelody), //
           part(verseMelody, 4),

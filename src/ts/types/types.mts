@@ -22,7 +22,9 @@ export type MDSongData = {
 };
 
 export type MDSongDataTrack = {
+  name?: string;
   instrument: MDInstrument;
+  mute: boolean;
   parts: MDSongDataTrackPart[];
 };
 
@@ -39,3 +41,12 @@ export type MDSongDataTrackPartSongBeats = {
 export type MDAudioBufferMap = Record<string, AudioBuffer>;
 export type MDAudioBufferMapMap = Record<MDInstrument, MDAudioBufferMap>;
 export type MDSongMap = Record<string, MDSong>;
+
+export type MDSongDataTrackState = {
+  partIndex: number;
+  beatIndex: number;
+  positionIndex: number;
+  partCount: number;
+  beatCount: number;
+  finished: boolean;
+};

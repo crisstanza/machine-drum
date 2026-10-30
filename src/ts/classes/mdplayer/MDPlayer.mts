@@ -1,43 +1,46 @@
 import { BASS_AUDIO_FILES, DRUMS_AUDIO_FILES } from "../../config/config.mjs";
 import { HTML, INSTRUMENTS, SONG_NAMES } from "../../enums/enums.mjs";
-import { MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongMap } from "../../types/types.mjs";
+import { MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongDataTrackState, MDSongMap } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
-type MDSongDataTrackState = {
-  partIndex: number;
-  beatIndex: number;
-  positionIndex: number;
-  partCount: number;
-  beatCount: number;
-  finished: boolean;
-};
-
 export class MDPlayer extends MDPlayerConstants {
-  private readonly bassFadeOutDuration = 0.03;
   private requestId = 0;
   private timeControl = 0;
 
   private activeSources = 0;
-  private bassVoices = new Map<AudioBufferSourceNode, GainNode>();
-  private trackStates: MDSongDataTrackState[] = [];
-
   private beatInterval = 0;
 
   private song?: MDSong;
+  private readonly trackGainNodes: GainNode[] = [];
+
+  private syncTrackMutes() {
+    this.song!.data.tracks.forEach((track, index) => {
+      let gainNode = this.trackGainNodes[index];
+      if (!gainNode) {
+        gainNode = this.audioContext.createGain();
+        gainNode.connect(this.gainNode);
+        this.trackGainNodes[index] = gainNode;
+      }
+      gainNode.gain.value = track.mute ? 0 : 1;
+    });
+  }
 
   private hasPlayableData(track: MDSongDataTrack) {
     return track.parts.some((part) => part.repeat >= 1 && part.beats.some((beat) => beat.repeat >= 1 && beat.data.length > 0));
   }
 
   private resetTrackStates() {
-    this.trackStates = this.song!.data.tracks.map(() => ({
-      partIndex: 0,
-      beatIndex: 0,
-      positionIndex: 0,
-      partCount: 0,
-      beatCount: 0,
-      finished: false,
-    }));
+    this.trackStates.length = 0;
+    this.trackStates.push(
+      ...this.song!.data.tracks.map(() => ({
+        partIndex: 0,
+        beatIndex: 0,
+        positionIndex: 0,
+        partCount: 0,
+        beatCount: 0,
+        finished: false,
+      })),
+    );
   }
 
   private calcBeatInterval(song: MDSong) {
@@ -108,6 +111,7 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private async playing(timestamp: number) {
+    this.syncTrackMutes();
     if (timestamp - this.timeControl >= this.beatInterval) {
       await this.playStep();
       this.timeControl = timestamp;
@@ -178,11 +182,13 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private async playStep() {
+    this.syncTrackMutes();
     const steps = this.song!.data.tracks.map((track, index) => this.nextTrackStep(track, this.trackStates[index]));
     const allTracksFinished = this.trackStates.every((state) => state.finished);
     const shouldRepeat = allTracksFinished && this.song!.repeat && this.song!.data.tracks.some((track) => this.hasPlayableData(track));
     const audioBuffers = this.song!.data.tracks.flatMap((track, index) =>
-      (steps[index] ?? []).map((name) => ({
+      (track.mute ? [] : (steps[index] ?? [])).map((name) => ({
+        trackIndex: index,
         instrument: track.instrument,
         buffer: this.AUDIO_BUFFERS[track.instrument][name],
       })),
@@ -196,11 +202,7 @@ export class MDPlayer extends MDPlayerConstants {
       return;
     }
     await this.audioContext.resume();
-    if (
-      this.song!.data.tracks.some(
-        (track, index) => track.instrument === INSTRUMENTS.BASS && (steps[index]?.length ?? 0) > 0,
-      )
-    ) {
+    if (this.song!.data.tracks.some((track, index) => !track.mute && track.instrument === INSTRUMENTS.BASS && (steps[index]?.length ?? 0) > 0)) {
       const now = this.audioContext.currentTime;
       const fadeOutEnd = now + this.bassFadeOutDuration;
       this.bassVoices.forEach((gain, source) => {
@@ -211,7 +213,7 @@ export class MDPlayer extends MDPlayerConstants {
       });
       this.bassVoices.clear();
     }
-    audioBuffers.forEach(({ instrument, buffer }) => {
+    audioBuffers.forEach(({ trackIndex, instrument, buffer }) => {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
       source.buffer = buffer;
       this.gainNode.gain.value = parseFloat(this.volumeControl.value);
@@ -219,11 +221,11 @@ export class MDPlayer extends MDPlayerConstants {
       if (instrument === INSTRUMENTS.BASS) {
         sourceGain = this.audioContext.createGain();
         sourceGain.gain.value = 1;
-        sourceGain.connect(this.gainNode);
+        sourceGain.connect(this.trackGainNodes[trackIndex]);
         source.connect(sourceGain);
         this.bassVoices.set(source, sourceGain);
       } else {
-        source.connect(this.gainNode);
+        source.connect(this.trackGainNodes[trackIndex]);
       }
       source.start();
       this.activeSources++;
@@ -267,7 +269,7 @@ export class MDPlayer extends MDPlayerConstants {
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
       this.requestId = 0;
-      this.trackStates = [];
+      this.trackStates.length = 0;
       this.playButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
       this.stopButton.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
       this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
