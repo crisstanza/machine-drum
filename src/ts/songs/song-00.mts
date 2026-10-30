@@ -5,7 +5,10 @@ export const song_00: MDSong = {
   name: "Test Song",
   gender: SONG_GENDERS._,
 
-  time: 4,
+  timeSignature: {
+    topNumber: 4,
+    bottomNumber: 4,
+  },
   bpm: 60,
 
   repeat: false,

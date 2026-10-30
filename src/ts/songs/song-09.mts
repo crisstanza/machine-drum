@@ -74,7 +74,10 @@ const outroMelody = fourBars([melodyBar(["G3", "G3", "E3", "G3", "Fs3", "E3", "D
 export const song_09: MDSong = {
   name: "Aço na Veia",
   gender: SONG_GENDERS.ROCK,
-  time: 4,
+  timeSignature: {
+    topNumber: 4,
+    bottomNumber: 4,
+  },
   bpm: 184,
   repeat: false,
   prompt:

@@ -24,6 +24,7 @@ export abstract class MDPlayerConstants {
   };
   protected readonly songs: MDSong[] = [];
 
+  protected readonly trackGainNodes: GainNode[] = [];
   protected readonly bassFadeOutDuration = 0.03;
   protected readonly bassVoices = new Map<AudioBufferSourceNode, GainNode>();
   protected readonly trackStates: MDSongDataTrackState[] = [];

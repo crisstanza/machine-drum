@@ -3,7 +3,10 @@ import { MDSong } from "../types/types.mjs";
 
 export const song_02: MDSong = {
   gender: SONG_GENDERS.BLUES,
-  time: 4,
+  timeSignature: {
+    topNumber: 4,
+    bottomNumber: 4,
+  },
   bpm: 90,
   repeat: true,
   data: {

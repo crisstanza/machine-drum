@@ -26,7 +26,10 @@ const buildFourBarPattern = (groove: string[][], fill: string[][]): string[][] =
 
 export const song_03: MDSong = {
   gender: SONG_GENDERS.POP_ROCK,
-  time: 4,
+  timeSignature: {
+    topNumber: 4,
+    bottomNumber: 4,
+  },
   bpm: 116,
   repeat: false,
   prompt: "Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-03.mts` que seja um ritmo de bateria pop/rock, com viradas e ataques.\n\nFaça uma música completa de aproximadamente 4 minutos, com introdução, verso, variação, refrão e solo, na ordem que você desejar.\n\nPara saber os códigos das partes da bateria, leia o arquivo `README.md` (lembrando de nunca usar `G2`e `A#2`).\n\nNo novo arquivo criado, preencha a propriedade `prompt` do objeto `MDSong` com este prompt que você usou. Você deve usar EXATAMENTE este prompt que eu estou lhe passando, não a sua versão.\n\nEdite a classe `MDPlayer` para ela referenciar o novo objeto `song` criado. Porém, nesta classe, jamais altere o método `calcStepDuration()`.",

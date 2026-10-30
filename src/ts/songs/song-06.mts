@@ -104,7 +104,10 @@ const outroBar = bar([
 export const song_06: MDSong = {
   name: "Brisa de Copacabana",
   gender: SONG_GENDERS.BOSSA_NOVA,
-  time: 4,
+  timeSignature: {
+    topNumber: 4,
+    bottomNumber: 4,
+  },
   bpm: 120,
   repeat: false,
   prompt: "Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-XX.mts` que seja um ritmo de BOSSA NOVA.\n\nFaça uma música completa de aproximadamente 1 minuto e meio, com introdução, verso e refrão, na ordem que você achar melhor.\n\nPara saber os códigos das partes da bateria, leia o arquivo `README.md` (lembrando de nunca usar `G2`e `A#2`).\n\nNo novo arquivo criado, preencha a propriedade `prompt` do objeto `MDSong` com este prompt que você usou. Você deve usar EXATAMENTE este prompt que eu estou lhe passando, não a sua versão.\n\nNesta sessão, não edite a classe `MDPlayer`.",

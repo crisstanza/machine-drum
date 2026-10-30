@@ -11,7 +11,6 @@ export class MDPlayer extends MDPlayerConstants {
   private beatInterval = 0;
 
   private song?: MDSong;
-  private readonly trackGainNodes: GainNode[] = [];
 
   private syncTrackMutes() {
     this.song!.data.tracks.forEach((track, index) => {
@@ -44,7 +43,7 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private calcBeatInterval(song: MDSong) {
-    return (1000 * 60) / (song.time * song.bpm * 2);
+    return (1000 * 60) / (song.timeSignature.bottomNumber * 2 * song.bpm);
   }
 
   private calcSongInstruments(song: MDSong) {
@@ -137,7 +136,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.songs.forEach((song, i) => {
       const newOption = document.createElement("option");
       newOption.value = i.toString();
-      newOption.text = `${song.name ?? SONG_NAMES._} | ${song.gender}`;
+      newOption.text = `${i}) ${song.name ?? SONG_NAMES._} | ${song.gender}`;
       this.availableSongs.add(newOption);
     });
     this.songChanged();

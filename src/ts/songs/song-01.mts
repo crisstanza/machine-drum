@@ -3,7 +3,10 @@ import { MDSong } from "../types/types.mjs";
 
 export const song_01: MDSong = {
   gender: SONG_GENDERS.POP_ROCK,
-  time: 4,
+  timeSignature: {
+    topNumber: 4,
+    bottomNumber: 4,
+  },
   bpm: 117,
   repeat: false,
   data: {

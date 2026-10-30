@@ -4,12 +4,17 @@ export type MDSongGender = (typeof SONG_GENDERS)[keyof typeof SONG_GENDERS];
 
 export type MDInstrument = (typeof INSTRUMENTS)[keyof typeof INSTRUMENTS];
 
+export type MDSongTimeSignature = {
+  topNumber: number;
+  bottomNumber: number;
+};
+
 export type MDSong = {
   name?: string;
   gender: MDSongGender;
   prompt?: string;
 
-  time: number;
+  timeSignature: MDSongTimeSignature;
   bpm: number;
 
   repeat: boolean;
