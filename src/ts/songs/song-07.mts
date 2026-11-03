@@ -8,76 +8,76 @@ const bar = (pulses: string[][][]): string[][] => pulses.flat();
 const buildFourBarPattern = (groove: string[][], variation: string[][], fill: string[][]): string[][] => [...groove, ...variation, ...groove, ...fill];
 
 const bossaGroove = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
 ]);
 const bossaVariation = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["B0", "Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
 ]);
 const introFill = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1", "A1"]),
 ]);
 
 const verseFill = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
   pulse(["D1", "Fs1"]),
   pulse(["Fs1", "A1"]),
 ]);
 const verseFillAlt = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1", "D2"]),
 ]);
 
 const chorusFill = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["B0", "Fs1"]),
   pulse(["D1", "Fs1"]),
   pulse(["Fs1", "A2"]),
 ]);
 
 const outroBar = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
   pulse(["B0", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(),
 ]);
 

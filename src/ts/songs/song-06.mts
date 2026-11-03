@@ -8,96 +8,96 @@ const bar = (pulses: string[][][]): string[][] => pulses.flat();
 const buildFourBarPattern = (groove: string[][], fill: string[][]): string[][] => [...groove, ...groove, ...groove, ...fill];
 
 const introGroove = bar([
-  pulse(["B0", "D#2"]), //
+  pulse(["B0", "Ds2"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2"]),
+  pulse(["B0", "Ds2"]),
   pulse(["B0", "Fs1"]),
-  pulse(["C#1", "Fs1", "D#2"]),
+  pulse(["Cs1", "Fs1", "Ds2"]),
   pulse(["Fs1"]),
 ]);
 const introFill = bar([
-  pulse(["B0", "D#2"]), //
+  pulse(["B0", "Ds2"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2"]),
+  pulse(["B0", "Ds2"]),
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"], [["D1"]]),
-  pulse(["Fs1"], [["D1"], [], ["C#1"]]),
+  pulse(["Cs1", "Fs1"], [["D1"]]),
+  pulse(["Fs1"], [["D1"], [], ["Cs1"]]),
 ]);
 
 const verseGroove = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["B0", "Fs1"]),
-  pulse(["C#1", "D#2", "Fs1"]),
+  pulse(["Cs1", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
 ]);
 const verseFill = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"], [["D1"], [], ["D1"]]),
-  pulse(["Fs1"], [["D1"], [], ["C#1"]]),
+  pulse(["Cs1", "Fs1"], [["D1"], [], ["D1"]]),
+  pulse(["Fs1"], [["D1"], [], ["Cs1"]]),
 ]);
 const verseFillAlt = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["B0", "Fs1"]),
-  pulse(["C#1", "D#2", "Fs1"]),
-  pulse(["Fs1"], [["D1"], [], ["C#1"]]),
+  pulse(["Cs1", "Ds2", "Fs1"]),
+  pulse(["Fs1"], [["D1"], [], ["Cs1"]]),
 ]);
 
 const chorusGroove = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "D#2", "Fs1"]),
+  pulse(["Cs1", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["B0", "Fs1"]),
-  pulse(["C#1", "D#2", "Fs1"]),
-  pulse(["A#1"]),
+  pulse(["Cs1", "Ds2", "Fs1"]),
+  pulse(["As1"]),
 ]);
 const chorusFill = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "D#2", "Fs1"]),
+  pulse(["Cs1", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["B0", "Fs1"]),
-  pulse(["C#1", "D#2", "Fs1"], [["D1"]]),
-  pulse(["A#1"], [["D1"], [], ["C#1"]]),
+  pulse(["Cs1", "Ds2", "Fs1"], [["D1"]]),
+  pulse(["As1"], [["D1"], [], ["Cs1"]]),
 ]);
 
 const outroGroove = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["B0", "D#2", "Fs1"]),
+  pulse(["B0", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["C#1", "D#2", "Fs1"]),
+  pulse(["Cs1", "Ds2", "Fs1"]),
   pulse(["Fs1"]),
 ]);
 const outroBar = bar([
-  pulse(["B0", "D#2", "Fs1"]), //
+  pulse(["B0", "Ds2", "Fs1"]), //
   pulse(["Fs1"]),
-  pulse(["C#1", "Fs1"]),
+  pulse(["Cs1", "Fs1"]),
   pulse(["Fs1"]),
   pulse(["B0", "Fs1"]),
   pulse(["Fs1"]),
-  pulse(["C#1", "D#2", "Fs1"]),
+  pulse(["Cs1", "Ds2", "Fs1"]),
   pulse(["B0"]),
 ]);
 

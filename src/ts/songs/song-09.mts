@@ -4,7 +4,7 @@ import { MDSong } from "../types/types.mjs";
 const drumBar = (extraKicks: number[] = [], crash = false, fill = false, ride = false): string[][] => {
   const data: string[][] = Array.from({ length: 32 }, () => []);
   for (let step = 0; step < data.length; step += 4) {
-    data[step].push(ride ? "D#2" : "Fs1");
+    data[step].push(ride ? "Ds2" : "Fs1");
   }
   data[0].push("B0");
   data[8].push("D1");

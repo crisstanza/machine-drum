@@ -39,7 +39,7 @@ const variationGroove = [
   ["B0", "Fs1"],
   ["Fs1"],
   ["D1", "Fs1"],
-  ["A#1"],
+  ["As1"],
 ];
 const variationFill = [
   ["Cs2", "B0", "Fs1"], //
@@ -53,17 +53,17 @@ const variationFill = [
 ];
 const chorusGroove = [
   ["Cs2", "B0", "Fs1"], //
-  ["A#1"],
+  ["As1"],
   ["D1", "Fs1"],
   ["Fs1"],
   ["B0", "Fs1"],
-  ["A#1"],
+  ["As1"],
   ["D1", "Fs1"],
   ["Fs1"],
 ];
 const chorusFill = [
   ["Cs2", "B0", "Fs1"], //
-  ["A#1"],
+  ["As1"],
   ["D1", "Fs1"],
   ["Fs1"],
   ["B0", "Fs1"],
@@ -72,21 +72,21 @@ const chorusFill = [
   ["Cs2", "B1", "D2"],
 ];
 const soloGroove = [
-  ["Cs2", "B0", "D#2"], //
-  ["D#2"],
-  ["D1", "D#2"],
-  ["D#2"],
-  ["B0", "D#2"],
-  ["D#2"],
-  ["D1", "D#2"],
-  ["D#2"],
+  ["Cs2", "B0", "Ds2"], //
+  ["Ds2"],
+  ["D1", "Ds2"],
+  ["Ds2"],
+  ["B0", "Ds2"],
+  ["Ds2"],
+  ["D1", "Ds2"],
+  ["Ds2"],
 ];
 const soloFill = [
-  ["Cs2", "B0", "D#2"], //
-  ["D#2"],
-  ["D1", "D#2"],
-  ["D#2"],
-  ["B0", "D#2"],
+  ["Cs2", "B0", "Ds2"], //
+  ["Ds2"],
+  ["D1", "Ds2"],
+  ["Ds2"],
+  ["B0", "Ds2"],
   ["F1"],
   ["A1", "D1"],
   ["Cs2", "C2", "D2"],
