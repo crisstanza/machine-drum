@@ -12,6 +12,20 @@ const buildFourBarPattern = (groove: string[][], fill: string[][]): string[][] =
   ...fill,
 ];
 
+const powerChordBar = (root: string, fifth: string): string[][] => {
+  const data: string[][] = Array.from({ length: 32 }, () => []);
+  for (let step = 0; step < data.length; step += 8) {
+    data[step].push(root, fifth);
+  }
+  return data;
+};
+
+const buildPowerChordPattern = (progression: [string, string][]): string[][] => progression.flatMap(([root, fifth]) => powerChordBar(root, fifth));
+const powerChordPart = (progression: [string, string][], repeat = 1) => ({
+  repeat,
+  beats: [{ data: buildPowerChordPattern(progression), repeat: 1 }],
+});
+
 const introGroove = bar([pulse(["Cs2", "B0"]), pulse(["Fs1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["Fs1"]), pulse(["D1", "Fs1"]), pulse(["A2", "Cs2"])]);
 const introFill = bar([pulse(["Cs2", "B0"]), pulse(["Fs1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["G1"]), pulse(["A1"], [["D1"], ["D1"], ["D1"]]), pulse(["B1", "D1"], [["D1"], ["D1"], ["D1"]]), pulse(["Cs2", "D2"])]);
 
@@ -19,16 +33,16 @@ const verseGroove = bar([pulse(["B0", "Fs1"]), pulse(["Fs1"]), pulse(["D1", "Fs1
 const verseFill = bar([pulse(["B0", "Fs1"]), pulse(["Fs1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["G1"], [["D1"], ["D1"], ["D1"]]), pulse(["A1"], [["D1"], ["D1"], ["D1"]]), pulse(["Cs2", "D2"])]);
 const verseFillAlt = bar([pulse(["Cs2", "B0", "Fs1"]), pulse(["Fs1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["A1"], [["D1"], ["D1"], ["D1"]]), pulse(["B1"], [["D1"], ["D1"], ["D1"]]), pulse(["C2", "D2", "Cs2"])]);
 
-const preChorusGroove = bar([pulse(["Cs2", "B0", "Fs1"]), pulse(["Fs1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["Fs1"]), pulse(["D1", "Fs1"]), pulse(["A#1"])]);
+const preChorusGroove = bar([pulse(["Cs2", "B0", "Fs1"]), pulse(["Fs1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["Fs1"]), pulse(["D1", "Fs1"]), pulse(["As1"])]);
 const preChorusFill = bar([pulse(["Cs2", "B0", "Fs1"]), pulse(["Fs1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["G1"], [["D1"], ["D1"], ["D1"]]), pulse(["A1"], [["D1"], ["D1"], ["D1"]]), pulse(["A2", "D2", "Cs2"])]);
 
-const chorusGroove = bar([pulse(["Cs2", "B0", "Fs1"]), pulse(["A#1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["A#1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"])]);
-const chorusFill = bar([pulse(["Cs2", "B0", "Fs1"]), pulse(["A#1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["G1"], [["D1"], ["D1"], ["D1"]]), pulse(["B1"], [["D1"], ["D1"], ["D1"]]), pulse(["Cs2", "C2", "D2"])]);
-const chorusFillAlt = bar([pulse(["A2", "B0", "Fs1"]), pulse(["A#1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["A1"], [["D1"], ["D1"], ["D1"]]), pulse(["C2"], [["D1"], ["D1"], ["D1"]]), pulse(["A2", "Cs2", "D2"])]);
+const chorusGroove = bar([pulse(["Cs2", "B0", "Fs1"]), pulse(["As1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["As1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"])]);
+const chorusFill = bar([pulse(["Cs2", "B0", "Fs1"]), pulse(["As1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["G1"], [["D1"], ["D1"], ["D1"]]), pulse(["B1"], [["D1"], ["D1"], ["D1"]]), pulse(["Cs2", "C2", "D2"])]);
+const chorusFillAlt = bar([pulse(["A2", "B0", "Fs1"]), pulse(["As1"]), pulse(["D1", "Fs1"]), pulse(["Fs1"]), pulse(["B0", "Fs1"]), pulse(["A1"], [["D1"], ["D1"], ["D1"]]), pulse(["C2"], [["D1"], ["D1"], ["D1"]]), pulse(["A2", "Cs2", "D2"])]);
 
-const soloGroove = bar([pulse(["Cs2", "B0", "D#2"]), pulse(["D#2"]), pulse(["D1", "D#2"]), pulse(["D#2"]), pulse(["B0", "D#2"]), pulse(["D#2"]), pulse(["D1", "D#2"]), pulse(["D#2"])]);
-const soloFill = bar([pulse(["Cs2", "B0", "D#2"]), pulse(["D#2"]), pulse(["D1", "D#2"]), pulse(["D#2"]), pulse(["B0", "D#2"]), pulse(["F1"], [["D1"], ["D1"], ["D1"]]), pulse(["G1"], [["D1"], ["D1"], ["D1"]]), pulse(["A1", "D1", "Cs2"])]);
-const soloFillAlt = bar([pulse(["Cs2", "B0", "D#2"]), pulse(["D#2"]), pulse(["D1", "D#2"]), pulse(["D#2"]), pulse(["B0", "D#2"]), pulse(["G1"], [["D1"], ["D1"], ["D1"]]), pulse(["B1"], [["D1"], ["D1"], ["D1"]]), pulse(["C2", "D2", "A2"])]);
+const soloGroove = bar([pulse(["Cs2", "B0", "Ds2"]), pulse(["Ds2"]), pulse(["D1", "Ds2"]), pulse(["Ds2"]), pulse(["B0", "Ds2"]), pulse(["Ds2"]), pulse(["D1", "Ds2"]), pulse(["Ds2"])]);
+const soloFill = bar([pulse(["Cs2", "B0", "Ds2"]), pulse(["Ds2"]), pulse(["D1", "Ds2"]), pulse(["Ds2"]), pulse(["B0", "Ds2"]), pulse(["F1"], [["D1"], ["D1"], ["D1"]]), pulse(["G1"], [["D1"], ["D1"], ["D1"]]), pulse(["A1", "D1", "Cs2"])]);
+const soloFillAlt = bar([pulse(["Cs2", "B0", "Ds2"]), pulse(["Ds2"]), pulse(["D1", "Ds2"]), pulse(["Ds2"]), pulse(["B0", "Ds2"]), pulse(["G1"], [["D1"], ["D1"], ["D1"]]), pulse(["B1"], [["D1"], ["D1"], ["D1"]]), pulse(["C2", "D2", "A2"])]);
 
 export const song_05: MDSong = {
   name: "Motor em Chamas",
@@ -37,7 +51,7 @@ export const song_05: MDSong = {
     topNumber: 4,
     bottomNumber: 4,
   },
-  bpm: 120,
+  bpm: 177,
   repeat: false,
   prompt: "Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-XX.mts` que seja um ritmo do gênero ROCK, com várias viradas, ataques e longos rolos.\n\nFaça uma música completa de aproximadamente 2 minutos e 15 segundo, com introdução, verso, refrão e solo, na ordem que você achar melhor. Faça a música ser bem dinâmica e agitada.\n\nPara saber os códigos das partes da bateria, leia o arquivo `README.md` (lembrando de nunca usar `G2`e `A#2`).\n\nNo novo arquivo criado, preencha a propriedade `prompt` do objeto `MDSong` com este prompt que você usou. Você deve usar EXATAMENTE este prompt que eu estou lhe passando, não a sua versão.\n\nNesta sessão, não edite a classe `MDPlayer`.",
   data: {
@@ -63,6 +77,99 @@ export const song_05: MDSong = {
               { data: buildFourBarPattern(chorusGroove, chorusFill), repeat: 2 },
             ],
           },
+        ],
+      },
+      {
+        instrument: INSTRUMENTS.GUITAR_CLEAN,
+        mute: false,
+        parts: [
+          powerChordPart([
+            ["E1", "B1"],
+            ["E1", "B1"],
+            ["G0", "D1"],
+            ["A1", "E2"],
+          ]),
+          powerChordPart(
+            [
+              ["E1", "B1"],
+              ["G0", "D1"],
+              ["A1", "E2"],
+              ["E1", "B1"],
+            ],
+            2,
+          ),
+          powerChordPart([
+            ["E1", "B1"],
+            ["G0", "D1"],
+            ["D1", "A1"],
+            ["A1", "E2"],
+          ]),
+          powerChordPart([
+            ["C1", "G1"],
+            ["D1", "A1"],
+            ["E1", "B1"],
+            ["D1", "A1"],
+          ]),
+          powerChordPart(
+            [
+              ["E1", "B1"],
+              ["G0", "D1"],
+              ["D1", "A1"],
+              ["A1", "E2"],
+            ],
+            2,
+          ),
+          powerChordPart([
+            ["E1", "B1"],
+            ["G0", "D1"],
+            ["A1", "E2"],
+            ["B0", "Fs1"],
+          ]),
+          powerChordPart(
+            [
+              ["E1", "B1"],
+              ["G0", "D1"],
+              ["A1", "E2"],
+              ["E1", "B1"],
+            ],
+            2,
+          ),
+          powerChordPart([
+            ["C1", "G1"],
+            ["D1", "A1"],
+            ["E1", "B1"],
+            ["D1", "A1"],
+          ]),
+          powerChordPart(
+            [
+              ["E1", "B1"],
+              ["G0", "D1"],
+              ["A1", "E2"],
+              ["B0", "Fs1"],
+            ],
+            2,
+          ),
+          powerChordPart([
+            ["E1", "B1"],
+            ["G0", "D1"],
+            ["A1", "E2"],
+            ["D1", "A1"],
+          ]),
+          powerChordPart([
+            ["C1", "G1"],
+            ["D1", "A1"],
+            ["A1", "E2"],
+            ["B0", "Fs1"],
+          ]),
+          powerChordPart(
+            [
+              ["E1", "B1"],
+              ["G0", "D1"],
+              ["D1", "A1"],
+              ["A1", "E2"],
+            ],
+            2,
+          ),
         ],
       },
     ],
