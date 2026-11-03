@@ -116,7 +116,7 @@ export const song_09: MDSong = {
         ],
       },
       {
-        instrument: INSTRUMENTS.BASS,
+        instrument: INSTRUMENTS.GUITAR_CLEAN,
         mute: false,
         parts: [
           part(introMelody), //

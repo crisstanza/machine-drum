@@ -19,6 +19,7 @@ export const SONG_GENDERS = Object.freeze({
   BALLAD: "ballad",
   BLUES: "blues",
   BOSSA_NOVA: "bossa nova",
+  DISCO: "disco",
   HEAVY_METAL: "heavy metal",
   POP_ROCK: "pop/rock",
   PUNK: "punk",
@@ -33,5 +34,5 @@ export const SONG_NAMES = Object.freeze({
 export const INSTRUMENTS = Object.freeze({
   BASS: "bass",
   DRUMS: "drums",
-  GUITAR: "guitar",
+  GUITAR_CLEAN: "guitar-clean",
 });

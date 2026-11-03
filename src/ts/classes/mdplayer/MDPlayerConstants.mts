@@ -21,13 +21,14 @@ export abstract class MDPlayerConstants {
   protected readonly AUDIO_BUFFERS: MDAudioBufferMapMap = {
     drums: {},
     bass: {},
-    guitar: {},
+    "guitar-clean": {},
   };
   protected readonly songs: MDSong[] = [];
 
   protected readonly trackGainNodes: GainNode[] = [];
-  protected readonly bassFadeOutDuration = 0.03;
+  protected readonly noteFadeOutDuration = 0.03;
   protected readonly bassVoices = new Map<AudioBufferSourceNode, GainNode>();
+  protected readonly guitarCleanVoices = new Map<AudioBufferSourceNode, GainNode>();
   protected readonly trackStates: MDSongDataTrackState[] = [];
 
   constructor(

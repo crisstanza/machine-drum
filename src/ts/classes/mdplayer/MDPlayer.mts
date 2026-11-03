@@ -1,4 +1,4 @@
-import { BASS_AUDIO_FILES, DRUMS_AUDIO_FILES } from "../../config/config.mjs";
+import { BASS_AUDIO_FILES, DRUMS_AUDIO_FILES, GUITAR_CLEAN_AUDIO_FILES } from "../../config/config.mjs";
 import { HTML, INSTRUMENTS, SONG_NAMES } from "../../enums/enums.mjs";
 import { MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongDataTrackState, MDSongMap } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
@@ -119,7 +119,24 @@ export class MDPlayer extends MDPlayerConstants {
       const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
       this.AUDIO_BUFFERS[INSTRUMENTS.BASS][name] = buffer;
     });
+    GUITAR_CLEAN_AUDIO_FILES.map(async (name) => {
+      const response = await fetch(new URL(`audio/${INSTRUMENTS.GUITAR_CLEAN}/${name}.wav`, window.location.href));
+      const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
+      this.AUDIO_BUFFERS[INSTRUMENTS.GUITAR_CLEAN][name] = buffer;
+    });
     this.gainNode.connect(this.audioContext.destination);
+  }
+
+  private fadeOutVoices(voices: Map<AudioBufferSourceNode, GainNode>) {
+    const now = this.audioContext.currentTime;
+    const fadeOutEnd = now + this.noteFadeOutDuration;
+    voices.forEach((gain, source) => {
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueAtTime(gain.gain.value, now);
+      gain.gain.linearRampToValueAtTime(0, fadeOutEnd);
+      source.stop(fadeOutEnd);
+    });
+    voices.clear();
   }
 
   async initUserInterface() {
@@ -236,27 +253,24 @@ export class MDPlayer extends MDPlayerConstants {
     }
     await this.audioContext.resume();
     if (this.song!.data.tracks.some((track, index) => !track.mute && track.instrument === INSTRUMENTS.BASS && (steps[index]?.length ?? 0) > 0)) {
-      const now = this.audioContext.currentTime;
-      const fadeOutEnd = now + this.bassFadeOutDuration;
-      this.bassVoices.forEach((gain, source) => {
-        gain.gain.cancelScheduledValues(now);
-        gain.gain.setValueAtTime(gain.gain.value, now);
-        gain.gain.linearRampToValueAtTime(0, fadeOutEnd);
-        source.stop(fadeOutEnd);
-      });
-      this.bassVoices.clear();
+      this.fadeOutVoices(this.bassVoices);
+    }
+    if (this.song!.data.tracks.some((track, index) => !track.mute && track.instrument === INSTRUMENTS.GUITAR_CLEAN && (steps[index]?.length ?? 0) > 0)) {
+      this.fadeOutVoices(this.guitarCleanVoices);
     }
     audioBuffers.forEach(({ trackIndex, instrument, buffer }) => {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
       source.buffer = buffer;
       this.gainNode.gain.value = parseFloat(this.volumeControl.value);
       let sourceGain: GainNode | undefined;
-      if (instrument === INSTRUMENTS.BASS) {
+      let voices: Map<AudioBufferSourceNode, GainNode> | undefined;
+      if (instrument === INSTRUMENTS.BASS || instrument === INSTRUMENTS.GUITAR_CLEAN) {
         sourceGain = this.audioContext.createGain();
         sourceGain.gain.value = 1;
         sourceGain.connect(this.trackGainNodes[trackIndex]);
         source.connect(sourceGain);
-        this.bassVoices.set(source, sourceGain);
+        voices = instrument === INSTRUMENTS.BASS ? this.bassVoices : this.guitarCleanVoices;
+        voices.set(source, sourceGain);
       } else {
         source.connect(this.trackGainNodes[trackIndex]);
       }
@@ -265,7 +279,7 @@ export class MDPlayer extends MDPlayerConstants {
       source.addEventListener("ended", () => {
         source.disconnect();
         sourceGain?.disconnect();
-        this.bassVoices.delete(source);
+        voices?.delete(source);
         this.activeSources--;
         if (!this.isPlaying()) {
           if (this.activeSources == 0) {

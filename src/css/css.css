@@ -84,7 +84,8 @@ section.songs>div.song-info>span {
     white-space: nowrap;
 }
 
-section.songs>div.song-info>span:nth-child(2n+1) {
+section.songs>div.song-info>span:nth-child(2n+1),
+section.songs>div.song-info-dynamic>span:nth-child(2n+1) {
     font-weight: bold;
 }
 
