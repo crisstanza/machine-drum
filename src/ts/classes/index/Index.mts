@@ -8,6 +8,9 @@ export class Index {
 
   private readonly songInfo;
   private readonly songInfoDynamic;
+  private readonly songDownload;
+  private readonly songDownloadLink;
+
   private readonly availableSongs;
   private readonly songDuration;
   private readonly songSpeed;
@@ -27,6 +30,9 @@ export class Index {
 
     this.songInfo = document.getElementById("song-info") as HTMLDivElement;
     this.songInfoDynamic = document.getElementById("song-info-dynamic") as HTMLDivElement;
+    this.songDownload = document.getElementById("song-download") as HTMLDivElement;
+    this.songDownloadLink = document.getElementById("song-download-link") as HTMLAnchorElement;
+
     this.availableSongs = document.getElementById("available-songs") as HTMLSelectElement;
     this.songDuration = document.getElementById("song-duration") as HTMLSpanElement;
     this.songSpeed = document.getElementById("song-speed") as HTMLSpanElement;
@@ -44,6 +50,9 @@ export class Index {
 
       this.songInfo,
       this.songInfoDynamic,
+      this.songDownload,
+      this.songDownloadLink,
+
       this.availableSongs,
       this.songDuration,
       this.songSpeed,
@@ -61,7 +70,11 @@ export class Index {
     this.playButton.addEventListener("mousedown", () => this.player.play());
     this.pauseButton.addEventListener("mousedown", () => this.player.pause());
     this.stopButton.addEventListener("mousedown", () => this.player.stop());
-    this.player.initAudios();
+    this.songDownloadLink.addEventListener("click", (event) => {
+      event.preventDefault();
+      void this.player.download().catch((error: unknown) => console.error("Could not download song:", error));
+    });
+    void this.player.initAudios().catch((error: unknown) => console.error("Could not initialize audio samples:", error));
     this.player.initUserInterface();
   }
 }

@@ -52,19 +52,19 @@ section {
 }
 
 section.player {
-    background-color: rgb(195, 210, 213);
+    background-color: rgb(172, 207, 215);
 }
 
 section.player * {
     font-size: 50pt;
 }
 
-section.songs {
-    background-color: rgb(197, 213, 195);
+section.songs,
+section.download {
+    background-color: rgb(197, 222, 194);
 }
 
-section.songs>div.song-info.loading,
-section.songs>div.song-info-dynamic.loading {
+section>div.loading {
     opacity: 0.25;
 }
 

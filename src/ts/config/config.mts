@@ -58,7 +58,7 @@ export const BASS_AUDIO_FILES = [
 ];
 
 export const GUITAR_CLEAN_AUDIO_FILES = [
-  "E-1",
+  "E-1", //
   "F-1",
   "Fs-1",
   "G-1",

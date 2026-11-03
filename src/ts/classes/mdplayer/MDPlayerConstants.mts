@@ -8,6 +8,9 @@ export abstract class MDPlayerConstants {
 
   protected readonly songInfo;
   protected readonly songInfoDynamic;
+  protected readonly songDownload;
+  protected readonly songDownloadLink;
+
   protected readonly availableSongs;
   protected readonly songDuration;
   protected readonly songSpeed;
@@ -17,7 +20,7 @@ export abstract class MDPlayerConstants {
   protected readonly songTracks;
   protected readonly songRepeat;
 
-  protected readonly audioContext = new AudioContext();
+  protected readonly audioContext = new AudioContext({ sampleRate: 44_100 });
   protected readonly gainNode: GainNode = this.audioContext.createGain();
   protected readonly AUDIO_BUFFERS: MDAudioBufferMapMap = {
     drums: {},
@@ -37,8 +40,12 @@ export abstract class MDPlayerConstants {
     playButton: HTMLButtonElement,
     pauseButton: HTMLButtonElement,
     stopButton: HTMLButtonElement,
+
     songInfo: HTMLDivElement,
     songInfoDynamic: HTMLDivElement,
+    songDownload: HTMLDivElement,
+    songDownloadLink: HTMLAnchorElement,
+
     availableSongs: HTMLSelectElement,
     songDuration: HTMLSpanElement,
     songSpeed: HTMLSpanElement,
@@ -55,6 +62,9 @@ export abstract class MDPlayerConstants {
 
     this.songInfo = songInfo;
     this.songInfoDynamic = songInfoDynamic;
+    this.songDownload = songDownload;
+    this.songDownloadLink = songDownloadLink;
+
     this.availableSongs = availableSongs;
     this.songDuration = songDuration;
     this.songSpeed = songSpeed;

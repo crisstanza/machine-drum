@@ -1,6 +1,6 @@
 import { BASS_AUDIO_FILES, DRUMS_AUDIO_FILES, GUITAR_CLEAN_AUDIO_FILES } from "../../config/config.mjs";
 import { HTML, INSTRUMENTS, SONG_NAMES } from "../../enums/enums.mjs";
-import { MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongDataTrackState, MDSongMap } from "../../types/types.mjs";
+import { MDInstrument, MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongDataTrackState, MDSongMap } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
 export class MDPlayer extends MDPlayerConstants {
@@ -13,6 +13,9 @@ export class MDPlayer extends MDPlayerConstants {
   private beatInterval = 0;
 
   private song?: MDSong;
+  private audioLoading?: Promise<void>;
+  private downloadUrl?: string;
+  private isDownloading = false;
 
   private syncTrackMutes() {
     this.song!.data.tracks.forEach((track, index) => {
@@ -46,6 +49,24 @@ export class MDPlayer extends MDPlayerConstants {
 
   private calcBeatInterval(song: MDSong) {
     return (1000 * 60) / (song.timeSignature.bottomNumber * 2 * song.bpm);
+  }
+
+  private async calcDownloadStepDuration(song: MDSong) {
+    const frameTimestamps = await new Promise<number[]>((resolve) => {
+      const timestamps: number[] = [];
+      const sampleFrame = (timestamp: number) => {
+        timestamps.push(timestamp);
+        if (timestamps.length === 25) {
+          resolve(timestamps);
+          return;
+        }
+        requestAnimationFrame(sampleFrame);
+      };
+      requestAnimationFrame(sampleFrame);
+    });
+    const frameInterval = (frameTimestamps[frameTimestamps.length - 1] - frameTimestamps[0]) / (frameTimestamps.length - 1);
+    const stepDuration = this.calcBeatInterval(song);
+    return Math.ceil(stepDuration / frameInterval) * frameInterval;
   }
 
   private calcSongInstruments(song: MDSong) {
@@ -110,23 +131,23 @@ export class MDPlayer extends MDPlayerConstants {
     return `${minutes}:${seconds}`;
   }
 
-  async initAudios() {
-    DRUMS_AUDIO_FILES.map(async (name) => {
-      const response = await fetch(new URL(`audio/${INSTRUMENTS.DRUMS}/${name}.wav`, window.location.href));
-      const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
-      this.AUDIO_BUFFERS[INSTRUMENTS.DRUMS][name] = buffer;
+  private async loadAudioFiles(instrument: MDInstrument, names: string[]) {
+    await Promise.all(
+      names.map(async (name) => {
+        const response = await fetch(new URL(`audio/${instrument}/${name}.wav`, window.location.href));
+        if (!response.ok) {
+          throw new Error(`Could not load audio file: ${instrument}/${name}.wav`);
+        }
+        this.AUDIO_BUFFERS[instrument][name] = await this.audioContext.decodeAudioData(await response.arrayBuffer());
+      }),
+    );
+  }
+
+  initAudios() {
+    this.audioLoading = Promise.all([this.loadAudioFiles(INSTRUMENTS.DRUMS, DRUMS_AUDIO_FILES), this.loadAudioFiles(INSTRUMENTS.BASS, BASS_AUDIO_FILES), this.loadAudioFiles(INSTRUMENTS.GUITAR_CLEAN, GUITAR_CLEAN_AUDIO_FILES)]).then(() => {
+      this.gainNode.connect(this.audioContext.destination);
     });
-    BASS_AUDIO_FILES.map(async (name) => {
-      const response = await fetch(new URL(`audio/${INSTRUMENTS.BASS}/${name}.wav`, window.location.href));
-      const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
-      this.AUDIO_BUFFERS[INSTRUMENTS.BASS][name] = buffer;
-    });
-    GUITAR_CLEAN_AUDIO_FILES.map(async (name) => {
-      const response = await fetch(new URL(`audio/${INSTRUMENTS.GUITAR_CLEAN}/${name}.wav`, window.location.href));
-      const buffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
-      this.AUDIO_BUFFERS[INSTRUMENTS.GUITAR_CLEAN][name] = buffer;
-    });
-    this.gainNode.connect(this.audioContext.destination);
+    return this.audioLoading;
   }
 
   private fadeOutVoices(voices: Map<AudioBufferSourceNode, GainNode>) {
@@ -373,6 +394,183 @@ export class MDPlayer extends MDPlayerConstants {
     }
   }
 
+  private async renderSong(song: MDSong) {
+    if (!this.audioLoading) {
+      throw new Error("Audio samples have not been initialized.");
+    }
+    await this.audioLoading;
+
+    const tracks = song.data.tracks;
+    const states: MDSongDataTrackState[] = tracks.map(() => ({
+      partIndex: 0,
+      beatIndex: 0,
+      positionIndex: 0,
+      partCount: 0,
+      beatCount: 0,
+      finished: false,
+    }));
+    const sampleRate = this.audioContext.sampleRate;
+    const stepDuration = (await this.calcDownloadStepDuration(song)) / 1000;
+    const events: { buffer: AudioBuffer; frame: number; instrument: MDInstrument }[] = [];
+    let stepIndex = 0;
+    let latestSampleEndFrame = 0;
+
+    while (!states.every((state) => state.finished)) {
+      const steps = tracks.map((track, index) => this.nextTrackStep(track, states[index]));
+      tracks.forEach((track, trackIndex) => {
+        if (track.mute) {
+          return;
+        }
+        (steps[trackIndex] ?? []).forEach((name) => {
+          const buffer = this.AUDIO_BUFFERS[track.instrument][name];
+          if (!buffer) {
+            throw new Error(`Audio sample not found: ${track.instrument}/${name}.wav`);
+          }
+          const frame = Math.round(stepIndex * stepDuration * sampleRate);
+          events.push({ buffer, frame, instrument: track.instrument });
+          latestSampleEndFrame = Math.max(latestSampleEndFrame, frame + Math.ceil(buffer.duration * sampleRate));
+        });
+      });
+      stepIndex++;
+    }
+
+    const songLength = Math.ceil(stepIndex * stepDuration * sampleRate);
+    const offlineContext = new OfflineAudioContext({
+      numberOfChannels: 2,
+      length: Math.max(1, songLength, latestSampleEndFrame),
+      sampleRate,
+    });
+    const voices = new Map<MDInstrument, { source: AudioBufferSourceNode; gain: GainNode; endFrame: number }[]>();
+    for (let eventIndex = 0; eventIndex < events.length; ) {
+      const frame = events[eventIndex].frame;
+      let nextEventIndex = eventIndex + 1;
+      while (nextEventIndex < events.length && events[nextEventIndex].frame === frame) {
+        nextEventIndex++;
+      }
+
+      const stepEvents = events.slice(eventIndex, nextEventIndex);
+      for (const instrument of [INSTRUMENTS.BASS, INSTRUMENTS.GUITAR_CLEAN]) {
+        if (!stepEvents.some((event) => event.instrument === instrument)) {
+          continue;
+        }
+        const instrumentVoices = voices.get(instrument) ?? [];
+        const now = frame / sampleRate;
+        const fadeOutEnd = now + this.noteFadeOutDuration;
+        instrumentVoices.forEach(({ source, gain, endFrame }) => {
+          const stopFrame = Math.min(endFrame, frame + Math.ceil(this.noteFadeOutDuration * sampleRate));
+          if (stopFrame <= frame) {
+            return;
+          }
+          const stopTime = stopFrame / sampleRate;
+          gain.gain.cancelScheduledValues(now);
+          gain.gain.setValueAtTime(gain.gain.value, now);
+          gain.gain.linearRampToValueAtTime(0, Math.min(fadeOutEnd, stopTime));
+          source.stop(stopTime);
+        });
+        voices.set(instrument, []);
+      }
+
+      stepEvents.forEach(({ buffer, frame, instrument }) => {
+        const source = offlineContext.createBufferSource();
+        source.buffer = buffer;
+        if (instrument === INSTRUMENTS.BASS || instrument === INSTRUMENTS.GUITAR_CLEAN) {
+          const gain = offlineContext.createGain();
+          source.connect(gain);
+          gain.connect(offlineContext.destination);
+          const endFrame = frame + Math.ceil(buffer.duration * sampleRate);
+          const instrumentVoices = voices.get(instrument) ?? [];
+          instrumentVoices.push({ source, gain, endFrame });
+          voices.set(instrument, instrumentVoices);
+        } else {
+          source.connect(offlineContext.destination);
+        }
+        source.start(frame / sampleRate);
+      });
+      eventIndex = nextEventIndex;
+    }
+
+    return offlineContext.startRendering();
+  }
+
+  private encodeWav(audioBuffer: AudioBuffer) {
+    const channelCount = audioBuffer.numberOfChannels;
+    const bytesPerSample = 4;
+    const dataLength = audioBuffer.length * channelCount * bytesPerSample;
+    const wavBuffer = new ArrayBuffer(58 + dataLength);
+    const view = new DataView(wavBuffer);
+    const writeString = (offset: number, value: string) => {
+      for (let i = 0; i < value.length; i++) {
+        view.setUint8(offset + i, value.charCodeAt(i));
+      }
+    };
+
+    writeString(0, "RIFF");
+    view.setUint32(4, 50 + dataLength, true);
+    writeString(8, "WAVE");
+    writeString(12, "fmt ");
+    view.setUint32(16, 18, true);
+    view.setUint16(20, 3, true);
+    view.setUint16(22, channelCount, true);
+    view.setUint32(24, audioBuffer.sampleRate, true);
+    view.setUint32(28, audioBuffer.sampleRate * channelCount * bytesPerSample, true);
+    view.setUint16(32, channelCount * bytesPerSample, true);
+    view.setUint16(34, bytesPerSample * 8, true);
+    view.setUint16(36, 0, true);
+    writeString(38, "fact");
+    view.setUint32(42, 4, true);
+    view.setUint32(46, audioBuffer.length, true);
+    writeString(50, "data");
+    view.setUint32(54, dataLength, true);
+
+    const channels = Array.from({ length: channelCount }, (_, index) => audioBuffer.getChannelData(index));
+    let offset = 58;
+    for (let frame = 0; frame < audioBuffer.length; frame++) {
+      for (let channel = 0; channel < channelCount; channel++) {
+        view.setFloat32(offset, channels[channel][frame], true);
+        offset += bytesPerSample;
+      }
+    }
+
+    return new Blob([wavBuffer], { type: "audio/wav" });
+  }
+
+  private songFileName(song: MDSong, songIndex: number) {
+    const name = song.name?.trim() || `song-${songIndex}`;
+    return `${name.replace(/[<>:"/\\|?*\u0000-\u001f]/g, "-")} (${song.gender}, ${song.bpm}bpm).wav`;
+  }
+
+  async download() {
+    if (this.isDownloading) {
+      return;
+    }
+    if (!this.song) {
+      throw new Error("No song is selected.");
+    }
+
+    this.isDownloading = true;
+    this.songDownload.classList.add(HTML.CLASS_NAMES.LOADING);
+    try {
+      const song = this.song;
+      const songIndex = this.availableSongs.selectedIndex;
+      const audioBuffer = await this.renderSong(song);
+      const url = URL.createObjectURL(this.encodeWav(audioBuffer));
+      const fileName = this.songFileName(song, songIndex);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      if (this.downloadUrl) {
+        URL.revokeObjectURL(this.downloadUrl);
+      }
+      this.downloadUrl = url;
+    } finally {
+      this.isDownloading = false;
+      this.songDownload.classList.remove(HTML.CLASS_NAMES.LOADING);
+    }
+  }
+
   songRepeatChanged() {
     if (this.song) {
       this.song.repeat = this.songRepeat.checked;
@@ -392,5 +590,6 @@ export class MDPlayer extends MDPlayerConstants {
     this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.songInfo.classList.remove(HTML.CLASS_NAMES.LOADING);
     this.songInfoDynamic.classList.remove(HTML.CLASS_NAMES.LOADING);
+    this.songDownload.classList.remove(HTML.CLASS_NAMES.LOADING);
   }
 }
