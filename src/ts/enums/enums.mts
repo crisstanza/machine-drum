@@ -1,6 +1,7 @@
 export const HTML = Object.freeze({
   CLASS_NAMES: Object.freeze({
     ACTIVE: "active",
+    CLICKABLE: "clickable",
     LOADING: "loading",
     MUTED: "muted",
   }),
@@ -10,7 +11,9 @@ export const HTML = Object.freeze({
   }),
   ATTRIBUTE_VALUES: Object.freeze({
     MUTE: "mute",
+    PAUSE: "pause",
     UNMUTE: "unmute",
+    UNPAUSE: "unpause",
   }),
 });
 

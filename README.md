@@ -8,7 +8,7 @@ https://crisstanza.github.io/machine-drum/
 
 - drums
 - bass
-- guitar-clean
+- clean guitar
 
 <br>
 

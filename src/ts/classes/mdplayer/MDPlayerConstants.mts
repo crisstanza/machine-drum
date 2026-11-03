@@ -3,6 +3,7 @@ import { MDAudioBufferMapMap, MDSong, MDSongDataTrackState } from "../../types/t
 export abstract class MDPlayerConstants {
   protected readonly volumeControl;
   protected readonly playButton;
+  protected readonly pauseButton;
   protected readonly stopButton;
 
   protected readonly songInfo;
@@ -34,6 +35,7 @@ export abstract class MDPlayerConstants {
   constructor(
     volumeControl: HTMLInputElement, //
     playButton: HTMLButtonElement,
+    pauseButton: HTMLButtonElement,
     stopButton: HTMLButtonElement,
     songInfo: HTMLDivElement,
     songInfoDynamic: HTMLDivElement,
@@ -48,6 +50,7 @@ export abstract class MDPlayerConstants {
   ) {
     this.volumeControl = volumeControl;
     this.playButton = playButton;
+    this.pauseButton = pauseButton;
     this.stopButton = stopButton;
 
     this.songInfo = songInfo;

@@ -100,6 +100,7 @@ div.buttons {
 
 a:not([href]),
 button:not([disabled]):not(.active),
+button.clickable:not([disabled]),
 input[type=range],
 input[type=checkbox],
 select:not(:disabled) {
@@ -130,6 +131,6 @@ button.active {
 }
 
 input[type="range"] {
-    width: 125px;
-    margin-bottom: -20px;
+    width: 250px;
+    margin-bottom: -30px;
 }

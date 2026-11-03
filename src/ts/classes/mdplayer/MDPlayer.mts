@@ -6,6 +6,8 @@ import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 export class MDPlayer extends MDPlayerConstants {
   private requestId = 0;
   private timeControl = 0;
+  private isPaused = false;
+  private pausedAt = 0;
 
   private activeSources = 0;
   private beatInterval = 0;
@@ -161,12 +163,15 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private async playing(timestamp: number) {
+    if (this.isPaused) {
+      return;
+    }
     this.syncTrackMutes();
     if (timestamp - this.timeControl >= this.beatInterval) {
-      await this.playStep();
       this.timeControl = timestamp;
+      await this.playStep();
     }
-    if (this.isPlaying()) {
+    if (this.isPlaying() && !this.isPaused) {
       this.requestId = requestAnimationFrame(this.playing.bind(this));
     }
   }
@@ -232,6 +237,13 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private async playStep() {
+    if (this.isPaused || !this.isPlaying()) {
+      return;
+    }
+    await this.audioContext.resume();
+    if (this.isPaused || !this.isPlaying()) {
+      return;
+    }
     this.syncTrackMutes();
     const steps = this.song!.data.tracks.map((track, index) => this.nextTrackStep(track, this.trackStates[index]));
     const allTracksFinished = this.trackStates.every((state) => state.finished);
@@ -251,7 +263,6 @@ export class MDPlayer extends MDPlayerConstants {
       }
       return;
     }
-    await this.audioContext.resume();
     if (this.song!.data.tracks.some((track, index) => !track.mute && track.instrument === INSTRUMENTS.BASS && (steps[index]?.length ?? 0) > 0)) {
       this.fadeOutVoices(this.bassVoices);
     }
@@ -305,21 +316,60 @@ export class MDPlayer extends MDPlayerConstants {
     if (this.isPlaying()) {
       return;
     }
+    this.isPaused = false;
+    this.pauseButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
     this.playButton.classList.add(HTML.CLASS_NAMES.ACTIVE);
+    this.pauseButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.stopButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.availableSongs.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
     this.resetTrackStates();
     this.requestId = requestAnimationFrame(this.playing.bind(this));
   }
 
-  stop() {
+  async pause() {
+    if (!this.isPlaying()) {
+      return;
+    }
+    if (this.isPaused) {
+      await this.audioContext.resume();
+      this.timeControl += performance.now() - this.pausedAt;
+      this.isPaused = false;
+      this.pauseButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
+      this.pauseButton.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.PAUSE);
+      this.requestId = requestAnimationFrame(this.playing.bind(this));
+      return;
+    }
+    this.isPaused = true;
+    this.pausedAt = performance.now();
+    this.pauseButton.classList.add(HTML.CLASS_NAMES.ACTIVE);
+    this.pauseButton.classList.add(HTML.CLASS_NAMES.CLICKABLE);
+    this.pauseButton.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.UNPAUSE);
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
       this.requestId = 0;
+    }
+    await this.audioContext.suspend();
+  }
+
+  stop() {
+    if (this.isPlaying()) {
+      const wasPaused = this.isPaused;
+      if (this.requestId) {
+        cancelAnimationFrame(this.requestId);
+      }
+      this.requestId = 0;
+      this.isPaused = false;
       this.trackStates.length = 0;
       this.playButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
+      this.pauseButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
+      this.pauseButton.classList.remove(HTML.CLASS_NAMES.CLICKABLE);
+      this.pauseButton.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
       this.stopButton.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
+      this.pauseButton.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.PAUSE);
       this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
+      if (wasPaused) {
+        this.audioContext.resume();
+      }
     }
   }
 

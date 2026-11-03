@@ -3,6 +3,7 @@ import { MDPlayer } from "../mdplayer/MDPlayer.mjs";
 export class Index {
   private readonly volumeControl;
   private readonly playButton;
+  private readonly pauseButton;
   private readonly stopButton;
 
   private readonly songInfo;
@@ -21,6 +22,7 @@ export class Index {
   constructor() {
     this.volumeControl = document.getElementById("volume-control") as HTMLInputElement;
     this.playButton = document.getElementById("play-button") as HTMLButtonElement;
+    this.pauseButton = document.getElementById("pause-button") as HTMLButtonElement;
     this.stopButton = document.getElementById("stop-button") as HTMLButtonElement;
 
     this.songInfo = document.getElementById("song-info") as HTMLDivElement;
@@ -37,6 +39,7 @@ export class Index {
     this.player = new MDPlayer(
       this.volumeControl, //
       this.playButton,
+      this.pauseButton,
       this.stopButton,
 
       this.songInfo,
@@ -56,6 +59,7 @@ export class Index {
     this.availableSongs.addEventListener("change", () => this.player.songChanged());
     this.songRepeat.addEventListener("change", () => this.player.songRepeatChanged());
     this.playButton.addEventListener("mousedown", () => this.player.play());
+    this.pauseButton.addEventListener("mousedown", () => this.player.pause());
     this.stopButton.addEventListener("mousedown", () => this.player.stop());
     this.player.initAudios();
     this.player.initUserInterface();
