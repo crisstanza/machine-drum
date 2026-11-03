@@ -327,5 +327,6 @@ export class MDPlayer extends MDPlayerConstants {
     this.songRepeat.checked = this.song.repeat ?? false;
     this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.songInfo.classList.remove(HTML.CLASS_NAMES.LOADING);
+    this.songInfoDynamic.classList.remove(HTML.CLASS_NAMES.LOADING);
   }
 }

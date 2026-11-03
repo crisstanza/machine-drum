@@ -6,6 +6,7 @@ export abstract class MDPlayerConstants {
   protected readonly stopButton;
 
   protected readonly songInfo;
+  protected readonly songInfoDynamic;
   protected readonly availableSongs;
   protected readonly songDuration;
   protected readonly songSpeed;
@@ -34,6 +35,7 @@ export abstract class MDPlayerConstants {
     playButton: HTMLButtonElement,
     stopButton: HTMLButtonElement,
     songInfo: HTMLDivElement,
+    songInfoDynamic: HTMLDivElement,
     availableSongs: HTMLSelectElement,
     songDuration: HTMLSpanElement,
     songSpeed: HTMLSpanElement,
@@ -48,6 +50,7 @@ export abstract class MDPlayerConstants {
     this.stopButton = stopButton;
 
     this.songInfo = songInfo;
+    this.songInfoDynamic = songInfoDynamic;
     this.availableSongs = availableSongs;
     this.songDuration = songDuration;
     this.songSpeed = songSpeed;

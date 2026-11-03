@@ -20,7 +20,7 @@ html {
 body {
     margin: auto;
     display: flex;
-    row-gap: 30px;
+    row-gap: 20px;
     text-align: center;
     align-items: center;
     flex-direction: column;
@@ -63,16 +63,21 @@ section.songs {
     background-color: rgb(197, 213, 195);
 }
 
-section.songs>div.song-info.loading {
+section.songs>div.song-info.loading,
+section.songs>div.song-info-dynamic.loading {
     opacity: 0.25;
 }
 
-section.songs>div.song-info {
-    padding-top: 10px;
+section.songs>div.song-info,
+section.songs>div.song-info-dynamic {
     display: grid;
     grid-template-columns: auto 1fr;
     text-align: left;
     column-gap: 20px;
+}
+
+section.songs>div.song-info {
+    padding-top: 10px;
 }
 
 section.songs>div.song-info>span {
@@ -83,7 +88,7 @@ section.songs>div.song-info>span:nth-child(2n+1) {
     font-weight: bold;
 }
 
-section.songs>div.song-info>span>input[type=checkbox] {
+section.songs>div.song-info-dynamic>span>input[type=checkbox] {
     transform: scale(1.75);
 }
 

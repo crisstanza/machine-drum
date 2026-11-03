@@ -6,6 +6,7 @@ export class Index {
   private readonly stopButton;
 
   private readonly songInfo;
+  private readonly songInfoDynamic;
   private readonly availableSongs;
   private readonly songDuration;
   private readonly songSpeed;
@@ -23,6 +24,7 @@ export class Index {
     this.stopButton = document.getElementById("stop-button") as HTMLButtonElement;
 
     this.songInfo = document.getElementById("song-info") as HTMLDivElement;
+    this.songInfoDynamic = document.getElementById("song-info-dynamic") as HTMLDivElement;
     this.availableSongs = document.getElementById("available-songs") as HTMLSelectElement;
     this.songDuration = document.getElementById("song-duration") as HTMLSpanElement;
     this.songSpeed = document.getElementById("song-speed") as HTMLSpanElement;
@@ -38,6 +40,7 @@ export class Index {
       this.stopButton,
 
       this.songInfo,
+      this.songInfoDynamic,
       this.availableSongs,
       this.songDuration,
       this.songSpeed,
