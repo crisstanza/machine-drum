@@ -1,5 +1,17 @@
 export const BASS_AUDIO_FILES = [
-  "E1", //
+  "E0", //
+  "F0",
+  "Fs0",
+  "G0",
+  "Gs0",
+  "A0",
+  "As0",
+  "B0",
+  "C1",
+  "Cs1",
+  "D1",
+  "Ds1",
+  "E1",
   "F1",
   "Fs1",
   "G1",
