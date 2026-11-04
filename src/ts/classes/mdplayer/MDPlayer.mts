@@ -8,6 +8,8 @@ export class MDPlayer extends MDPlayerConstants {
   private timeControl = 0;
   private isPaused = false;
   private pausedAt = 0;
+  private currentStepIndex = 0;
+  private isSeekingProgress = false;
 
   private activeSources = 0;
   private beatInterval = 0;
@@ -45,6 +47,23 @@ export class MDPlayer extends MDPlayerConstants {
         finished: false,
       })),
     );
+  }
+
+  private resetSongPosition() {
+    this.resetTrackStates();
+    this.currentStepIndex = 0;
+    if (!this.isSeekingProgress) {
+      this.songProgress.value = "0";
+    }
+  }
+
+  private seekSongPosition(stepIndex: number) {
+    this.resetTrackStates();
+    for (let i = 0; i < stepIndex; i++) {
+      this.song!.data.tracks.forEach((track, index) => this.nextTrackStep(track, this.trackStates[index]));
+    }
+    this.currentStepIndex = stepIndex;
+    this.songProgress.value = stepIndex.toString();
   }
 
   private calcBeatInterval(song: MDSong) {
@@ -107,7 +126,7 @@ export class MDPlayer extends MDPlayerConstants {
     }
   }
 
-  private calcSongDuration(song: MDSong) {
+  private calcSongSteps(song: MDSong) {
     const trackSteps = song.data.tracks.map((track) =>
       track.parts.reduce((partTotal, part) => {
         if (part.repeat < 1 || !part.beats.some((beat) => beat.repeat >= 1 && beat.data.length > 0)) {
@@ -122,7 +141,11 @@ export class MDPlayer extends MDPlayerConstants {
         return partTotal + partSteps * Math.ceil(part.repeat);
       }, 0),
     );
-    const steps = Math.max(0, ...trackSteps);
+    return Math.max(0, ...trackSteps);
+  }
+
+  private calcSongDuration(song: MDSong) {
+    const steps = this.calcSongSteps(song);
     const durationInSeconds = Math.floor((steps * this.calcBeatInterval(song)) / 1000);
     const minutes = Math.floor(durationInSeconds / 60)
       .toString()
@@ -267,6 +290,11 @@ export class MDPlayer extends MDPlayerConstants {
     }
     this.syncTrackMutes();
     const steps = this.song!.data.tracks.map((track, index) => this.nextTrackStep(track, this.trackStates[index]));
+    const stepIndex = this.currentStepIndex;
+    if (!this.isSeekingProgress) {
+      this.songProgress.value = stepIndex.toString();
+    }
+    this.currentStepIndex++;
     const allTracksFinished = this.trackStates.every((state) => state.finished);
     const shouldRepeat = allTracksFinished && this.song!.repeat && this.song!.data.tracks.some((track) => this.hasPlayableData(track));
     const audioBuffers = this.song!.data.tracks.flatMap((track, index) =>
@@ -278,9 +306,9 @@ export class MDPlayer extends MDPlayerConstants {
     );
     if (allTracksFinished && audioBuffers.length === 0) {
       if (shouldRepeat) {
-        this.resetTrackStates();
+        this.resetSongPosition();
       } else {
-        this.stop();
+        this.stop(false);
       }
       return;
     }
@@ -322,9 +350,9 @@ export class MDPlayer extends MDPlayerConstants {
     });
     if (allTracksFinished) {
       if (shouldRepeat) {
-        this.resetTrackStates();
+        this.resetSongPosition();
       } else {
-        this.stop();
+        this.stop(false);
       }
     }
   }
@@ -343,7 +371,9 @@ export class MDPlayer extends MDPlayerConstants {
     this.pauseButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.stopButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.availableSongs.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
-    this.resetTrackStates();
+    if (this.currentStepIndex >= this.calcSongSteps(this.song!)) {
+      this.resetSongPosition();
+    }
     this.requestId = requestAnimationFrame(this.playing.bind(this));
   }
 
@@ -372,9 +402,10 @@ export class MDPlayer extends MDPlayerConstants {
     await this.audioContext.suspend();
   }
 
-  stop() {
+  stop(resetProgress = true) {
     if (this.isPlaying()) {
       const wasPaused = this.isPaused;
+      this.isSeekingProgress = false;
       if (this.requestId) {
         cancelAnimationFrame(this.requestId);
       }
@@ -388,6 +419,11 @@ export class MDPlayer extends MDPlayerConstants {
       this.stopButton.setAttribute(HTML.ATTRIBUTE_NAMES.DISABLED, "");
       this.pauseButton.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.PAUSE);
       this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
+      if (resetProgress) {
+        this.resetSongPosition();
+      } else {
+        this.trackStates.length = 0;
+      }
       if (wasPaused) {
         this.audioContext.resume();
       }
@@ -577,8 +613,29 @@ export class MDPlayer extends MDPlayerConstants {
     }
   }
 
+  songProgressChanged() {
+    if (this.song) {
+      const stepCount = this.calcSongSteps(this.song);
+      const stepIndex = Number.isFinite(this.songProgress.valueAsNumber) ? Math.floor(this.songProgress.valueAsNumber) : 0;
+      this.seekSongPosition(Math.min(Math.max(0, stepIndex), Math.max(0, stepCount - 1)));
+      this.isSeekingProgress = false;
+    }
+  }
+
+  songProgressInput() {
+    if (this.song) {
+      this.isSeekingProgress = true;
+      const stepCount = this.calcSongSteps(this.song);
+      const stepIndex = Number.isFinite(this.songProgress.valueAsNumber) ? Math.floor(this.songProgress.valueAsNumber) : 0;
+      this.seekSongPosition(Math.min(Math.max(0, stepIndex), Math.max(0, stepCount - 1)));
+    }
+  }
+
   songChanged() {
     this.song = this.songs[this.availableSongs.selectedIndex];
+    this.isSeekingProgress = false;
+    this.songProgress.max = Math.max(0, this.calcSongSteps(this.song) - 1).toString();
+    this.resetSongPosition();
     this.beatInterval = this.calcBeatInterval(this.song);
     this.songDuration.innerText = this.calcSongDuration(this.song);
     this.songSpeed.innerText = this.song.bpm.toString();

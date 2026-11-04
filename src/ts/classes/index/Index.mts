@@ -5,6 +5,7 @@ export class Index {
   private readonly playButton;
   private readonly pauseButton;
   private readonly stopButton;
+  private readonly songProgress;
 
   private readonly songInfo;
   private readonly songInfoDynamic;
@@ -27,6 +28,7 @@ export class Index {
     this.playButton = document.getElementById("play-button") as HTMLButtonElement;
     this.pauseButton = document.getElementById("pause-button") as HTMLButtonElement;
     this.stopButton = document.getElementById("stop-button") as HTMLButtonElement;
+    this.songProgress = document.getElementById("song-progress") as HTMLInputElement;
 
     this.songInfo = document.getElementById("song-info") as HTMLDivElement;
     this.songInfoDynamic = document.getElementById("song-info-dynamic") as HTMLDivElement;
@@ -47,6 +49,7 @@ export class Index {
       this.playButton,
       this.pauseButton,
       this.stopButton,
+      this.songProgress,
 
       this.songInfo,
       this.songInfoDynamic,
@@ -71,9 +74,10 @@ export class Index {
     this.pauseButton.addEventListener("mousedown", () => this.player.pause());
     this.stopButton.addEventListener("mousedown", () => this.player.stop());
     this.songDownloadLink.addEventListener("click", (event) => {
-      event.preventDefault();
-      void this.player.download().catch((error: unknown) => console.error("Could not download song:", error));
+      this.player.download().catch((error: unknown) => console.error("Could not download song:", error));
     });
+    this.songProgress.addEventListener("input", () => this.player.songProgressInput());
+    this.songProgress.addEventListener("change", () => this.player.songProgressChanged());
     void this.player.initAudios().catch((error: unknown) => console.error("Could not initialize audio samples:", error));
     this.player.initUserInterface();
   }

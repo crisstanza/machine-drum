@@ -96,6 +96,7 @@ section.songs>div.song-info-dynamic>span>input[type=checkbox] {
 div.buttons {
     display: flex;
     gap: 20px;
+    align-items: center;
 }
 
 a:not([href]),
@@ -130,7 +131,14 @@ button.active {
     box-shadow: inset 2px 2px 5px 0px gray;
 }
 
-input[type="range"] {
-    width: 250px;
-    margin-bottom: -30px;
+input[type="range"].volume {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    height: 150px;
+    width: 25px;
+}
+
+input[type="range"].progress {
+    width: 375px;
+    margin-bottom: -25px;
 }
