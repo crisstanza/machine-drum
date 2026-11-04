@@ -65,6 +65,7 @@ build() {
     cp src/*.* build --verbose
     echo ''
     cp -r src/audio build --verbose
+    cp -r src/img build --verbose
 }
 
 runBuild() {
