@@ -1,31 +1,3 @@
-export const DRUMS_AUDIO_FILES = [
-  "B0",
-  "C1",
-  "Cs1",
-  "D1",
-  "Ds1",
-  "E1",
-  "F1",
-  "Fs1",
-  "G1",
-  "Gs1",
-  "A1",
-  "As1",
-  "B1",
-  "C2",
-  "Cs2",
-  "D2",
-  "Ds2",
-  "E2",
-  "F2",
-  "Fs2",
-  "G2", // empty
-  "Gs2",
-  "A2",
-  "As2", // empty
-  "B2",
-];
-
 export const BASS_AUDIO_FILES = [
   "E1", //
   "F1",
@@ -55,6 +27,34 @@ export const BASS_AUDIO_FILES = [
   "F3",
   "Fs3",
   "G3",
+];
+
+export const DRUMS_AUDIO_FILES = [
+  "B0",
+  "C1",
+  "Cs1",
+  "D1",
+  "Ds1",
+  "E1",
+  "F1",
+  "Fs1",
+  "G1",
+  "Gs1",
+  "A1",
+  "As1",
+  "B1",
+  "C2",
+  "Cs2",
+  "D2",
+  "Ds2",
+  "E2",
+  "F2",
+  "Fs2",
+  "G2", // empty
+  "Gs2",
+  "A2", // empty
+  "As2",
+  "B2",
 ];
 
 export const GUITAR_CLEAN_AUDIO_FILES = [
@@ -116,6 +116,8 @@ export const GUITAR_CLEAN_AUDIO_FILES = [
   "B3",
   "C4",
   "Cs4",
+  "D4",
+  "Ds4",
   "E4",
   "F4",
   "Fs4",

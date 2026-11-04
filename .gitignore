@@ -5,3 +5,5 @@ src/js
 .DS_Store
 
 GarageBand/**/WindowImage.jpg
+
+scripts/tmp/*

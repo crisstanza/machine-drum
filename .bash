@@ -73,6 +73,20 @@ runBuild() {
     cd ..
 }
 
+checkAudios() {
+    _generate_report "bass" "bass"
+    _generate_report "drums" "drums"
+    _generate_report "guitar-clean" "guitarClean"
+    node --watch scripts/check-audios.ts
+}
+
+function _generate_report() { # pseudo-private
+    local FOLDER="${1}"
+    local VARIABLE="${2}"
+    echo "export const ${VARIABLE} = " > scripts/tmp/${FOLDER}.mts
+    ls -1 src/audio/${FOLDER}/ | awk -F. '{print $1}' | jq -R . | jq -s . >> scripts/tmp/${FOLDER}.mts
+}
+
 ########################## HIC SUNT DRACONES ##########################
 
 RED='\033[0;31m'
