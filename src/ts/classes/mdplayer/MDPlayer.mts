@@ -54,7 +54,20 @@ export class MDPlayer extends MDPlayerConstants {
     this.currentStepIndex = 0;
     if (!this.isSeekingProgress) {
       this.songProgress.value = "0";
+      this.updateSongPosition(0);
     }
+  }
+
+  private updateSongPosition(stepIndex: number) {
+    if (!this.song) {
+      return;
+    }
+    const elapsedSeconds = Math.floor((stepIndex * this.calcBeatInterval(this.song)) / 1000);
+    const minutes = Math.floor(elapsedSeconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const seconds = (elapsedSeconds % 60).toString().padStart(2, "0");
+    this.songPosition.innerText = `${minutes}:${seconds}`;
   }
 
   private seekSongPosition(stepIndex: number) {
@@ -64,6 +77,7 @@ export class MDPlayer extends MDPlayerConstants {
     }
     this.currentStepIndex = stepIndex;
     this.songProgress.value = stepIndex.toString();
+    this.updateSongPosition(stepIndex);
   }
 
   private calcBeatInterval(song: MDSong) {
@@ -86,10 +100,6 @@ export class MDPlayer extends MDPlayerConstants {
     const frameInterval = (frameTimestamps[frameTimestamps.length - 1] - frameTimestamps[0]) / (frameTimestamps.length - 1);
     const stepDuration = this.calcBeatInterval(song);
     return Math.ceil(stepDuration / frameInterval) * frameInterval;
-  }
-
-  private calcSongInstruments(song: MDSong) {
-    return [...new Set(song.data.tracks.map((track) => track.instrument))].join(", ");
   }
 
   private calcSongTracks(song: MDSong) {
@@ -293,6 +303,7 @@ export class MDPlayer extends MDPlayerConstants {
     const stepIndex = this.currentStepIndex;
     if (!this.isSeekingProgress) {
       this.songProgress.value = stepIndex.toString();
+      this.updateSongPosition(stepIndex);
     }
     this.currentStepIndex++;
     const allTracksFinished = this.trackStates.every((state) => state.finished);
@@ -652,7 +663,6 @@ export class MDPlayer extends MDPlayerConstants {
     } else {
       this.songKey.classList.remove(HTML.CLASS_NAMES.ITALIC);
     }
-    this.songInstruments.innerText = this.calcSongInstruments(this.song);
     this.calcSongTracks(this.song);
     this.songRepeat.checked = this.song.repeat ?? false;
     this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);

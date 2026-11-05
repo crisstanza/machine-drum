@@ -27,8 +27,6 @@
         <span id="song-genre"></span>
         <span>Key:</span>
         <span id="song-key"></span>
-        <span>Instruments:</span>
-        <span id="song-instruments"></span>
       </div>
     </section>
     <section class="songs">
@@ -46,8 +44,10 @@
         <button title="pause" id="pause-button" disabled>⏸️</button>
         <button title="stop" id="stop-button" disabled>⏹️</button>
       </div>
-      <div>
+      <div class="progress">
+        <span>00:00</span>
         <input title="song progress" class="progress" id="song-progress" type="range" min="0" max="0" step="1" value="0" />
+        <span id="song-position">00:00</span>
       </div>
     </section>
     <section class="download">

@@ -6,6 +6,7 @@ export class Index {
   private readonly pauseButton;
   private readonly stopButton;
   private readonly songProgress;
+  private readonly songPosition;
 
   private readonly songInfo;
   private readonly songInfoDynamic;
@@ -18,7 +19,6 @@ export class Index {
   private readonly songName;
   private readonly songGenre;
   private readonly songKey;
-  private readonly songInstruments;
 
   private readonly songTracks;
   private readonly songRepeat;
@@ -31,6 +31,7 @@ export class Index {
     this.pauseButton = document.getElementById("pause-button") as HTMLButtonElement;
     this.stopButton = document.getElementById("stop-button") as HTMLButtonElement;
     this.songProgress = document.getElementById("song-progress") as HTMLInputElement;
+    this.songPosition = document.getElementById("song-position") as HTMLSpanElement;
 
     this.songInfo = document.getElementById("song-info") as HTMLDivElement;
     this.songInfoDynamic = document.getElementById("song-info-dynamic") as HTMLDivElement;
@@ -43,7 +44,6 @@ export class Index {
     this.songName = document.getElementById("song-name") as HTMLSpanElement;
     this.songGenre = document.getElementById("song-genre") as HTMLSpanElement;
     this.songKey = document.getElementById("song-key") as HTMLSpanElement;
-    this.songInstruments = document.getElementById("song-instruments") as HTMLSpanElement;
 
     this.songTracks = document.getElementById("song-tracks") as HTMLSpanElement;
     this.songRepeat = document.getElementById("song-repeat") as HTMLInputElement;
@@ -54,6 +54,7 @@ export class Index {
       this.pauseButton,
       this.stopButton,
       this.songProgress,
+      this.songPosition,
 
       this.songInfo,
       this.songInfoDynamic,
@@ -66,7 +67,6 @@ export class Index {
       this.songName,
       this.songGenre,
       this.songKey,
-      this.songInstruments,
 
       this.songTracks,
       this.songRepeat,
