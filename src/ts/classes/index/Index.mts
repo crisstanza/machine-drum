@@ -17,7 +17,9 @@ export class Index {
   private readonly songSpeed;
   private readonly songName;
   private readonly songGenre;
+  private readonly songKey;
   private readonly songInstruments;
+
   private readonly songTracks;
   private readonly songRepeat;
 
@@ -40,7 +42,9 @@ export class Index {
     this.songSpeed = document.getElementById("song-speed") as HTMLSpanElement;
     this.songName = document.getElementById("song-name") as HTMLSpanElement;
     this.songGenre = document.getElementById("song-genre") as HTMLSpanElement;
+    this.songKey = document.getElementById("song-key") as HTMLSpanElement;
     this.songInstruments = document.getElementById("song-instruments") as HTMLSpanElement;
+
     this.songTracks = document.getElementById("song-tracks") as HTMLSpanElement;
     this.songRepeat = document.getElementById("song-repeat") as HTMLInputElement;
 
@@ -61,7 +65,9 @@ export class Index {
       this.songSpeed,
       this.songName,
       this.songGenre,
+      this.songKey,
       this.songInstruments,
+
       this.songTracks,
       this.songRepeat,
     );
@@ -73,12 +79,10 @@ export class Index {
     this.playButton.addEventListener("mousedown", () => this.player.play());
     this.pauseButton.addEventListener("mousedown", () => this.player.pause());
     this.stopButton.addEventListener("mousedown", () => this.player.stop());
-    this.songDownloadLink.addEventListener("click", (event) => {
-      this.player.download().catch((error: unknown) => console.error("Could not download song:", error));
-    });
+    this.songDownloadLink.addEventListener("click", (event) => this.player.download());
     this.songProgress.addEventListener("input", () => this.player.songProgressInput());
     this.songProgress.addEventListener("change", () => this.player.songProgressChanged());
-    void this.player.initAudios().catch((error: unknown) => console.error("Could not initialize audio samples:", error));
+    this.player.initAudios();
     this.player.initUserInterface();
   }
 }

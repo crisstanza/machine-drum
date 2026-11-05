@@ -1,4 +1,4 @@
-import { INSTRUMENTS, SONG_GENDERS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS, SONG_KEYS } from "../enums/enums.mjs";
 import { MDSong } from "../types/types.mjs";
 
 const drumBar = (extraKicks: number[] = [], crash = false, fill = false, ride = false): string[][] => {
@@ -74,6 +74,7 @@ const outroMelody = fourBars([melodyBar(["G3", "G3", "E3", "G3", "Fs3", "E3", "D
 export const song_09: MDSong = {
   name: "Aço na Veia",
   gender: SONG_GENDERS.ROCK,
+  key: SONG_KEYS.E,
   timeSignature: {
     topNumber: 4,
     bottomNumber: 4,

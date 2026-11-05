@@ -1,4 +1,4 @@
-import { INSTRUMENTS, SONG_GENDERS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS, SONG_KEYS } from "../enums/enums.mjs";
 import { MDSong } from "../types/types.mjs";
 
 const drumBar = (chorus = false, fill = false, crash = false): string[][] => {
@@ -92,6 +92,7 @@ const silentSection = fourBars([restBar(), restBar(), restBar(), restBar()]);
 export const song_10: MDSong = {
   name: "Brilho da Meia-Noite",
   gender: SONG_GENDERS.DISCO,
+  key: SONG_KEYS.A,
   timeSignature: {
     topNumber: 4,
     bottomNumber: 4,
@@ -126,18 +127,7 @@ export const song_10: MDSong = {
       {
         instrument: INSTRUMENTS.GUITAR_CLEAN,
         mute: false,
-        parts: [
-          part(silentSection),
-          part(silentSection, 3),
-          part(silentSection, 2),
-          part(silentSection, 3),
-          part(silentSection, 2),
-          part(silentSection, 3),
-          part(soloGuitar, 2),
-          part(silentSection),
-          part(silentSection),
-          part(finalRest),
-        ],
+        parts: [part(silentSection), part(silentSection, 3), part(silentSection, 2), part(silentSection, 3), part(silentSection, 2), part(silentSection, 3), part(soloGuitar, 2), part(silentSection), part(silentSection), part(finalRest)],
       },
     ],
   },

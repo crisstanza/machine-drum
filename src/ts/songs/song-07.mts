@@ -1,4 +1,4 @@
-import { INSTRUMENTS, SONG_GENDERS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS, SONG_KEYS } from "../enums/enums.mjs";
 import { MDSong } from "../types/types.mjs";
 
 const pulse = (hit: string[] = []): string[][] => Array.from({ length: 4 }, (_, index) => (index === 0 ? hit : []));
@@ -84,6 +84,7 @@ const outroBar = bar([
 export const song_07: MDSong = {
   name: "Brisa Reta de Copacabana",
   gender: SONG_GENDERS.BOSSA_NOVA,
+  key: SONG_KEYS._,
   timeSignature: {
     topNumber: 4,
     bottomNumber: 4,

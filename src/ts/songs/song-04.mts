@@ -1,4 +1,4 @@
-import { INSTRUMENTS, SONG_GENDERS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS, SONG_KEYS } from "../enums/enums.mjs";
 import { MDSong } from "../types/types.mjs";
 
 const introGroove = [
@@ -108,6 +108,7 @@ const buildFourBarPattern = (groove: string[][], fill: string[][]): string[][] =
 export const song_04: MDSong = {
   name: "Balada do Coração",
   gender: SONG_GENDERS.BALLAD,
+  key: SONG_KEYS._,
   timeSignature: {
     topNumber: 4,
     bottomNumber: 4,

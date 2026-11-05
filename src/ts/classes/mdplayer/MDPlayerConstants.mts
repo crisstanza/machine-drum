@@ -17,7 +17,9 @@ export abstract class MDPlayerConstants {
   protected readonly songSpeed;
   protected readonly songName;
   protected readonly songGenre;
+  protected readonly songKey;
   protected readonly songInstruments;
+
   protected readonly songTracks;
   protected readonly songRepeat;
 
@@ -53,7 +55,9 @@ export abstract class MDPlayerConstants {
     songSpeed: HTMLSpanElement,
     songName: HTMLSpanElement,
     songGenre: HTMLSpanElement,
+    songKey: HTMLSpanElement,
     songInstruments: HTMLSpanElement,
+
     songTracks: HTMLSpanElement,
     songRepeat: HTMLInputElement,
   ) {
@@ -73,7 +77,9 @@ export abstract class MDPlayerConstants {
     this.songSpeed = songSpeed;
     this.songName = songName;
     this.songGenre = songGenre;
+    this.songKey = songKey;
     this.songInstruments = songInstruments;
+
     this.songTracks = songTracks;
     this.songRepeat = songRepeat;
   }

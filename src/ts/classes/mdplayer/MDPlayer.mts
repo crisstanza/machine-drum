@@ -1,5 +1,5 @@
 import { BASS_AUDIO_FILES, DRUMS_AUDIO_FILES, GUITAR_CLEAN_AUDIO_FILES } from "../../config/config.mjs";
-import { HTML, INSTRUMENTS, SONG_NAMES } from "../../enums/enums.mjs";
+import { HTML, INSTRUMENTS, SONG_KEYS, SONG_NAMES } from "../../enums/enums.mjs";
 import { MDInstrument, MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongDataTrackState, MDSongMap } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
@@ -640,7 +640,18 @@ export class MDPlayer extends MDPlayerConstants {
     this.songDuration.innerText = this.calcSongDuration(this.song);
     this.songSpeed.innerText = this.song.bpm.toString();
     this.songName.innerText = this.song.name ?? SONG_NAMES._;
+    if ((this.song.name ?? SONG_NAMES._) == SONG_NAMES._) {
+      this.songName.classList.add(HTML.CLASS_NAMES.ITALIC);
+    } else {
+      this.songName.classList.remove(HTML.CLASS_NAMES.ITALIC);
+    }
     this.songGenre.innerText = this.song.gender;
+    this.songKey.innerText = this.song.key;
+    if (this.song.key == SONG_KEYS._) {
+      this.songKey.classList.add(HTML.CLASS_NAMES.ITALIC);
+    } else {
+      this.songKey.classList.remove(HTML.CLASS_NAMES.ITALIC);
+    }
     this.songInstruments.innerText = this.calcSongInstruments(this.song);
     this.calcSongTracks(this.song);
     this.songRepeat.checked = this.song.repeat ?? false;

@@ -1,4 +1,4 @@
-import { INSTRUMENTS, SONG_GENDERS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS, SONG_KEYS } from "../enums/enums.mjs";
 import { MDSong } from "../types/types.mjs";
 
 const drumBar = (kickOnOne = false, fill = false, openHat = false): string[][] => {
@@ -55,6 +55,7 @@ const outroBass = fourBars([bassBar("E1", "B1"), bassBar("C2", "G1"), bassBar("D
 export const song_08: MDSong = {
   name: "Sol de Jah",
   gender: SONG_GENDERS.REGGAE,
+  key: SONG_KEYS.E,
   timeSignature: {
     topNumber: 4,
     bottomNumber: 4,

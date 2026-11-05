@@ -1,6 +1,8 @@
-import { INSTRUMENTS, SONG_GENDERS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS, SONG_KEYS } from "../enums/enums.mjs";
 
 export type MDSongGender = (typeof SONG_GENDERS)[keyof typeof SONG_GENDERS];
+
+export type MDSongKey = (typeof SONG_KEYS)[keyof typeof SONG_KEYS];
 
 export type MDInstrument = (typeof INSTRUMENTS)[keyof typeof INSTRUMENTS];
 
@@ -12,6 +14,7 @@ export type MDSongTimeSignature = {
 export type MDSong = {
   name?: string;
   gender: MDSongGender;
+  key: MDSongKey;
   prompt?: string;
 
   timeSignature: MDSongTimeSignature;

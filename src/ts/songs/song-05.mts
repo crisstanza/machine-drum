@@ -1,4 +1,4 @@
-import { INSTRUMENTS, SONG_GENDERS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS, SONG_KEYS } from "../enums/enums.mjs";
 import { MDSong } from "../types/types.mjs";
 
 const pulse = (hit: string[] = [], roll: string[][] = []): string[][] => Array.from({ length: 4 }, (_, index) => (index === 0 ? hit : (roll[index - 1] ?? [])));
@@ -47,6 +47,7 @@ const soloFillAlt = bar([pulse(["Cs2", "B0", "Ds2"]), pulse(["Ds2"]), pulse(["D1
 export const song_05: MDSong = {
   name: "Motor em Chamas",
   gender: SONG_GENDERS.ROCK,
+  key: SONG_KEYS.E,
   timeSignature: {
     topNumber: 4,
     bottomNumber: 4,

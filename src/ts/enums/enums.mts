@@ -2,6 +2,7 @@ export const HTML = Object.freeze({
   CLASS_NAMES: Object.freeze({
     ACTIVE: "active",
     CLICKABLE: "clickable",
+    ITALIC: "italic",
     LOADING: "loading",
     MUTED: "muted",
   }),
@@ -28,6 +29,27 @@ export const SONG_GENDERS = Object.freeze({
   PUNK: "punk",
   REGGAE: "reggae",
   ROCK: "rock",
+});
+
+export const SONG_KEYS = Object.freeze({
+  _: "no key",
+  C: "C",
+  Cs: "C#",
+  Db: "Db",
+  D: "D",
+  Ds: "D#",
+  Eb: "Eb",
+  E: "E",
+  F: "F",
+  Fs: "F#",
+  Gb: "Gb",
+  G: "G",
+  Gs: "G#",
+  Ab: "Ab",
+  A: "A",
+  As: "A#",
+  Bb: "Bb",
+  B: "B",
 });
 
 export const SONG_NAMES = Object.freeze({
