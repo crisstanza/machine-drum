@@ -77,6 +77,17 @@ For GarageBand's more complex or percussion-oriented kits, the higher-pitched no
 
 <br>
 
+## Run (local):
+
+    scripts/.run.bat.
+
+## Build and Run (local):
+
+    scripts/.build.bat
+    scripts/.run-build.bat
+
+<br>
+
 ## Cool Links:
 
 - https://fsymbols.com/signs/arrow/
