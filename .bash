@@ -63,6 +63,9 @@ build() {
     minifyJS
     
     cp src/*.* build --verbose
+    local TS=`date +%s`
+    _replace_in_file '?ts=${}' "?ts=${TS}" build/index.html
+    
     echo ''
     cp -r src/audio build --verbose
     cp -r src/img build --verbose
@@ -86,6 +89,13 @@ function _generate_report() { # pseudo-private
     local VARIABLE="${2}"
     echo "export const ${VARIABLE} = " > scripts/tmp/${FOLDER}.mts
     ls -1 src/audio/${FOLDER}/ | awk -F. '{print $1}' | jq -R . | jq -s . >> scripts/tmp/${FOLDER}.mts
+}
+
+function _replace_in_file() {
+    local OLD="${1}"
+    local NEW="${2}"
+    local FILE="${3}"
+    sed -i "s/${OLD}/${NEW}/g" "${FILE}"
 }
 
 ########################## HIC SUNT DRACONES ##########################
