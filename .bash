@@ -89,9 +89,9 @@ trimAudios() {
     #
     # run from an elevated command shell: choco install ffmpeg
     #
-    _trim_audios "drums" "-60"
-    _trim_audios "bass" "-30"
-    _trim_audios "guitar-clean" "-50"
+    _trim_audios "drums" "-60" "1"
+    _trim_audios "bass" "-30" "1"
+    _trim_audios "guitar-clean" "-50" "1"
 }
 
 function _generate_audios_report() { # pseudo-private
@@ -111,14 +111,16 @@ function _replace_in_file() { # pseudo-private
 function _trim_audios() { # pseudo-private
     local FOLDER="${1}"
     local THRESHOLD="${2}"
+    local CHANNELS="${3}"
     local FOLDER_PATH="scripts/tmp/audio/${FOLDER}"
     rm -Rf "${FOLDER_PATH}"
     mkdir -p "${FOLDER_PATH}"
     for filePath in src/audio/${FOLDER}/*.wav ; do
         local FILE_NAME=`basename ${filePath}`
         local PARAMS="silenceremove=start_periods=1:start_duration=0:start_threshold=${THRESHOLD}dB,areverse,silenceremove=start_periods=1:start_duration=0:start_threshold=${THRESHOLD}dB,areverse"
-        ffmpeg -i "$filePath" -af "${PARAMS}" -c:a pcm_s24le "${FOLDER_PATH}/${FILE_NAME}" -y
+        ffmpeg -i "$filePath" -af "${PARAMS}" -c:a pcm_s24le -ac ${CHANNELS} "${FOLDER_PATH}/${FILE_NAME}" -y
     done
+    mv "${FOLDER_PATH}"/*.wav src/audio/${FOLDER}/
 }
 
 ########################## HIC SUNT DRACONES ##########################
