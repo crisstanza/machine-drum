@@ -42,7 +42,7 @@ export const BASS_AUDIO_FILES = [
 ];
 
 export const DRUMS_AUDIO_FILES = [
-  "B0",
+  "B0", //
   "C1",
   "Cs1",
   "D1",
@@ -62,10 +62,8 @@ export const DRUMS_AUDIO_FILES = [
   "E2",
   "F2",
   "Fs2",
-  "G2", // empty
   "Gs2",
-  "A2", // empty
-  "As2",
+  "A2",
   "B2",
 ];
 
