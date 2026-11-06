@@ -61,6 +61,26 @@ section {
 
             button {
                 font-size: 45pt;
+                height: 100px;
+                width: 100px;
+                border-style: outset;
+                border-width: 3px;
+                line-height: 94px;
+                padding: 0;
+                box-shadow: 2px 2px 10px 0px gray;
+
+                &[disabled] {
+                    opacity: 0.75;
+                }
+
+                &:active:not([disabled]),
+                &.active {
+                    border-style: inset;
+                    background-color: #e0e0e0;
+                    padding-top: 3px;
+                    color: color-mix(in srgb, currentColor 75%, transparent);
+                    box-shadow: inset 2px 2px 5px 0px gray;
+                }
             }
         }
 
@@ -117,6 +137,10 @@ section {
             >span>input[type=checkbox] {
                 transform: scale(1.75);
             }
+
+            >span>input[type=number] {
+                width: 75px;
+            }
         }
     }
 }
@@ -128,29 +152,6 @@ input[type=range],
 input[type=checkbox],
 select:not(:disabled) {
     cursor: pointer;
-}
-
-button {
-    border-style: outset;
-    border-width: 3px;
-    line-height: 94px;
-    height: 100px;
-    width: 100px;
-    padding: 0;
-    box-shadow: 2px 2px 10px 0px gray;
-
-    &[disabled] {
-        opacity: 0.75;
-    }
-
-    &:active:not([disabled]),
-    &.active {
-        border-style: inset;
-        background-color: #e0e0e0;
-        padding-top: 3px;
-        color: color-mix(in srgb, currentColor 75%, transparent);
-        box-shadow: inset 2px 2px 5px 0px gray;
-    }
 }
 
 input[type="range"] {

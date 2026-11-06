@@ -15,10 +15,13 @@ export class Index {
 
   private readonly availableSongs;
   private readonly songDuration;
-  private readonly songSpeed;
   private readonly songName;
   private readonly songGenre;
   private readonly songKey;
+
+  private readonly minus10Button;
+  private readonly songSpeed;
+  private readonly plus10Button;
 
   private readonly songTracks;
   private readonly songRepeat;
@@ -40,10 +43,13 @@ export class Index {
 
     this.availableSongs = document.getElementById("available-songs") as HTMLSelectElement;
     this.songDuration = document.getElementById("song-duration") as HTMLSpanElement;
-    this.songSpeed = document.getElementById("song-speed") as HTMLSpanElement;
     this.songName = document.getElementById("song-name") as HTMLSpanElement;
     this.songGenre = document.getElementById("song-genre") as HTMLSpanElement;
     this.songKey = document.getElementById("song-key") as HTMLSpanElement;
+
+    this.minus10Button = document.getElementById("minus-10-button") as HTMLButtonElement;
+    this.songSpeed = document.getElementById("song-speed") as HTMLInputElement;
+    this.plus10Button = document.getElementById("plus-10-button") as HTMLButtonElement;
 
     this.songTracks = document.getElementById("song-tracks") as HTMLSpanElement;
     this.songRepeat = document.getElementById("song-repeat") as HTMLInputElement;
@@ -63,10 +69,13 @@ export class Index {
 
       this.availableSongs,
       this.songDuration,
-      this.songSpeed,
       this.songName,
       this.songGenre,
       this.songKey,
+
+      this.minus10Button,
+      this.songSpeed,
+      this.plus10Button,
 
       this.songTracks,
       this.songRepeat,
@@ -75,13 +84,22 @@ export class Index {
 
   async init() {
     this.availableSongs.addEventListener("change", () => this.player.songChanged());
+
+    this.minus10Button.addEventListener("mousedown", () => this.player.minus10Bpm());
+    this.songSpeed.addEventListener("input", () => this.player.songSpeedChanged());
+    this.plus10Button.addEventListener("mousedown", () => this.player.plus10Bpm());
+
     this.songRepeat.addEventListener("change", () => this.player.songRepeatChanged());
+
     this.playButton.addEventListener("mousedown", () => this.player.play());
     this.pauseButton.addEventListener("mousedown", () => this.player.pause());
     this.stopButton.addEventListener("mousedown", () => this.player.stop());
-    this.songDownloadLink.addEventListener("click", (event) => this.player.download());
+
     this.songProgress.addEventListener("input", () => this.player.songProgressInput());
     this.songProgress.addEventListener("change", () => this.player.songProgressChanged());
+
+    this.songDownloadLink.addEventListener("click", () => this.player.download());
+
     this.player.initAudios();
     this.player.initUserInterface();
   }

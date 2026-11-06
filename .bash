@@ -56,7 +56,6 @@ run() {
 build() {
     clean
     mkdir build
-    mkdir build/audio
     
     minifyCSS
     transpileJS

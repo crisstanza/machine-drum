@@ -624,11 +624,18 @@ export class MDPlayer extends MDPlayerConstants {
     }
   }
 
+  private updateSongProgress() {
+    if (!this.song) {
+      return;
+    }
+    const stepCount = this.calcSongSteps(this.song);
+    const stepIndex = Number.isFinite(this.songProgress.valueAsNumber) ? Math.floor(this.songProgress.valueAsNumber) : 0;
+    this.seekSongPosition(Math.min(Math.max(0, stepIndex), Math.max(0, stepCount - 1)));
+  }
+
   songProgressChanged() {
     if (this.song) {
-      const stepCount = this.calcSongSteps(this.song);
-      const stepIndex = Number.isFinite(this.songProgress.valueAsNumber) ? Math.floor(this.songProgress.valueAsNumber) : 0;
-      this.seekSongPosition(Math.min(Math.max(0, stepIndex), Math.max(0, stepCount - 1)));
+      this.updateSongProgress();
       this.isSeekingProgress = false;
     }
   }
@@ -636,9 +643,39 @@ export class MDPlayer extends MDPlayerConstants {
   songProgressInput() {
     if (this.song) {
       this.isSeekingProgress = true;
-      const stepCount = this.calcSongSteps(this.song);
-      const stepIndex = Number.isFinite(this.songProgress.valueAsNumber) ? Math.floor(this.songProgress.valueAsNumber) : 0;
-      this.seekSongPosition(Math.min(Math.max(0, stepIndex), Math.max(0, stepCount - 1)));
+      this.updateSongProgress();
+    }
+  }
+
+  private updateSongSpeed(bpm: number) {
+    if (!this.song) {
+      return;
+    }
+    const max = Number(this.songSpeed.max);
+    const min = Number(this.songSpeed.min);
+    const newBpm = Math.max(Math.min(Number.isFinite(bpm) ? bpm : this.song.bpm, max), min);
+    this.song.bpm = newBpm;
+    this.songSpeed.value = newBpm.toString();
+    this.beatInterval = this.calcBeatInterval(this.song);
+    this.songDuration.innerText = this.calcSongDuration(this.song);
+    this.updateSongPosition(this.currentStepIndex);
+  }
+
+  plus10Bpm() {
+    if (this.song) {
+      this.updateSongSpeed(Number(this.songSpeed.value) + 10);
+    }
+  }
+
+  songSpeedChanged() {
+    if (this.song) {
+      this.updateSongSpeed(this.songSpeed.valueAsNumber);
+    }
+  }
+
+  minus10Bpm() {
+    if (this.song) {
+      this.updateSongSpeed(Number(this.songSpeed.value) - 10);
     }
   }
 
@@ -649,7 +686,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.resetSongPosition();
     this.beatInterval = this.calcBeatInterval(this.song);
     this.songDuration.innerText = this.calcSongDuration(this.song);
-    this.songSpeed.innerText = this.song.bpm.toString();
+    this.songSpeed.value = this.song.bpm.toString();
     this.songName.innerText = this.song.name ?? SONG_NAMES._;
     if ((this.song.name ?? SONG_NAMES._) == SONG_NAMES._) {
       this.songName.classList.add(HTML.CLASS_NAMES.ITALIC);

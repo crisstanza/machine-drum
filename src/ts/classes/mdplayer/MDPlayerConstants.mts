@@ -15,10 +15,13 @@ export abstract class MDPlayerConstants {
 
   protected readonly availableSongs;
   protected readonly songDuration;
-  protected readonly songSpeed;
   protected readonly songName;
   protected readonly songGenre;
   protected readonly songKey;
+
+  protected readonly minus10Button;
+  protected readonly songSpeed;
+  protected readonly plus10Button;
 
   protected readonly songTracks;
   protected readonly songRepeat;
@@ -53,10 +56,13 @@ export abstract class MDPlayerConstants {
 
     availableSongs: HTMLSelectElement,
     songDuration: HTMLSpanElement,
-    songSpeed: HTMLSpanElement,
     songName: HTMLSpanElement,
     songGenre: HTMLSpanElement,
     songKey: HTMLSpanElement,
+
+    minus10Button: HTMLButtonElement,
+    songSpeed: HTMLInputElement,
+    plus10Button: HTMLButtonElement,
 
     songTracks: HTMLSpanElement,
     songRepeat: HTMLInputElement,
@@ -75,10 +81,13 @@ export abstract class MDPlayerConstants {
 
     this.availableSongs = availableSongs;
     this.songDuration = songDuration;
-    this.songSpeed = songSpeed;
     this.songName = songName;
     this.songGenre = songGenre;
     this.songKey = songKey;
+
+    this.minus10Button = minus10Button;
+    this.songSpeed = songSpeed;
+    this.plus10Button = plus10Button;
 
     this.songTracks = songTracks;
     this.songRepeat = songRepeat;

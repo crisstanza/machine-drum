@@ -5,9 +5,9 @@
     <title>Machine Drum</title>
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="css/github.css?ts=${}" />
-    <link rel="stylesheet" href="css/css.css?ts=${}" />
-    <script type="module" src="js/index.mjs?ts=${}"></script>
+    <link rel="stylesheet" href="css/github.css?ts=${TS}" />
+    <link rel="stylesheet" href="css/css.css?ts=${TS}" />
+    <script type="module" src="js/index.mjs?ts=${TS}"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
@@ -19,8 +19,6 @@
       <div class="song-info loading" id="song-info">
         <span>Duration:</span>
         <span id="song-duration"></span>
-        <span>BPM:</span>
-        <span id="song-speed"></span>
         <span>Name:</span>
         <span id="song-name"></span>
         <span>Genre:</span>
@@ -31,6 +29,12 @@
     </section>
     <section class="songs">
       <div class="song-info-dynamic loading" id="song-info-dynamic">
+        <span>BPM:</span>
+        <span>
+          <button id="minus-10-button">-10</button>
+          <input id="song-speed" type="number" title="song speed" step="1" min="1" max="500" maxlength="3" />
+          <button id="plus-10-button">10+</button>
+        </span>
         <span>Tracks:</span>
         <span id="song-tracks"></span>
         <span>Repeat?</span>
