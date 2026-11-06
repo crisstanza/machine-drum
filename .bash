@@ -85,6 +85,13 @@ checkAudios() {
     node --watch scripts/check-audios.ts
 }
 
+trimAudios() {
+    #
+    # run from an elevated command shell: choco install ffmpeg
+    #
+    _trim_audios "drums"
+}
+
 function _generate_audios_report() { # pseudo-private
     local FOLDER="${1}"
     local VARIABLE="${2}"
@@ -92,11 +99,23 @@ function _generate_audios_report() { # pseudo-private
     ls -1 src/audio/${FOLDER}/ | awk -F. '{print $1}' | jq -R . | jq -s . >> scripts/tmp/${FOLDER}.mts
 }
 
-function _replace_in_file() {
+function _replace_in_file() { # pseudo-private
     local OLD="${1}"
     local NEW="${2}"
     local FILE="${3}"
     sed -i "s/${OLD}/${NEW}/gw /dev/stdout" "${FILE}" || exit 1
+}
+
+function _trim_audios() { # pseudo-private
+    local FOLDER="${1}"
+    local FOLDER_PATH="scripts/tmp/audio/${FOLDER}"
+    rm -Rf "${FOLDER_PATH}"
+    mkdir -p "${FOLDER_PATH}"
+    for filePath in src/audio/${FOLDER}/*.wav ; do
+        local FILE_NAME=`basename ${filePath}`
+        local PARAMS="silenceremove=start_periods=1:start_duration=0:start_threshold=-60dB,areverse,silenceremove=start_periods=1:start_duration=0:start_threshold=-60dB,areverse"
+        ffmpeg -i "$filePath" -af "${PARAMS}" -c:a pcm_s24le "${FOLDER_PATH}/${FILE_NAME}" -y
+    done
 }
 
 ########################## HIC SUNT DRACONES ##########################
