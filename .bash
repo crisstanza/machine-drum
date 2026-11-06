@@ -89,9 +89,8 @@ trimAudios() {
     #
     # run from an elevated command shell: choco install ffmpeg
     #
-    
-    # _trim_audios "drums" "-60"
-    # _trim_audios "bass" "-30"
+    _trim_audios "drums" "-60"
+    _trim_audios "bass" "-30"
     _trim_audios "guitar-clean" "-50"
 }
 
