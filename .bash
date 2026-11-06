@@ -62,9 +62,11 @@ build() {
     transpileJS
     minifyJS
     
+    echo ''
     cp src/*.* build --verbose
+    echo ''
     local TS=`date +%s`
-    _replace_in_file '?ts=${}' "?ts=${TS}" build/index.html
+    _replace_in_file '${TS}' "${TS}" build/index.html
     
     echo ''
     cp -r src/audio build --verbose
@@ -78,13 +80,13 @@ runBuild() {
 }
 
 checkAudios() {
-    _generate_report "bass" "bass"
-    _generate_report "drums" "drums"
-    _generate_report "guitar-clean" "guitarClean"
+    _generate_audios_report "bass" "bass"
+    _generate_audios_report "drums" "drums"
+    _generate_audios_report "guitar-clean" "guitarClean"
     node --watch scripts/check-audios.ts
 }
 
-function _generate_report() { # pseudo-private
+function _generate_audios_report() { # pseudo-private
     local FOLDER="${1}"
     local VARIABLE="${2}"
     echo "export const ${VARIABLE} = " > scripts/tmp/${FOLDER}.mts
@@ -95,7 +97,7 @@ function _replace_in_file() {
     local OLD="${1}"
     local NEW="${2}"
     local FILE="${3}"
-    sed -i "s/${OLD}/${NEW}/g" "${FILE}"
+    sed -i "s/${OLD}/${NEW}/gw /dev/stdout" "${FILE}" || exit 1
 }
 
 ########################## HIC SUNT DRACONES ##########################
