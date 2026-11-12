@@ -63,13 +63,28 @@ build() {
     
     echo ''
     cp src/*.* build --verbose
-    echo ''
-    local TS=`date +%s`
-    _replace_in_file '${TS}' "${TS}" build/index.html
     
+    local DO_NOT_COPY=()
+    DO_NOT_COPY+=('.vite')
+    DO_NOT_COPY+=('css')
+    DO_NOT_COPY+=('js')
+    DO_NOT_COPY+=('ts')
+    
+    shopt -s globstar nullglob
+    for filePath in src/*/ ; do
+        local FOLDER_NAME=`basename ${filePath}`
+        local CONTAINS=`_array_contains DO_NOT_COPY "${FOLDER_NAME}"`
+        if [[ $CONTAINS -eq 0 ]] ; then
+            cp -r "${filePath}" build --verbose
+        fi
+    done
     echo ''
-    cp -r src/audio build --verbose
-    cp -r src/img build --verbose
+    
+    local TS=`date +%s`
+    for filePath in build/**/*.html ; do
+        _replace_in_file '${TS}' "${TS}" "${filePath}"
+    done
+    shopt -u globstar
 }
 
 runBuild() {
