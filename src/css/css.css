@@ -131,6 +131,9 @@ section {
         >div.song-info-dynamic {
             >span:nth-child(2n+1) {
                 font-weight: bold;
+                display: flex;
+                align-content: center;
+                flex-wrap: wrap;
             }
 
             >span>input[type=checkbox] {
