@@ -80,6 +80,8 @@ export const song_09: MDSong = {
     bottomNumber: 4,
   },
   bpm: 184,
+  subdivisions: 8,
+
   repeat: false,
   prompt:
     "Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-XX.mts` que seja uma música no estilo ROCK com baixo e bateria. Quero uma música bem rápida e com bastante pegada.\n\n" +

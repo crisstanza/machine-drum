@@ -12,13 +12,14 @@ export type MDSongTimeSignature = {
 };
 
 export type MDSong = {
-  name?: string;
+  name: string;
   gender: MDSongGender;
   key: MDSongKey;
   prompt?: string;
 
   timeSignature: MDSongTimeSignature;
   bpm: number;
+  subdivisions: number;
 
   repeat: boolean;
 

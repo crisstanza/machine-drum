@@ -12,7 +12,7 @@ export class MDPlayer extends MDPlayerConstants {
   private isSeekingProgress = false;
 
   private activeSources = 0;
-  private beatInterval = 0;
+  private subdivisionsInterval = 0;
 
   private song?: MDSong;
   private audioLoading?: Promise<void>;
@@ -81,7 +81,7 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private calcBeatInterval(song: MDSong) {
-    return (1000 * 60) / (song.timeSignature.bottomNumber * 2 * song.bpm);
+    return 1000 / (song.bpm / 60) / song.subdivisions;
   }
 
   private async calcDownloadStepDuration(song: MDSong) {
@@ -196,12 +196,12 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   async initUserInterface() {
-    for (let i = 0; i <= 99; i++) {
+    for (let i = this.MIN_SONG; i <= this.MAX_SONG; i++) {
       try {
-        const module = (await import(`../../songs/song-${i.toString().padStart(2, "0")}.mjs`)) as MDSongMap;
+        const module = (await import(`../../songs/song-${this.calcFriendlySongIndex(i)}.mjs`)) as MDSongMap;
         Object.keys(module).forEach((exportedObject) => this.songs.push(module[exportedObject]));
       } catch (exc) {
-        console.info(`End of songs loading. Total: ${this.songs.length}.`);
+        console.info(`End of songs loading. Total: ${this.songs.length}.`, exc);
         break;
       }
     }
@@ -216,12 +216,20 @@ export class MDPlayer extends MDPlayerConstants {
     this.playButton.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
   }
 
+  private calcFriendlySongIndex(i: number) {
+    const id = Math.abs(i).toString().padStart(2, "0");
+    if (i < 0) {
+      return `-${id}`;
+    }
+    return id;
+  }
+
   private async playing(timestamp: number) {
     if (this.isPaused) {
       return;
     }
     this.syncTrackMutes();
-    if (timestamp - this.timeControl >= this.beatInterval) {
+    if (timestamp - this.timeControl >= this.subdivisionsInterval) {
       this.timeControl = timestamp;
       await this.playStep();
     }
@@ -656,7 +664,7 @@ export class MDPlayer extends MDPlayerConstants {
     const newBpm = Math.max(Math.min(Number.isFinite(bpm) ? bpm : this.song.bpm, max), min);
     this.song.bpm = newBpm;
     this.songSpeed.value = newBpm.toString();
-    this.beatInterval = this.calcBeatInterval(this.song);
+    this.subdivisionsInterval = this.calcBeatInterval(this.song);
     this.songDuration.innerText = this.calcSongDuration(this.song);
     this.updateSongPosition(this.currentStepIndex);
   }
@@ -684,7 +692,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.isSeekingProgress = false;
     this.songProgress.max = Math.max(0, this.calcSongSteps(this.song) - 1).toString();
     this.resetSongPosition();
-    this.beatInterval = this.calcBeatInterval(this.song);
+    this.subdivisionsInterval = this.calcBeatInterval(this.song);
     this.songDuration.innerText = this.calcSongDuration(this.song);
     this.songSpeed.value = this.song.bpm.toString();
     this.songName.innerText = this.song.name ?? SONG_NAMES._;

@@ -79,7 +79,7 @@ For GarageBand's more complex or percussion-oriented kits, the higher-pitched no
 
 ## Run (local):
 
-    scripts/.run.bat.
+    scripts/.run.bat
 
 ## Build and Run (local):
 

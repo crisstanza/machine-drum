@@ -11,6 +11,7 @@ export const song_00: MDSong = {
     bottomNumber: 4,
   },
   bpm: 60,
+  subdivisions: 8,
 
   repeat: false,
 

@@ -1,7 +1,8 @@
-import { INSTRUMENTS, SONG_GENDERS, SONG_KEYS } from "../enums/enums.mjs";
+import { INSTRUMENTS, SONG_GENDERS, SONG_KEYS, SONG_NAMES } from "../enums/enums.mjs";
 import { MDSong } from "../types/types.mjs";
 
 export const song_01: MDSong = {
+  name: SONG_NAMES._,
   gender: SONG_GENDERS.POP_ROCK,
   key: SONG_KEYS._,
   timeSignature: {
@@ -9,6 +10,8 @@ export const song_01: MDSong = {
     bottomNumber: 4,
   },
   bpm: 117,
+  subdivisions: 8,
+
   repeat: false,
   data: {
     tracks: [
