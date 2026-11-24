@@ -1,3 +1,5 @@
+import { MDAccidentalsMap, MDInstrumentAccidentalsMap } from "../types/types.mjs";
+
 export const BASS_AUDIO_FILES = [
   "E0", //
   "F0",
@@ -142,3 +144,57 @@ export const GUITAR_CLEAN_AUDIO_FILES = [
   "Ds5",
   "E5",
 ];
+
+const FLAT_ACCIDENTALS: MDAccidentalsMap = {
+  "Fb-1": "E-1",
+  "Gb-1": "Fs-1",
+  "Ab-1": "Gs-1",
+  "Bb-1": "As-1",
+  Cb0: "B-1",
+  Db0: "Cs0",
+  Eb0: "Ds0",
+  Fb0: "E0",
+  Gb0: "Fs0",
+  Ab0: "Gs0",
+  Bb0: "As0",
+  Cb1: "B0",
+  Db1: "Cs1",
+  Eb1: "Ds1",
+  Fb1: "E1",
+  Gb1: "Fs1",
+  Ab1: "Gs1",
+  Bb1: "As1",
+  Cb2: "B1",
+  Db2: "Cs2",
+  Eb2: "Ds2",
+  Fb2: "E2",
+  Gb2: "Fs2",
+  Ab2: "Gs2",
+  Bb2: "As2",
+  Cb3: "B2",
+  Db3: "Cs3",
+  Eb3: "Ds3",
+  Fb3: "E3",
+  Gb3: "Fs3",
+  Ab3: "Gs3",
+  Bb3: "As3",
+  Cb4: "B3",
+  Db4: "Cs4",
+  Eb4: "Ds4",
+  Fb4: "E4",
+  Gb4: "Fs4",
+  Ab4: "Gs4",
+  Bb4: "As4",
+  Cb5: "B4",
+  Db5: "Cs5",
+  Eb5: "Ds5",
+  Fb5: "E5",
+};
+
+const getAccidentals = (audioFiles: string[]) => Object.fromEntries(Object.entries(FLAT_ACCIDENTALS).filter(([, audioFile]) => audioFiles.includes(audioFile)));
+
+export const ACCIDENTALS: MDInstrumentAccidentalsMap = {
+  bass: getAccidentals(BASS_AUDIO_FILES),
+  drums: {},
+  "guitar-clean": getAccidentals(GUITAR_CLEAN_AUDIO_FILES),
+};

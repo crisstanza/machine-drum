@@ -1,7 +1,7 @@
 import { MDAudioBufferMapMap, MDSong, MDSongDataTrackState } from "../../types/types.mjs";
 
 export abstract class MDPlayerConstants {
-  protected readonly MIN_SONG = -2;
+  protected readonly MIN_SONG = -3;
   protected readonly MAX_SONG = 11;
 
   protected readonly volumeControl;

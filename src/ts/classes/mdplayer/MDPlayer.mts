@@ -1,4 +1,4 @@
-import { BASS_AUDIO_FILES, DRUMS_AUDIO_FILES, GUITAR_CLEAN_AUDIO_FILES } from "../../config/config.mjs";
+import { ACCIDENTALS, BASS_AUDIO_FILES, DRUMS_AUDIO_FILES, GUITAR_CLEAN_AUDIO_FILES } from "../../config/config.mjs";
 import { HTML, INSTRUMENTS, SONG_KEYS, SONG_NAMES } from "../../enums/enums.mjs";
 import { MDInstrument, MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongDataTrackState, MDSongMap } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
@@ -62,7 +62,7 @@ export class MDPlayer extends MDPlayerConstants {
     if (!this.song) {
       return;
     }
-    const elapsedSeconds = Math.floor((stepIndex * this.calcBeatInterval(this.song)) / 1000);
+    const elapsedSeconds = Math.floor((stepIndex * this.calcSubdivisionsInterval(this.song)) / 1000);
     const minutes = Math.floor(elapsedSeconds / 60)
       .toString()
       .padStart(2, "0");
@@ -80,7 +80,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.updateSongPosition(stepIndex);
   }
 
-  private calcBeatInterval(song: MDSong) {
+  private calcSubdivisionsInterval(song: MDSong) {
     return 1000 / (song.bpm / 60) / song.subdivisions;
   }
 
@@ -98,7 +98,7 @@ export class MDPlayer extends MDPlayerConstants {
       requestAnimationFrame(sampleFrame);
     });
     const frameInterval = (frameTimestamps[frameTimestamps.length - 1] - frameTimestamps[0]) / (frameTimestamps.length - 1);
-    const stepDuration = this.calcBeatInterval(song);
+    const stepDuration = this.calcSubdivisionsInterval(song);
     return Math.ceil(stepDuration / frameInterval) * frameInterval;
   }
 
@@ -156,7 +156,7 @@ export class MDPlayer extends MDPlayerConstants {
 
   private calcSongDuration(song: MDSong) {
     const steps = this.calcSongSteps(song);
-    const durationInSeconds = Math.floor((steps * this.calcBeatInterval(song)) / 1000);
+    const durationInSeconds = Math.floor((steps * this.calcSubdivisionsInterval(song)) / 1000);
     const minutes = Math.floor(durationInSeconds / 60)
       .toString()
       .padStart(2, "0");
@@ -167,11 +167,18 @@ export class MDPlayer extends MDPlayerConstants {
   private async loadAudioFiles(instrument: MDInstrument, names: string[]) {
     await Promise.all(
       names.map(async (name) => {
-        const response = await fetch(new URL(`audio/${instrument}/${name}.wav`, window.location.href));
+        const audioPath = `audio/${instrument}/${name}.wav`;
+        const response = await fetch(new URL(audioPath, window.location.href));
         if (!response.ok) {
-          throw new Error(`Could not load audio file: ${instrument}/${name}.wav`);
+          throw new Error(`Could not load audio file: ${audioPath}`);
         }
-        this.AUDIO_BUFFERS[instrument][name] = await this.audioContext.decodeAudioData(await response.arrayBuffer());
+        const audioBuffer = await this.audioContext.decodeAudioData(await response.arrayBuffer());
+        this.AUDIO_BUFFERS[instrument][name] = audioBuffer;
+        Object.entries(ACCIDENTALS[instrument]).forEach(([accidental, audioFile]) => {
+          if (audioFile === name) {
+            this.AUDIO_BUFFERS[instrument][accidental] = audioBuffer;
+          }
+        });
       }),
     );
   }
@@ -209,7 +216,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.songs.forEach((song, i) => {
       const newOption = document.createElement("option");
       newOption.value = i.toString();
-      newOption.text = `${i}) ${song.name ?? SONG_NAMES._} | ${song.gender}`;
+      newOption.text = `${i + 1}) ${song.name ?? SONG_NAMES._} | ${song.gender}`;
       this.availableSongs.add(newOption);
     });
     this.songChanged();
@@ -664,14 +671,14 @@ export class MDPlayer extends MDPlayerConstants {
     const newBpm = Math.max(Math.min(Number.isFinite(bpm) ? bpm : this.song.bpm, max), min);
     this.song.bpm = newBpm;
     this.songSpeed.value = newBpm.toString();
-    this.subdivisionsInterval = this.calcBeatInterval(this.song);
+    this.subdivisionsInterval = this.calcSubdivisionsInterval(this.song);
     this.songDuration.innerText = this.calcSongDuration(this.song);
     this.updateSongPosition(this.currentStepIndex);
   }
 
   plus10Bpm() {
     if (this.song) {
-      this.updateSongSpeed(Number(this.songSpeed.value) + 10);
+      this.updateSongSpeed(this.songSpeed.valueAsNumber + 10);
     }
   }
 
@@ -683,7 +690,7 @@ export class MDPlayer extends MDPlayerConstants {
 
   minus10Bpm() {
     if (this.song) {
-      this.updateSongSpeed(Number(this.songSpeed.value) - 10);
+      this.updateSongSpeed(this.songSpeed.valueAsNumber - 10);
     }
   }
 
@@ -692,7 +699,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.isSeekingProgress = false;
     this.songProgress.max = Math.max(0, this.calcSongSteps(this.song) - 1).toString();
     this.resetSongPosition();
-    this.subdivisionsInterval = this.calcBeatInterval(this.song);
+    this.subdivisionsInterval = this.calcSubdivisionsInterval(this.song);
     this.songDuration.innerText = this.calcSongDuration(this.song);
     this.songSpeed.value = this.song.bpm.toString();
     this.songName.innerText = this.song.name ?? SONG_NAMES._;

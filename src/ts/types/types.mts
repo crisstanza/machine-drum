@@ -59,3 +59,6 @@ export type MDSongDataTrackState = {
   beatCount: number;
   finished: boolean;
 };
+
+export type MDInstrumentAccidentalsMap = Record<MDInstrument, MDAccidentalsMap>;
+export type MDAccidentalsMap = Record<string, string>;

@@ -11,7 +11,6 @@
 
 html {
     background-color: rgb(213, 195, 213);
-    padding: var(--main-padding);
     height: calc(100% - var(--main-padding)*2);
     display: flex;
     vertical-align: middle;
