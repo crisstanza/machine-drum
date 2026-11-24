@@ -98,8 +98,8 @@ export class MDPlayer extends MDPlayerConstants {
       requestAnimationFrame(sampleFrame);
     });
     const frameInterval = (frameTimestamps[frameTimestamps.length - 1] - frameTimestamps[0]) / (frameTimestamps.length - 1);
-    const stepDuration = this.calcSubdivisionsInterval(song);
-    return Math.ceil(stepDuration / frameInterval) * frameInterval;
+    const subdivisionsInterval = this.calcSubdivisionsInterval(song);
+    return Math.ceil(subdivisionsInterval / frameInterval) * frameInterval;
   }
 
   private calcSongTracks(song: MDSong) {
@@ -384,11 +384,14 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private isPlaying() {
-    return this.playButton.classList.contains(HTML.CLASS_NAMES.ACTIVE);
+    return this.isPaused || this.playButton.classList.contains(HTML.CLASS_NAMES.ACTIVE);
   }
 
   play() {
     if (this.isPlaying()) {
+      if (this.isPaused) {
+        this.pause();
+      }
       return;
     }
     this.isPaused = false;
@@ -411,6 +414,7 @@ export class MDPlayer extends MDPlayerConstants {
       await this.audioContext.resume();
       this.timeControl += performance.now() - this.pausedAt;
       this.isPaused = false;
+      this.playButton.classList.add(HTML.CLASS_NAMES.ACTIVE);
       this.pauseButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
       this.pauseButton.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.PAUSE);
       this.requestId = requestAnimationFrame(this.playing.bind(this));
@@ -418,6 +422,7 @@ export class MDPlayer extends MDPlayerConstants {
     }
     this.isPaused = true;
     this.pausedAt = performance.now();
+    this.playButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
     this.pauseButton.classList.add(HTML.CLASS_NAMES.ACTIVE);
     this.pauseButton.classList.add(HTML.CLASS_NAMES.CLICKABLE);
     this.pauseButton.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.UNPAUSE);
