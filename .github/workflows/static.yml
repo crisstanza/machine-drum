@@ -32,7 +32,7 @@ jobs:
           ./.bash installDeps
           ./.bash build
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v4
         with:
           path: "build"
       - name: Deploy to GitHub Pages
