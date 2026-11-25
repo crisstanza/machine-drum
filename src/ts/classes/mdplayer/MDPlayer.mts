@@ -1,4 +1,4 @@
-import { ACCIDENTALS, BASS_AUDIO_FILES, DRUMS_AUDIO_FILES, GUITAR_CLEAN_AUDIO_FILES } from "../../config/config.mjs";
+import { ACCIDENTALS, BASS_AUDIO_FILES, DRUMS_AUDIO_FILES, GUITAR_CLEAN_AUDIO_FILES, PIANO_AUDIO_FILES } from "../../config/config.mjs";
 import { HTML, INSTRUMENTS, SONG_KEYS, SONG_NAMES } from "../../enums/enums.mjs";
 import { MDInstrument, MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongDataTrackState, MDSongMap } from "../../types/types.mjs";
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
@@ -184,7 +184,12 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   initAudios() {
-    this.audioLoading = Promise.all([this.loadAudioFiles(INSTRUMENTS.DRUMS, DRUMS_AUDIO_FILES), this.loadAudioFiles(INSTRUMENTS.BASS, BASS_AUDIO_FILES), this.loadAudioFiles(INSTRUMENTS.GUITAR_CLEAN, GUITAR_CLEAN_AUDIO_FILES)]).then(() => {
+    this.audioLoading = Promise.all([
+      this.loadAudioFiles(INSTRUMENTS.DRUMS, DRUMS_AUDIO_FILES), //
+      this.loadAudioFiles(INSTRUMENTS.BASS, BASS_AUDIO_FILES),
+      this.loadAudioFiles(INSTRUMENTS.GUITAR_CLEAN, GUITAR_CLEAN_AUDIO_FILES),
+      this.loadAudioFiles(INSTRUMENTS.PIANO, PIANO_AUDIO_FILES),
+    ]).then(() => {
       this.gainNode.connect(this.audioContext.destination);
     });
     return this.audioLoading;
@@ -344,18 +349,21 @@ export class MDPlayer extends MDPlayerConstants {
     if (this.song!.data.tracks.some((track, index) => !track.mute && track.instrument === INSTRUMENTS.GUITAR_CLEAN && (steps[index]?.length ?? 0) > 0)) {
       this.fadeOutVoices(this.guitarCleanVoices);
     }
+    if (this.song!.data.tracks.some((track, index) => !track.mute && track.instrument === INSTRUMENTS.PIANO && (steps[index]?.length ?? 0) > 0)) {
+      this.fadeOutVoices(this.pianoVoices);
+    }
     audioBuffers.forEach(({ trackIndex, instrument, buffer }) => {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
       source.buffer = buffer;
       this.gainNode.gain.value = parseFloat(this.volumeControl.value);
       let sourceGain: GainNode | undefined;
       let voices: Map<AudioBufferSourceNode, GainNode> | undefined;
-      if (instrument === INSTRUMENTS.BASS || instrument === INSTRUMENTS.GUITAR_CLEAN) {
+      if (instrument === INSTRUMENTS.BASS || instrument === INSTRUMENTS.GUITAR_CLEAN || instrument === INSTRUMENTS.PIANO) {
         sourceGain = this.audioContext.createGain();
         sourceGain.gain.value = 1;
         sourceGain.connect(this.trackGainNodes[trackIndex]);
         source.connect(sourceGain);
-        voices = instrument === INSTRUMENTS.BASS ? this.bassVoices : this.guitarCleanVoices;
+        voices = instrument === INSTRUMENTS.BASS ? this.bassVoices : instrument === INSTRUMENTS.GUITAR_CLEAN ? this.guitarCleanVoices : this.pianoVoices;
         voices.set(source, sourceGain);
       } else {
         source.connect(this.trackGainNodes[trackIndex]);
@@ -516,7 +524,7 @@ export class MDPlayer extends MDPlayerConstants {
       }
 
       const stepEvents = events.slice(eventIndex, nextEventIndex);
-      for (const instrument of [INSTRUMENTS.BASS, INSTRUMENTS.GUITAR_CLEAN]) {
+      for (const instrument of [INSTRUMENTS.BASS, INSTRUMENTS.GUITAR_CLEAN, INSTRUMENTS.PIANO]) {
         if (!stepEvents.some((event) => event.instrument === instrument)) {
           continue;
         }
@@ -540,7 +548,7 @@ export class MDPlayer extends MDPlayerConstants {
       stepEvents.forEach(({ buffer, frame, instrument }) => {
         const source = offlineContext.createBufferSource();
         source.buffer = buffer;
-        if (instrument === INSTRUMENTS.BASS || instrument === INSTRUMENTS.GUITAR_CLEAN) {
+        if (instrument === INSTRUMENTS.BASS || instrument === INSTRUMENTS.GUITAR_CLEAN || instrument === INSTRUMENTS.PIANO) {
           const gain = offlineContext.createGain();
           source.connect(gain);
           gain.connect(offlineContext.destination);

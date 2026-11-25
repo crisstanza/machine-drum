@@ -60,4 +60,5 @@ export const INSTRUMENTS = Object.freeze({
   BASS: "bass",
   DRUMS: "drums",
   GUITAR_CLEAN: "guitar-clean",
+  PIANO: "piano",
 });

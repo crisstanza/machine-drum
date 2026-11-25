@@ -18,6 +18,21 @@ export const song_00: MDSong = {
   data: {
     tracks: [
       {
+        instrument: INSTRUMENTS.BASS,
+        mute: false,
+        parts: [
+          {
+            repeat: 1,
+            beats: [
+              {
+                repeat: 1,
+                data: [["Eb1"], ["F1"], ["G1"], ["Ab1"], ["Bb1"], ["C2"], ["D2"], ["Eb2"]],
+              },
+            ],
+          },
+        ],
+      },
+      {
         instrument: INSTRUMENTS.GUITAR_CLEAN,
         mute: false,
         parts: [
@@ -27,6 +42,21 @@ export const song_00: MDSong = {
               {
                 repeat: 1,
                 data: [["Eb1"], ["F1"], ["G1"], ["Ab1"], ["Bb1"], ["C2"], ["D2"], ["Eb2"]],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        instrument: INSTRUMENTS.PIANO,
+        mute: false,
+        parts: [
+          {
+            repeat: 1,
+            beats: [
+              {
+                repeat: 1,
+                data: [["Eb0"], ["F0"], ["G0"], ["Ab0"], ["Bb0"], ["C1"], ["D1"], ["Eb1"]],
               },
             ],
           },

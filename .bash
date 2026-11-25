@@ -15,8 +15,11 @@ deps() {
 }
 
 clean() {
-    rm -Rf build
-    rm -Rf src/js
+    rm -Rf build --verbose
+    echo ''
+    rm -Rf src/js --verbose
+    echo ''
+    rm -Rf scripts/tmp --verbose
 }
 
 transpileJS() {
@@ -97,6 +100,7 @@ checkAudios() {
     _generate_audios_report "bass" "bass"
     _generate_audios_report "drums" "drums"
     _generate_audios_report "guitar-clean" "guitarClean"
+    _generate_audios_report "piano" "piano"
     node --watch scripts/check-audios.ts
 }
 
@@ -104,9 +108,10 @@ trimAudios() {
     #
     # run from an elevated command shell: choco install ffmpeg
     #
-    _trim_audios "drums" "-60" "1"
-    _trim_audios "bass" "-30" "1"
-    _trim_audios "guitar-clean" "-50" "1"
+    _trim_audios "drums" "-150" "0.5" "1"
+    _trim_audios "bass" "-150" "0.5" "1"
+    _trim_audios "guitar-clean" "-150" "0.5" "1"
+    _trim_audios "piano" "-150" "0.5" "1"
 }
 
 function _generate_audios_report() { # pseudo-private
@@ -126,13 +131,14 @@ function _replace_in_file() { # pseudo-private
 function _trim_audios() { # pseudo-private
     local FOLDER="${1}"
     local THRESHOLD="${2}"
-    local CHANNELS="${3}"
+    local FADE_OUT="${3}"
+    local CHANNELS="${4}"
     local FOLDER_PATH="scripts/tmp/audio/${FOLDER}"
     rm -Rf "${FOLDER_PATH}"
     mkdir -p "${FOLDER_PATH}"
     for filePath in src/audio/${FOLDER}/*.wav ; do
         local FILE_NAME=`basename ${filePath}`
-        local PARAMS="silenceremove=start_periods=1:start_duration=0:start_threshold=${THRESHOLD}dB,areverse,silenceremove=start_periods=1:start_duration=0:start_threshold=${THRESHOLD}dB,areverse"
+        local PARAMS="silenceremove=start_periods=1:start_duration=0:start_threshold=${THRESHOLD}dB,areverse,silenceremove=start_periods=1:start_duration=0:start_threshold=${THRESHOLD}dB,afade=t=in:d=${FADE_OUT},areverse"
         ffmpeg -i "$filePath" -af "${PARAMS}" -c:a pcm_s24le -ac ${CHANNELS} "${FOLDER_PATH}/${FILE_NAME}" -y
     done
     mv "${FOLDER_PATH}"/*.wav src/audio/${FOLDER}/
