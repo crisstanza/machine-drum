@@ -2,7 +2,7 @@ import { MDAudioBufferMapMap, MDSong, MDSongDataTrackState } from "../../types/t
 
 export abstract class MDPlayerConstants {
   protected readonly MIN_SONG = -3;
-  protected readonly MAX_SONG = 12;
+  protected readonly MAX_SONG = 13;
 
   protected readonly volumeControl;
   protected readonly playButton;
