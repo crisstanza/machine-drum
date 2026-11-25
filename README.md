@@ -6,7 +6,7 @@ https://crisstanza.github.io/machine-drum/
 
 ## Supported Instruments:
 
-- drums (see the table below)
+- drums ([see the table below](#-general-midi-gm-percussion-key-map))
 - bass (E0 - G3)
 - clean guitar (E-1 - E5)
 - piano (C0 - C7)
