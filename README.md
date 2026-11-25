@@ -6,9 +6,10 @@ https://crisstanza.github.io/machine-drum/
 
 ## Supported Instruments:
 
-- drums
-- bass
-- clean guitar
+- drums (see the table below)
+- bass (E0 - G3)
+- clean guitar (E-1 - E5)
+- piano (C0 - C7)
 
 <br>
 

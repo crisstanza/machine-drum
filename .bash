@@ -144,6 +144,13 @@ function _trim_audios() { # pseudo-private
     mv "${FOLDER_PATH}"/*.wav src/audio/${FOLDER}/
 }
 
+function _restore_some_audios() { # pseudo-private
+    local GIT_COMMIT=f45c11b011fdcc3da56622c148f9360f824e6779
+    echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/bass
+    echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/drums
+    echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/guitar-clean
+}
+
 ########################## HIC SUNT DRACONES ##########################
 
 RED='\033[0;31m'
