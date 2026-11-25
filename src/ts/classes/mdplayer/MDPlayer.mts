@@ -4,11 +4,17 @@ import { MDInstrument, MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongDataT
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
 export class MDPlayer extends MDPlayerConstants {
-  private requestId = 0;
-  private timeControl = 0;
+  private readonly scheduleAheadTime = 0.1;
+  private readonly scheduleLeadTime = 0.05;
+  private readonly schedulerInterval = 25;
+  private schedulerTimer = 0;
+  private nextStepTime = 0;
+  private pendingStopTime?: number;
+  private readonly scheduledPlayhead: { time: number; stepIndex: number }[] = [];
+  private readonly scheduledSources = new Map<AudioBufferSourceNode, number>();
   private isPaused = false;
-  private pausedAt = 0;
   private currentStepIndex = 0;
+  private currentPlayheadStepIndex = 0;
   private isSeekingProgress = false;
 
   private activeSources = 0;
@@ -52,6 +58,7 @@ export class MDPlayer extends MDPlayerConstants {
   private resetSongPosition() {
     this.resetTrackStates();
     this.currentStepIndex = 0;
+    this.currentPlayheadStepIndex = 0;
     if (!this.isSeekingProgress) {
       this.songProgress.value = "0";
       this.updateSongPosition(0);
@@ -71,35 +78,22 @@ export class MDPlayer extends MDPlayerConstants {
   }
 
   private seekSongPosition(stepIndex: number) {
+    this.cancelPendingScheduledSources();
+    this.scheduledPlayhead.length = 0;
+    this.pendingStopTime = undefined;
     this.resetTrackStates();
     for (let i = 0; i < stepIndex; i++) {
       this.song!.data.tracks.forEach((track, index) => this.nextTrackStep(track, this.trackStates[index]));
     }
     this.currentStepIndex = stepIndex;
+    this.currentPlayheadStepIndex = stepIndex;
+    this.nextStepTime = this.isPlaying() ? this.audioContext.currentTime + this.scheduleLeadTime : 0;
     this.songProgress.value = stepIndex.toString();
     this.updateSongPosition(stepIndex);
   }
 
   private calcSubdivisionsInterval(song: MDSong) {
     return 1000 / (song.bpm / 60) / song.subdivisions;
-  }
-
-  private async calcDownloadStepDuration(song: MDSong) {
-    const frameTimestamps = await new Promise<number[]>((resolve) => {
-      const timestamps: number[] = [];
-      const sampleFrame = (timestamp: number) => {
-        timestamps.push(timestamp);
-        if (timestamps.length === 25) {
-          resolve(timestamps);
-          return;
-        }
-        requestAnimationFrame(sampleFrame);
-      };
-      requestAnimationFrame(sampleFrame);
-    });
-    const frameInterval = (frameTimestamps[frameTimestamps.length - 1] - frameTimestamps[0]) / (frameTimestamps.length - 1);
-    const subdivisionsInterval = this.calcSubdivisionsInterval(song);
-    return Math.ceil(subdivisionsInterval / frameInterval) * frameInterval;
   }
 
   private calcSongTracks(song: MDSong) {
@@ -195,12 +189,12 @@ export class MDPlayer extends MDPlayerConstants {
     return this.audioLoading;
   }
 
-  private fadeOutVoices(voices: Map<AudioBufferSourceNode, GainNode>) {
-    const now = this.audioContext.currentTime;
-    const fadeOutEnd = now + this.noteFadeOutDuration;
+  private fadeOutVoices(voices: Map<AudioBufferSourceNode, GainNode>, when: number) {
+    const fadeOutStart = Math.max(this.audioContext.currentTime, when);
+    const fadeOutEnd = fadeOutStart + this.noteFadeOutDuration;
     voices.forEach((gain, source) => {
-      gain.gain.cancelScheduledValues(now);
-      gain.gain.setValueAtTime(gain.gain.value, now);
+      gain.gain.cancelScheduledValues(fadeOutStart);
+      gain.gain.setValueAtTime(gain.gain.value, fadeOutStart);
       gain.gain.linearRampToValueAtTime(0, fadeOutEnd);
       source.stop(fadeOutEnd);
     });
@@ -236,17 +230,55 @@ export class MDPlayer extends MDPlayerConstants {
     return id;
   }
 
-  private async playing(timestamp: number) {
-    if (this.isPaused) {
+  private updateScheduledPlayhead(currentTime: number) {
+    while (this.scheduledPlayhead.length > 0 && this.scheduledPlayhead[0].time <= currentTime) {
+      const { stepIndex } = this.scheduledPlayhead.shift()!;
+      this.currentPlayheadStepIndex = stepIndex;
+      if (!this.isSeekingProgress) {
+        this.songProgress.value = stepIndex.toString();
+        this.updateSongPosition(stepIndex);
+      }
+    }
+  }
+
+  private async schedulePlayback() {
+    if (this.isPaused || !this.isPlaying()) {
       return;
     }
+    if (this.audioContext.state !== "running") {
+      await this.audioContext.resume();
+    }
+    if (this.isPaused || !this.isPlaying()) {
+      return;
+    }
+
+    const now = this.audioContext.currentTime;
+    if (this.nextStepTime <= now) {
+      this.nextStepTime = now + this.scheduleLeadTime;
+    }
+    this.updateScheduledPlayhead(now);
+    if (this.pendingStopTime !== undefined && now >= this.pendingStopTime) {
+      this.stop(false);
+      return;
+    }
+
     this.syncTrackMutes();
-    if (timestamp - this.timeControl >= this.subdivisionsInterval) {
-      this.timeControl = timestamp;
-      await this.playStep();
+    const stepDuration = this.subdivisionsInterval / 1000;
+    while (this.pendingStopTime === undefined && this.nextStepTime < now + this.scheduleAheadTime) {
+      this.playStep(this.nextStepTime);
+      this.nextStepTime += stepDuration;
+    }
+
+    this.updateScheduledPlayhead(this.audioContext.currentTime);
+    if (this.pendingStopTime !== undefined && this.audioContext.currentTime >= this.pendingStopTime) {
+      this.stop(false);
+      return;
     }
     if (this.isPlaying() && !this.isPaused) {
-      this.requestId = requestAnimationFrame(this.playing.bind(this));
+      this.schedulerTimer = window.setTimeout(() => {
+        this.schedulerTimer = 0;
+        void this.schedulePlayback();
+      }, this.schedulerInterval);
     }
   }
 
@@ -310,21 +342,14 @@ export class MDPlayer extends MDPlayerConstants {
     }
   }
 
-  private async playStep() {
-    if (this.isPaused || !this.isPlaying()) {
-      return;
-    }
-    await this.audioContext.resume();
+  private playStep(when: number) {
     if (this.isPaused || !this.isPlaying()) {
       return;
     }
     this.syncTrackMutes();
     const steps = this.song!.data.tracks.map((track, index) => this.nextTrackStep(track, this.trackStates[index]));
     const stepIndex = this.currentStepIndex;
-    if (!this.isSeekingProgress) {
-      this.songProgress.value = stepIndex.toString();
-      this.updateSongPosition(stepIndex);
-    }
+    this.scheduledPlayhead.push({ time: when, stepIndex });
     this.currentStepIndex++;
     const allTracksFinished = this.trackStates.every((state) => state.finished);
     const shouldRepeat = allTracksFinished && this.song!.repeat && this.song!.data.tracks.some((track) => this.hasPlayableData(track));
@@ -337,20 +362,21 @@ export class MDPlayer extends MDPlayerConstants {
     );
     if (allTracksFinished && audioBuffers.length === 0) {
       if (shouldRepeat) {
-        this.resetSongPosition();
+        this.resetTrackStates();
+        this.currentStepIndex = 0;
       } else {
-        this.stop(false);
+        this.pendingStopTime = when;
       }
       return;
     }
     if (this.song!.data.tracks.some((track, index) => !track.mute && track.instrument === INSTRUMENTS.BASS && (steps[index]?.length ?? 0) > 0)) {
-      this.fadeOutVoices(this.bassVoices);
+      this.fadeOutVoices(this.bassVoices, when);
     }
     if (this.song!.data.tracks.some((track, index) => !track.mute && track.instrument === INSTRUMENTS.GUITAR_CLEAN && (steps[index]?.length ?? 0) > 0)) {
-      this.fadeOutVoices(this.guitarCleanVoices);
+      this.fadeOutVoices(this.guitarCleanVoices, when);
     }
     if (this.song!.data.tracks.some((track, index) => !track.mute && track.instrument === INSTRUMENTS.PIANO && (steps[index]?.length ?? 0) > 0)) {
-      this.fadeOutVoices(this.pianoVoices);
+      this.fadeOutVoices(this.pianoVoices, when);
     }
     audioBuffers.forEach(({ trackIndex, instrument, buffer }) => {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
@@ -368,11 +394,13 @@ export class MDPlayer extends MDPlayerConstants {
       } else {
         source.connect(this.trackGainNodes[trackIndex]);
       }
-      source.start();
+      source.start(when);
+      this.scheduledSources.set(source, when);
       this.activeSources++;
       source.addEventListener("ended", () => {
         source.disconnect();
         sourceGain?.disconnect();
+        this.scheduledSources.delete(source);
         voices?.delete(source);
         this.activeSources--;
         if (!this.isPlaying()) {
@@ -384,11 +412,22 @@ export class MDPlayer extends MDPlayerConstants {
     });
     if (allTracksFinished) {
       if (shouldRepeat) {
-        this.resetSongPosition();
+        this.resetTrackStates();
+        this.currentStepIndex = 0;
       } else {
-        this.stop(false);
+        this.pendingStopTime = when;
       }
     }
+  }
+
+  private cancelPendingScheduledSources() {
+    const now = this.audioContext.currentTime;
+    this.scheduledSources.forEach((startTime, source) => {
+      if (startTime > now) {
+        source.stop();
+        this.scheduledSources.delete(source);
+      }
+    });
   }
 
   private isPlaying() {
@@ -411,7 +450,9 @@ export class MDPlayer extends MDPlayerConstants {
     if (this.currentStepIndex >= this.calcSongSteps(this.song!)) {
       this.resetSongPosition();
     }
-    this.requestId = requestAnimationFrame(this.playing.bind(this));
+    this.nextStepTime = 0;
+    this.pendingStopTime = undefined;
+    void this.schedulePlayback();
   }
 
   async pause() {
@@ -420,23 +461,21 @@ export class MDPlayer extends MDPlayerConstants {
     }
     if (this.isPaused) {
       await this.audioContext.resume();
-      this.timeControl += performance.now() - this.pausedAt;
       this.isPaused = false;
       this.playButton.classList.add(HTML.CLASS_NAMES.ACTIVE);
       this.pauseButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
       this.pauseButton.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.PAUSE);
-      this.requestId = requestAnimationFrame(this.playing.bind(this));
+      void this.schedulePlayback();
       return;
     }
     this.isPaused = true;
-    this.pausedAt = performance.now();
     this.playButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
     this.pauseButton.classList.add(HTML.CLASS_NAMES.ACTIVE);
     this.pauseButton.classList.add(HTML.CLASS_NAMES.CLICKABLE);
     this.pauseButton.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.UNPAUSE);
-    if (this.requestId) {
-      cancelAnimationFrame(this.requestId);
-      this.requestId = 0;
+    if (this.schedulerTimer) {
+      window.clearTimeout(this.schedulerTimer);
+      this.schedulerTimer = 0;
     }
     await this.audioContext.suspend();
   }
@@ -445,10 +484,14 @@ export class MDPlayer extends MDPlayerConstants {
     if (this.isPlaying()) {
       const wasPaused = this.isPaused;
       this.isSeekingProgress = false;
-      if (this.requestId) {
-        cancelAnimationFrame(this.requestId);
+      if (this.schedulerTimer) {
+        window.clearTimeout(this.schedulerTimer);
       }
-      this.requestId = 0;
+      this.schedulerTimer = 0;
+      this.cancelPendingScheduledSources();
+      this.scheduledPlayhead.length = 0;
+      this.nextStepTime = 0;
+      this.pendingStopTime = undefined;
       this.isPaused = false;
       this.trackStates.length = 0;
       this.playButton.classList.remove(HTML.CLASS_NAMES.ACTIVE);
@@ -485,7 +528,7 @@ export class MDPlayer extends MDPlayerConstants {
       finished: false,
     }));
     const sampleRate = this.audioContext.sampleRate;
-    const stepDuration = (await this.calcDownloadStepDuration(song)) / 1000;
+    const stepDuration = this.calcSubdivisionsInterval(song) / 1000;
     const events: { buffer: AudioBuffer; frame: number; instrument: MDInstrument }[] = [];
     let stepIndex = 0;
     let latestSampleEndFrame = 0;
@@ -685,8 +728,10 @@ export class MDPlayer extends MDPlayerConstants {
     this.song.bpm = newBpm;
     this.songSpeed.value = newBpm.toString();
     this.subdivisionsInterval = this.calcSubdivisionsInterval(this.song);
+
+    console.log("====", this.subdivisionsInterval);
     this.songDuration.innerText = this.calcSongDuration(this.song);
-    this.updateSongPosition(this.currentStepIndex);
+    this.updateSongPosition(this.currentPlayheadStepIndex);
   }
 
   plus10Bpm() {

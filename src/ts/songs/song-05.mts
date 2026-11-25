@@ -52,7 +52,7 @@ export const song_05: MDSong = {
     topNumber: 4,
     bottomNumber: 4,
   },
-  bpm: 177,
+  bpm: 150,
   subdivisions: 8,
 
   repeat: false,
