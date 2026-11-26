@@ -4,14 +4,9 @@ import { MDInstrument, MDSong, MDSongDataTrack, MDSongDataTrackPart, MDSongDataT
 import { MDPlayerConstants } from "./MDPlayerConstants.mjs";
 
 export class MDPlayer extends MDPlayerConstants {
-  private readonly scheduleAheadTime = 0.1;
-  private readonly scheduleLeadTime = 0.05;
-  private readonly schedulerInterval = 25;
   private schedulerTimer = 0;
   private nextStepTime = 0;
   private pendingStopTime?: number;
-  private readonly scheduledPlayhead: { time: number; stepIndex: number }[] = [];
-  private readonly scheduledSources = new Map<AudioBufferSourceNode, number>();
   private isPaused = false;
   private currentStepIndex = 0;
   private currentPlayheadStepIndex = 0;

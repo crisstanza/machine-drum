@@ -46,6 +46,12 @@ export abstract class MDPlayerConstants {
   protected readonly pianoVoices = new Map<AudioBufferSourceNode, GainNode>();
   protected readonly trackStates: MDSongDataTrackState[] = [];
 
+  protected readonly scheduleAheadTime = 0.1;
+  protected readonly scheduleLeadTime = 0.05;
+  protected readonly schedulerInterval = 25;
+  protected readonly scheduledPlayhead: { time: number; stepIndex: number }[] = [];
+  protected readonly scheduledSources = new Map<AudioBufferSourceNode, number>();
+
   constructor(
     masterVolumeControl: HTMLInputElement, //
     playButton: HTMLButtonElement,
