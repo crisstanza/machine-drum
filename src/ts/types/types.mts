@@ -34,6 +34,7 @@ export type MDSongDataTrack = {
   name?: string;
   instrument: MDInstrument;
   mute: boolean;
+  volume: number;
   parts: MDSongDataTrackPart[];
 };
 

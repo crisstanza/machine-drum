@@ -4,7 +4,7 @@ export abstract class MDPlayerConstants {
   protected readonly MIN_SONG = -3;
   protected readonly MAX_SONG = 13;
 
-  protected readonly volumeControl;
+  protected readonly masterVolumeControl;
   protected readonly playButton;
   protected readonly pauseButton;
   protected readonly stopButton;
@@ -47,7 +47,7 @@ export abstract class MDPlayerConstants {
   protected readonly trackStates: MDSongDataTrackState[] = [];
 
   constructor(
-    volumeControl: HTMLInputElement, //
+    masterVolumeControl: HTMLInputElement, //
     playButton: HTMLButtonElement,
     pauseButton: HTMLButtonElement,
     stopButton: HTMLButtonElement,
@@ -72,7 +72,7 @@ export abstract class MDPlayerConstants {
     songTracks: HTMLSpanElement,
     songRepeat: HTMLInputElement,
   ) {
-    this.volumeControl = volumeControl;
+    this.masterVolumeControl = masterVolumeControl;
     this.playButton = playButton;
     this.pauseButton = pauseButton;
     this.stopButton = stopButton;

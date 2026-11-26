@@ -5,16 +5,25 @@ export const HTML = Object.freeze({
     ITALIC: "italic",
     LOADING: "loading",
     MUTED: "muted",
+    VOLUME: "volume",
   }),
   ATTRIBUTE_NAMES: Object.freeze({
     DISABLED: "disabled",
+    MIN: "min",
+    MAX: "max",
+    STEP: "step",
     TITLE: "title",
+    TYPE: "type",
+    VALUE: "value",
   }),
   ATTRIBUTE_VALUES: Object.freeze({
+    MASTER_VOLUME: (value: string) => `master volume: ${value}`,
     MUTE: "mute",
     PAUSE: "pause",
+    RANGE: "range",
     UNMUTE: "unmute",
     UNPAUSE: "unpause",
+    VOLUME: (value: string) => `volume: ${value}`,
   }),
 });
 

@@ -211,6 +211,7 @@ export const song_12: MDSong = {
         name: "Piano",
         instrument: INSTRUMENTS.PIANO,
         mute: false,
+        volume: 1,
         parts: [
           part(introPiano), //
           part(verseOnePiano),
@@ -227,6 +228,7 @@ export const song_12: MDSong = {
         name: "Bateria",
         instrument: INSTRUMENTS.DRUMS,
         mute: false,
+        volume: 1,
         parts: [
           part(introDrums), //
           part(verseOneDrums),

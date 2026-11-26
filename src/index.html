@@ -27,7 +27,7 @@
         <span id="song-key"></span>
       </div>
     </section>
-    <section class="songs">
+    <section class="current-song">
       <div class="song-info-dynamic loading" id="song-info-dynamic">
         <span>BPM:</span>
         <span>
@@ -35,15 +35,15 @@
           <input id="song-speed" type="number" title="song speed" step="1" min="10" max="500" maxlength="3" />
           <button id="plus-10-button">10+</button>
         </span>
-        <span>Tracks:</span>
-        <span id="song-tracks"></span>
         <span>Repeat?</span>
         <span><input type="checkbox" id="song-repeat" /></span>
+        <span>Tracks:</span>
+        <span id="song-tracks" class="tracks-volume"></span>
       </div>
     </section>
     <section class="player">
       <div class="buttons">
-        <input title="volume" class="volume" id="volume-control" type="range" min="0" max="1" step="0.01" value="0.5" />
+        <input title="master volume: 0.5" class="volume" id="master-volume-control" type="range" min="0" max="1" step="0.01" value="0.5" />
         <button title="play" id="play-button" disabled>▶️</button>
         <button title="pause" id="pause-button" disabled>⏸️</button>
         <button title="stop" id="stop-button" disabled>⏹️</button>

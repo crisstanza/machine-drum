@@ -62,6 +62,7 @@ export const song_05: MDSong = {
       {
         instrument: INSTRUMENTS.DRUMS,
         mute: false,
+        volume: 1,
         parts: [
           {
             repeat: 1,
@@ -85,6 +86,7 @@ export const song_05: MDSong = {
       {
         instrument: INSTRUMENTS.GUITAR_CLEAN,
         mute: false,
+        volume: 1,
         parts: [
           powerChordPart([
             ["E1", "B1"],

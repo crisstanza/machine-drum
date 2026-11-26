@@ -18,6 +18,7 @@ export const song_01: MDSong = {
       {
         instrument: INSTRUMENTS.DRUMS,
         mute: false,
+        volume: 1,
         parts: [
           {
             repeat: 1,

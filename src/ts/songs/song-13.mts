@@ -47,8 +47,7 @@ const pianoBar = (harmony: BluesHarmony, flourish = false): string[][] => {
   return data;
 };
 
-const pianoSection = (harmony: BluesHarmony[], flourish = false): string[][] =>
-  harmony.flatMap((bar, index) => pianoBar(bar, flourish && index === harmony.length - 1));
+const pianoSection = (harmony: BluesHarmony[], flourish = false): string[][] => harmony.flatMap((bar, index) => pianoBar(bar, flourish && index === harmony.length - 1));
 
 const bassBar = (harmony: BluesHarmony): string[][] => {
   const data: string[][] = Array.from({ length: 32 }, () => []);
@@ -128,68 +127,23 @@ const finalOneBass = bassSection(finalOneHarmony);
 const finalTwoBass = bassSection(finalTwoHarmony);
 const finalThreeBass = bassSection(finalThreeHarmony);
 
-const introDrums = drumSection([
-  { intensity: 0, crash: true },
-  { intensity: 0 },
-  { intensity: 1 },
-  { intensity: 1, fill: true },
-]);
+const introDrums = drumSection([{ intensity: 0, crash: true }, { intensity: 0 }, { intensity: 1 }, { intensity: 1, fill: true }]);
 
-const verseOneDrums = drumSection([
-  { intensity: 1 },
-  { intensity: 1 },
-  { intensity: 1 },
-  { intensity: 2, fill: true },
-]);
+const verseOneDrums = drumSection([{ intensity: 1 }, { intensity: 1 }, { intensity: 1 }, { intensity: 2, fill: true }]);
 
-const verseTwoDrums = drumSection([
-  { intensity: 2, crash: true },
-  { intensity: 2 },
-  { intensity: 1 },
-  { intensity: 2, fill: true },
-]);
+const verseTwoDrums = drumSection([{ intensity: 2, crash: true }, { intensity: 2 }, { intensity: 1 }, { intensity: 2, fill: true }]);
 
-const verseThreeDrums = drumSection([
-  { intensity: 2, crash: true },
-  { intensity: 2 },
-  { intensity: 2 },
-  { intensity: 2, fill: true },
-]);
+const verseThreeDrums = drumSection([{ intensity: 2, crash: true }, { intensity: 2 }, { intensity: 2 }, { intensity: 2, fill: true }]);
 
-const variationOneDrums = drumSection([
-  { intensity: 2, crash: true },
-  { intensity: 2 },
-  { intensity: 2 },
-  { intensity: 2, fill: true },
-]);
+const variationOneDrums = drumSection([{ intensity: 2, crash: true }, { intensity: 2 }, { intensity: 2 }, { intensity: 2, fill: true }]);
 
-const variationTwoDrums = drumSection([
-  { intensity: 2, crash: true },
-  { intensity: 2 },
-  { intensity: 2, fill: true },
-  { intensity: 2, fill: true },
-]);
+const variationTwoDrums = drumSection([{ intensity: 2, crash: true }, { intensity: 2 }, { intensity: 2, fill: true }, { intensity: 2, fill: true }]);
 
-const finalOneDrums = drumSection([
-  { intensity: 2, crash: true },
-  { intensity: 2 },
-  { intensity: 2 },
-  { intensity: 2, fill: true },
-]);
+const finalOneDrums = drumSection([{ intensity: 2, crash: true }, { intensity: 2 }, { intensity: 2 }, { intensity: 2, fill: true }]);
 
-const finalTwoDrums = drumSection([
-  { intensity: 2, crash: true },
-  { intensity: 2, fill: true },
-  { intensity: 2 },
-  { intensity: 2, fill: true },
-]);
+const finalTwoDrums = drumSection([{ intensity: 2, crash: true }, { intensity: 2, fill: true }, { intensity: 2 }, { intensity: 2, fill: true }]);
 
-const finalThreeDrums = drumSection([
-  { intensity: 2, crash: true },
-  { intensity: 2 },
-  { intensity: 2, fill: true },
-  { intensity: 2, fill: true },
-]);
+const finalThreeDrums = drumSection([{ intensity: 2, crash: true }, { intensity: 2 }, { intensity: 2, fill: true }, { intensity: 2, fill: true }]);
 
 export const song_13: MDSong = {
   name: "Blues da Estrada",
@@ -217,49 +171,22 @@ export const song_13: MDSong = {
         name: "Piano",
         instrument: INSTRUMENTS.PIANO,
         mute: false,
-        parts: [
-          part(introPiano),
-          part(verseOnePiano),
-          part(verseTwoPiano),
-          part(verseThreePiano),
-          part(variationOnePiano),
-          part(variationTwoPiano),
-          part(finalOnePiano),
-          part(finalTwoPiano),
-          part([...finalThreePiano, ...introPiano.slice(0, 8)]),
-        ],
+        volume: 1,
+        parts: [part(introPiano), part(verseOnePiano), part(verseTwoPiano), part(verseThreePiano), part(variationOnePiano), part(variationTwoPiano), part(finalOnePiano), part(finalTwoPiano), part([...finalThreePiano, ...introPiano.slice(0, 8)])],
       },
       {
         name: "Baixo",
         instrument: INSTRUMENTS.BASS,
         mute: false,
-        parts: [
-          part(introBass),
-          part(verseOneBass),
-          part(verseTwoBass),
-          part(verseThreeBass),
-          part(variationOneBass),
-          part(variationTwoBass),
-          part(finalOneBass),
-          part(finalTwoBass),
-          part([...finalThreeBass, ...introBass.slice(0, 8)]),
-        ],
+        volume: 1,
+        parts: [part(introBass), part(verseOneBass), part(verseTwoBass), part(verseThreeBass), part(variationOneBass), part(variationTwoBass), part(finalOneBass), part(finalTwoBass), part([...finalThreeBass, ...introBass.slice(0, 8)])],
       },
       {
         name: "Bateria",
         instrument: INSTRUMENTS.DRUMS,
         mute: false,
-        parts: [
-          part(introDrums),
-          part(verseOneDrums),
-          part(verseTwoDrums),
-          part(verseThreeDrums),
-          part(variationOneDrums),
-          part(variationTwoDrums),
-          part(finalOneDrums),
-          part(finalTwoDrums),
-          part([...finalThreeDrums, ...introDrums.slice(0, 8)]),
-        ],
+        volume: 1,
+        parts: [part(introDrums), part(verseOneDrums), part(verseTwoDrums), part(verseThreeDrums), part(variationOneDrums), part(variationTwoDrums), part(finalOneDrums), part(finalTwoDrums), part([...finalThreeDrums, ...introDrums.slice(0, 8)])],
       },
     ],
   },

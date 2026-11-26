@@ -96,13 +96,32 @@ export class MDPlayer extends MDPlayerConstants {
     return 1000 / (song.bpm / 60) / song.subdivisions;
   }
 
-  private calcSongTracks(song: MDSong) {
+  public masterVolumeChanged(event: Event) {
+    const target = event.target as HTMLInputElement;
+    target.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.MASTER_VOLUME(target.value));
+  }
+
+  private trackVolumeChanged(event: Event) {
+    const target = event.target as HTMLInputElement;
+    target.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.VOLUME(target.value));
+  }
+
+  private showSongTracks(song: MDSong) {
     this.songTracks.innerText = "";
-    const trackNames = song.data.tracks.map((track) => track.instrument);
-    trackNames.forEach((trackName, i) => {
+    song.data.tracks.forEach((track: MDSongDataTrack, i) => {
+      const span: HTMLSpanElement = document.createElement("span");
+      const range: HTMLInputElement = document.createElement("input");
+      const volume: string = track.volume.toString();
+      range.classList.add(HTML.CLASS_NAMES.VOLUME);
+      range.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.VOLUME(volume));
+      range.setAttribute(HTML.ATTRIBUTE_NAMES.TYPE, HTML.ATTRIBUTE_VALUES.RANGE);
+      range.setAttribute(HTML.ATTRIBUTE_NAMES.MIN, "0");
+      range.setAttribute(HTML.ATTRIBUTE_NAMES.MAX, "1.5");
+      range.setAttribute(HTML.ATTRIBUTE_NAMES.STEP, "0.05");
+      range.setAttribute(HTML.ATTRIBUTE_NAMES.VALUE, volume);
+      range.addEventListener("change", this.trackVolumeChanged);
       const link: HTMLAnchorElement = document.createElement("a");
-      link.textContent = trackName;
-      const track: MDSongDataTrack = song.data.tracks[i];
+      link.textContent = track.instrument;
       if (track.mute) {
         link.classList.add(HTML.CLASS_NAMES.MUTED);
         link.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.UNMUTE);
@@ -110,10 +129,9 @@ export class MDPlayer extends MDPlayerConstants {
         link.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.MUTE);
       }
       link.addEventListener("click", () => this.trackNameClicked(link, song, i));
-      this.songTracks.appendChild(link);
-      if (i < trackNames.length - 1) {
-        this.songTracks.appendChild(document.createTextNode(", "));
-      }
+      span.appendChild(range);
+      span.appendChild(link);
+      this.songTracks.appendChild(span);
     });
   }
 
@@ -381,7 +399,7 @@ export class MDPlayer extends MDPlayerConstants {
     audioBuffers.forEach(({ trackIndex, instrument, buffer }) => {
       const source: AudioBufferSourceNode = this.audioContext.createBufferSource();
       source.buffer = buffer;
-      this.gainNode.gain.value = parseFloat(this.volumeControl.value);
+      this.gainNode.gain.value = parseFloat(this.masterVolumeControl.value);
       let sourceGain: GainNode | undefined;
       let voices: Map<AudioBufferSourceNode, GainNode> | undefined;
       if (instrument === INSTRUMENTS.BASS || instrument === INSTRUMENTS.GUITAR_CLEAN || instrument === INSTRUMENTS.PIANO) {
@@ -728,8 +746,6 @@ export class MDPlayer extends MDPlayerConstants {
     this.song.bpm = newBpm;
     this.songSpeed.value = newBpm.toString();
     this.subdivisionsInterval = this.calcSubdivisionsInterval(this.song);
-
-    console.log("====", this.subdivisionsInterval);
     this.songDuration.innerText = this.calcSongDuration(this.song);
     this.updateSongPosition(this.currentPlayheadStepIndex);
   }
@@ -773,7 +789,7 @@ export class MDPlayer extends MDPlayerConstants {
     } else {
       this.songKey.classList.remove(HTML.CLASS_NAMES.ITALIC);
     }
-    this.calcSongTracks(this.song);
+    this.showSongTracks(this.song);
     this.songRepeat.checked = this.song.repeat ?? false;
     this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.songInfo.classList.remove(HTML.CLASS_NAMES.LOADING);

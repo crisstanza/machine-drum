@@ -97,16 +97,22 @@ section {
         }
     }
 
-    &.songs,
-    &.download {
-        background-color: rgb(197, 222, 194);
+    &.songs {
+        background-color: #C5C2DE;
+    }
+
+    &.download,
+    &.current-song {
+        background-color: #CBDEC2;
     }
 
     >div.loading {
         opacity: 0.25;
     }
 
-    &.songs {
+    &.download,
+    &.songs,
+    &.current-song {
 
         >div.song-info,
         >div.song-info-dynamic {
@@ -142,6 +148,22 @@ section {
 
             >span>input[type=number] {
                 width: 75px;
+            }
+
+            >span.tracks-volume {
+                display: flex;
+
+                >span {
+                    display: grid;
+                    justify-items: center;
+                    padding: calc(var(--main-padding)/2);
+                    background-color: #b2c6b0;
+                    margin: calc(var(--main-padding)/5);
+
+                    input:has(+ a.muted) {
+                        opacity: 0.5;
+                    }
+                }
             }
         }
     }

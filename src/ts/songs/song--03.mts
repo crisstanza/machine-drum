@@ -19,7 +19,8 @@ export const song_00: MDSong = {
     tracks: [
       {
         instrument: INSTRUMENTS.BASS,
-        mute: false,
+        mute: true,
+        volume: 1.25,
         parts: [
           {
             repeat: 1,
@@ -34,7 +35,8 @@ export const song_00: MDSong = {
       },
       {
         instrument: INSTRUMENTS.GUITAR_CLEAN,
-        mute: false,
+        mute: true,
+        volume: 0.75,
         parts: [
           {
             repeat: 1,
@@ -50,6 +52,7 @@ export const song_00: MDSong = {
       {
         instrument: INSTRUMENTS.PIANO,
         mute: false,
+        volume: 1,
         parts: [
           {
             repeat: 1,

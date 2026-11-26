@@ -114,21 +114,25 @@ export const song_10: MDSong = {
       {
         instrument: INSTRUMENTS.DRUMS,
         mute: false,
+        volume: 1,
         parts: [part(introDrums), part(verseDrums, 3), part(variationDrums, 2), part(chorusDrums, 3), part(verseDrums, 2), part(chorusDrums, 3), part(soloDrums, 2), part(chorusDrums), part(outroDrums), part(finalDrums)],
       },
       {
         instrument: INSTRUMENTS.BASS,
         mute: false,
+        volume: 1,
         parts: [part(introBass), part(verseBass, 3), part(variationBass, 2), part(chorusBass, 3), part(verseBass, 2), part(chorusBass, 3), part(soloBass, 2), part(chorusBass), part(outroBass), part(finalBass)],
       },
       {
         instrument: INSTRUMENTS.GUITAR_CLEAN,
         mute: false,
+        volume: 1,
         parts: [part(introGuitar), part(verseGuitar, 3), part(variationGuitar, 2), part(chorusGuitar, 3), part(verseGuitar, 2), part(chorusGuitar, 3), part(chorusGuitar, 2), part(chorusGuitar), part(outroGuitar), part(finalGuitar)],
       },
       {
         instrument: INSTRUMENTS.GUITAR_CLEAN,
         mute: false,
+        volume: 1,
         parts: [part(silentSection), part(silentSection, 3), part(silentSection, 2), part(silentSection, 3), part(silentSection, 2), part(silentSection, 3), part(soloGuitar, 2), part(silentSection), part(silentSection), part(finalRest)],
       },
     ],
