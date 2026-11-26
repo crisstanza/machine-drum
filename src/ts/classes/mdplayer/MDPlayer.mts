@@ -20,15 +20,15 @@ export class MDPlayer extends MDPlayerConstants {
   private downloadUrl?: string;
   private isDownloading = false;
 
-  private syncTrackMutes() {
-    this.song!.data.tracks.forEach((track, index) => {
+  private syncTrackGains(song: MDSong) {
+    song.data.tracks.forEach((track, index) => {
       let gainNode = this.trackGainNodes[index];
       if (!gainNode) {
         gainNode = this.audioContext.createGain();
         gainNode.connect(this.gainNode);
         this.trackGainNodes[index] = gainNode;
       }
-      gainNode.gain.value = track.mute ? 0 : 1;
+      gainNode.gain.value = track.mute ? 0 : track.volume;
     });
   }
 
@@ -97,6 +97,7 @@ export class MDPlayer extends MDPlayerConstants {
 
   public masterVolumeChanged() {
     this.setMasterVolumeTitle();
+    this.gainNode.gain.value = this.masterVolumeControl.valueAsNumber;
     if (this.song) {
       this.song.volume = this.masterVolumeControl.valueAsNumber;
     }
@@ -106,6 +107,7 @@ export class MDPlayer extends MDPlayerConstants {
     range.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.VOLUME(range.value));
     const track: MDSongDataTrack = song.data.tracks[i];
     track.volume = range.valueAsNumber;
+    this.syncTrackGains(song);
   }
 
   private showSongTracks(song: MDSong) {
@@ -118,7 +120,7 @@ export class MDPlayer extends MDPlayerConstants {
       range.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.VOLUME(volume));
       range.setAttribute(HTML.ATTRIBUTE_NAMES.TYPE, HTML.ATTRIBUTE_VALUES.RANGE);
       range.setAttribute(HTML.ATTRIBUTE_NAMES.MIN, "0");
-      range.setAttribute(HTML.ATTRIBUTE_NAMES.MAX, "1.5");
+      range.setAttribute(HTML.ATTRIBUTE_NAMES.MAX, "1");
       range.setAttribute(HTML.ATTRIBUTE_NAMES.STEP, "0.05");
       range.setAttribute(HTML.ATTRIBUTE_NAMES.VALUE, volume);
       range.addEventListener("change", () => this.trackVolumeChanged(range, song, i));
@@ -148,6 +150,7 @@ export class MDPlayer extends MDPlayerConstants {
       link.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.UNMUTE);
       track.mute = true;
     }
+    this.syncTrackGains(song);
   }
 
   private calcSongSteps(song: MDSong) {
@@ -282,7 +285,7 @@ export class MDPlayer extends MDPlayerConstants {
       return;
     }
 
-    this.syncTrackMutes();
+    this.syncTrackGains(this.song!);
     const stepDuration = this.subdivisionsInterval / 1000;
     while (this.pendingStopTime === undefined && this.nextStepTime < now + this.scheduleAheadTime) {
       this.playStep(this.nextStepTime);
@@ -366,7 +369,7 @@ export class MDPlayer extends MDPlayerConstants {
     if (this.isPaused || !this.isPlaying()) {
       return;
     }
-    this.syncTrackMutes();
+    this.syncTrackGains(this.song!);
     const steps = this.song!.data.tracks.map((track, index) => this.nextTrackStep(track, this.trackStates[index]));
     const stepIndex = this.currentStepIndex;
     this.scheduledPlayhead.push({ time: when, stepIndex });
@@ -549,7 +552,7 @@ export class MDPlayer extends MDPlayerConstants {
     }));
     const sampleRate = this.audioContext.sampleRate;
     const stepDuration = this.calcSubdivisionsInterval(song) / 1000;
-    const events: { buffer: AudioBuffer; frame: number; instrument: MDInstrument }[] = [];
+    const events: { buffer: AudioBuffer; frame: number; instrument: MDInstrument; trackIndex: number }[] = [];
     let stepIndex = 0;
     let latestSampleEndFrame = 0;
 
@@ -565,7 +568,7 @@ export class MDPlayer extends MDPlayerConstants {
             throw new Error(`Audio sample not found: ${track.instrument}/${name}.wav`);
           }
           const frame = Math.round(stepIndex * stepDuration * sampleRate);
-          events.push({ buffer, frame, instrument: track.instrument });
+          events.push({ buffer, frame, instrument: track.instrument, trackIndex });
           latestSampleEndFrame = Math.max(latestSampleEndFrame, frame + Math.ceil(buffer.duration * sampleRate));
         });
       });
@@ -577,6 +580,15 @@ export class MDPlayer extends MDPlayerConstants {
       numberOfChannels: 2,
       length: Math.max(1, songLength, latestSampleEndFrame),
       sampleRate,
+    });
+    const masterGain = offlineContext.createGain();
+    masterGain.gain.value = song.volume;
+    masterGain.connect(offlineContext.destination);
+    const trackGainNodes = tracks.map((track) => {
+      const gain = offlineContext.createGain();
+      gain.gain.value = track.mute ? 0 : track.volume;
+      gain.connect(masterGain);
+      return gain;
     });
     const voices = new Map<MDInstrument, { source: AudioBufferSourceNode; gain: GainNode; endFrame: number }[]>();
     for (let eventIndex = 0; eventIndex < events.length; ) {
@@ -608,19 +620,19 @@ export class MDPlayer extends MDPlayerConstants {
         voices.set(instrument, []);
       }
 
-      stepEvents.forEach(({ buffer, frame, instrument }) => {
+      stepEvents.forEach(({ buffer, frame, instrument, trackIndex }) => {
         const source = offlineContext.createBufferSource();
         source.buffer = buffer;
         if (instrument === INSTRUMENTS.BASS || instrument === INSTRUMENTS.GUITAR_CLEAN || instrument === INSTRUMENTS.PIANO) {
           const gain = offlineContext.createGain();
           source.connect(gain);
-          gain.connect(offlineContext.destination);
+          gain.connect(trackGainNodes[trackIndex]);
           const endFrame = frame + Math.ceil(buffer.duration * sampleRate);
           const instrumentVoices = voices.get(instrument) ?? [];
           instrumentVoices.push({ source, gain, endFrame });
           voices.set(instrument, instrumentVoices);
         } else {
-          source.connect(offlineContext.destination);
+          source.connect(trackGainNodes[trackIndex]);
         }
         source.start(frame / sampleRate);
       });
@@ -794,6 +806,7 @@ export class MDPlayer extends MDPlayerConstants {
     this.showSongTracks(this.song);
     this.songRepeat.checked = this.song.repeat ?? false;
     this.masterVolumeControl.value = this.song.volume.toString();
+    this.gainNode.gain.value = this.song.volume;
     this.setMasterVolumeTitle();
     this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.songInfo.classList.remove(HTML.CLASS_NAMES.LOADING);

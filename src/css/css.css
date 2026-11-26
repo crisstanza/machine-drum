@@ -160,12 +160,16 @@ section {
                     display: grid;
                     justify-items: center;
                     padding: calc(var(--main-padding)/2);
+                    margin-top: calc(var(--main-padding)/3);
                     background-color: #b2c6b0;
-                    margin: calc(var(--main-padding)/5);
 
                     input:has(+ a.muted) {
                         opacity: 0.5;
                     }
+                }
+
+                >span:not(:last-child) {
+                    margin-right: calc(var(--main-padding)/2);
                 }
             }
         }
