@@ -121,13 +121,6 @@ function _generate_audios_report() { # pseudo-private
     ls -1 src/audio/${FOLDER}/ | awk -F. '{print $1}' | jq -R . | jq -s . >> scripts/tmp/${FOLDER}.mts
 }
 
-function _replace_in_file() { # pseudo-private
-    local OLD="${1}"
-    local NEW="${2}"
-    local FILE="${3}"
-    sed -i "s/${OLD}/${NEW}/gw /dev/stdout" "${FILE}" || exit 1
-}
-
 function _trim_audios() { # pseudo-private
     local FOLDER="${1}"
     local THRESHOLD="${2}"
@@ -149,6 +142,25 @@ function _restore_some_audios() { # pseudo-private
     echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/bass
     echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/drums
     echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/guitar-clean
+}
+
+function _array_contains() { # pseudo-private
+    local -n ARRAY="${1}"
+    local STR="${2}"
+    for item in ${ARRAY[*]} ; do
+        if [[ "${item}" == "${STR}" ]] ; then
+            echo 1
+            return
+        fi
+    done
+    echo 0
+}
+
+function _replace_in_file() { # pseudo-private
+    local OLD="${1}"
+    local NEW="${2}"
+    local FILE="${3}"
+    sed -i "s/${OLD}/${NEW}/gw /dev/stdout" "${FILE}" || exit 1
 }
 
 ########################## HIC SUNT DRACONES ##########################
