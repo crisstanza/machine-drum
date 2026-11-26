@@ -91,14 +91,21 @@ export class MDPlayer extends MDPlayerConstants {
     return 1000 / (song.bpm / 60) / song.subdivisions;
   }
 
-  public masterVolumeChanged(event: Event) {
-    const target = event.target as HTMLInputElement;
-    target.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.MASTER_VOLUME(target.value));
+  private setMasterVolumeTitle() {
+    this.masterVolumeControl.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.MASTER_VOLUME(this.masterVolumeControl.value));
   }
 
-  private trackVolumeChanged(event: Event) {
-    const target = event.target as HTMLInputElement;
-    target.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.VOLUME(target.value));
+  public masterVolumeChanged() {
+    this.setMasterVolumeTitle();
+    if (this.song) {
+      this.song.volume = this.masterVolumeControl.valueAsNumber;
+    }
+  }
+
+  private trackVolumeChanged(range: HTMLInputElement, song: MDSong, i: number) {
+    range.setAttribute(HTML.ATTRIBUTE_NAMES.TITLE, HTML.ATTRIBUTE_VALUES.VOLUME(range.value));
+    const track: MDSongDataTrack = song.data.tracks[i];
+    track.volume = range.valueAsNumber;
   }
 
   private showSongTracks(song: MDSong) {
@@ -114,7 +121,7 @@ export class MDPlayer extends MDPlayerConstants {
       range.setAttribute(HTML.ATTRIBUTE_NAMES.MAX, "1.5");
       range.setAttribute(HTML.ATTRIBUTE_NAMES.STEP, "0.05");
       range.setAttribute(HTML.ATTRIBUTE_NAMES.VALUE, volume);
-      range.addEventListener("change", this.trackVolumeChanged);
+      range.addEventListener("change", () => this.trackVolumeChanged(range, song, i));
       const link: HTMLAnchorElement = document.createElement("a");
       link.textContent = track.instrument;
       if (track.mute) {
@@ -786,6 +793,8 @@ export class MDPlayer extends MDPlayerConstants {
     }
     this.showSongTracks(this.song);
     this.songRepeat.checked = this.song.repeat ?? false;
+    this.masterVolumeControl.value = this.song.volume.toString();
+    this.setMasterVolumeTitle();
     this.availableSongs.removeAttribute(HTML.ATTRIBUTE_NAMES.DISABLED);
     this.songInfo.classList.remove(HTML.CLASS_NAMES.LOADING);
     this.songInfoDynamic.classList.remove(HTML.CLASS_NAMES.LOADING);

@@ -93,6 +93,7 @@ export const song_07: MDSong = {
   subdivisions: 8,
 
   repeat: false,
+  volume: 0.5,
   prompt: "Crie uma versão de Brisa de Copacabana com a mesma estrutura e pegada de Bossa Nova, usando uma base fácil de acompanhar no violão, com síncopes leves no bumbo e sem subdivisões curtas.",
   data: {
     tracks: [

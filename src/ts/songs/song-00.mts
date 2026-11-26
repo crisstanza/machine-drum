@@ -15,6 +15,8 @@ export const song_00: MDSong = {
 
   repeat: false,
 
+  volume: 0.5,
+
   data: {
     tracks: [
       {

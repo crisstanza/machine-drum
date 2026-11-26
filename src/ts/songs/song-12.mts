@@ -197,6 +197,7 @@ export const song_12: MDSong = {
   bpm: 72,
   subdivisions: 8,
   repeat: false,
+  volume: 0.5,
   prompt:
     "Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-XX.mts` que seja uma música no estilo BALLAD com piano e bateria.\n\n" +
     "Faça uma música completa de aproximadamente 120 segundos, com introdução, verso, variação e parte final.\n\n" +

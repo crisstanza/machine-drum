@@ -23,6 +23,7 @@ export type MDSong = {
 
   repeat: boolean;
 
+  volume: number;
   data: MDSongData;
 };
 

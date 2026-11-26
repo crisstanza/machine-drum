@@ -100,7 +100,7 @@ export class Index {
 
     this.songDownloadLink.addEventListener("click", () => this.player.download());
 
-    this.masterVolumeControl.addEventListener("change", this.player.masterVolumeChanged);
+    this.masterVolumeControl.addEventListener("change", () => this.player.masterVolumeChanged());
 
     this.player.initAudios();
     this.player.initUserInterface();

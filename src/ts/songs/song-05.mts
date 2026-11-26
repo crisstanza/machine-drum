@@ -56,6 +56,7 @@ export const song_05: MDSong = {
   subdivisions: 8,
 
   repeat: false,
+  volume: 0.5,
   prompt: "Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-XX.mts` que seja um ritmo do gênero ROCK, com várias viradas, ataques e longos rolos.\n\nFaça uma música completa de aproximadamente 2 minutos e 15 segundo, com introdução, verso, refrão e solo, na ordem que você achar melhor. Faça a música ser bem dinâmica e agitada.\n\nPara saber os códigos das partes da bateria, leia o arquivo `README.md` (lembrando de nunca usar `G2`e `A#2`).\n\nNo novo arquivo criado, preencha a propriedade `prompt` do objeto `MDSong` com este prompt que você usou. Você deve usar EXATAMENTE este prompt que eu estou lhe passando, não a sua versão.\n\nNesta sessão, não edite a classe `MDPlayer`.",
   data: {
     tracks: [

@@ -13,6 +13,9 @@ export const song_01: MDSong = {
   subdivisions: 8,
 
   repeat: false,
+
+  volume: 0.5,
+
   data: {
     tracks: [
       {

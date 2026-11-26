@@ -101,9 +101,12 @@ section {
         background-color: #C5C2DE;
     }
 
-    &.download,
     &.current-song {
         background-color: #CBDEC2;
+    }
+
+    &.download {
+        background-color: #ded6c2;
     }
 
     >div.loading {

@@ -101,6 +101,7 @@ export const song_10: MDSong = {
   subdivisions: 8,
 
   repeat: false,
+  volume: 0.5,
   prompt:
     "Utilizando os arquivos da pasta `src/ts/songs` como exemplo, quero que você crie um novo arquivo `song-XX.mts` que seja uma música no estilo DISCO com baixo e bateria, base de guitarra e uma parte com solo de guitarra.\n\n" +
     "Faça uma música completa de aproximadamente 2 minutos e 15 segundos, com introdução, verso, variação, refrão e solo, na ordem que você desejar.\n\n" +
