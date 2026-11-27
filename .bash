@@ -1,5 +1,4 @@
 #!/bin/bash
-# set -eEo pipefail ; shopt -s inherit_errexit
 clear ; cd "$(dirname "${0}")"
 
 installDeps() {
@@ -27,7 +26,7 @@ transpileJS() {
     echo ''
     echo 'npx tsc --listEmittedFiles'
     echo ''
-    tsc --listEmittedFiles
+    tsc --listEmittedFiles || exit 1
     echo ''
 }
 
@@ -40,11 +39,11 @@ transpileJSAndWatch() {
 }
 
 minifyJS() {
-    npx esbuild `find . -wholename '*/src/js/*.mjs'` --outdir=build/js --minify --format=esm --out-extension:.js=.mjs
+    npx esbuild `find . -wholename '*/src/js/*.mjs'` --outdir=build/js --minify --format=esm --out-extension:.js=.mjs || exit 1
 }
 
 minifyCSS() {
-    npx esbuild `find . -wholename '*/src/css/*.css'` --outdir=build/css --minify
+    npx esbuild `find . -wholename '*/src/css/*.css'` --outdir=build/css --minify || exit 1
 }
 
 viteHelp() {
@@ -84,7 +83,6 @@ build() {
     shopt -s globstar nullglob
     for filePath in src/*/ ; do
         local FOLDER_NAME=`basename ${filePath}`
-        # local CONTAINS=`_array_contains DO_NOT_COPY "${FOLDER_NAME}" || kill -TERM $$`
         local CONTAINS=`_array_contains DO_NOT_COPY "${FOLDER_NAME}"`
         if [[ "${CONTAINS}" == 'false' ]] ; then
             cp -r "${filePath}" build --verbose
@@ -147,13 +145,6 @@ function _trim_audios() { # pseudo-private
     mv "${FOLDER_PATH}"/*.wav src/audio/${FOLDER}/
 }
 
-function _restore_some_audios() { # pseudo-private
-    local GIT_COMMIT=f45c11b011fdcc3da56622c148f9360f824e6779
-    echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/bass
-    echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/drums
-    echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/guitar-clean
-}
-
 function _array_contains() { # pseudo-private
     local -n ARRAY="${1}"
     local STR="${2}"
@@ -170,7 +161,19 @@ function _replace_in_file() { # pseudo-private
     local OLD="${1}"
     local NEW="${2}"
     local FILE="${3}"
-    sed -i "s/${OLD}/${NEW}/gw /dev/stdout" "${FILE}"
+    sed -i "s/${OLD}/${NEW}/gw /dev/stdout" "${FILE}" || exit 1
+}
+
+function _restore_some_folders() { # pseudo-private
+    local GIT_COMMIT=f45c11b011fdcc3da56622c148f9360f824e6779
+    echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/bass
+    echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/drums
+    echo git restore --source=${GIT_COMMIT} --worktree -- src/audio/guitar-clean
+}
+
+function _revert_some_commits() { # pseudo-private
+    local AMOUNT=2
+    echo git revert --no-commit HEAD~${AMOUNT}..
 }
 
 ########################## HIC SUNT DRACONES ##########################
