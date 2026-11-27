@@ -3,7 +3,8 @@ clear ; cd "$(dirname "${0}")"
 
 installDeps() {
     npm install -g typescript
-    npm install -g typescript html-minifier-terser
+    npm install -g html-minifier-terser
+    npm install -g html-validate
 }
 
 deps() {
@@ -48,14 +49,16 @@ minifyCSS() {
 }
 
 minifyHTML() {
-    find src -type f -name "*.html" | while read -r file ; do
+    html-validate "src/**/*.html" || exit 1
+    
+    while IFS= read -r file ; do
         local DEST="build/${file#src/}"
         mkdir -p "$(dirname "${DEST}")"
-        html-minifier-terser --collapse-whitespace --remove-comments --minify-js true --minify-css true "${file}" -o "${DEST}" || exit 1
+        html-minifier-terser --collapse-whitespace --remove-comments --minify-js true --minify-css true --no-include-auto-generated-tags "${file}" -o "${DEST}" || exit 1
         local ORIG_SIZE=$(wc -c < "${file}" | tr -d ' ')
         local MIN_SIZE=$(wc -c < "${DEST}" | tr -d ' ')
         echo "minified: ${file} -> ${DEST} (${ORIG_SIZE}B -> ${MIN_SIZE}B)"
-    done
+    done < <(find src -type f -name "*.html")
 }
 
 viteHelp() {

@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt">
   <head>
     <title>Machine Drum</title>
@@ -31,9 +31,9 @@
       <div class="song-info-dynamic loading" id="song-info-dynamic">
         <span>BPM:</span>
         <span>
-          <button id="minus-10-button">-10</button>
-          <input id="song-speed" type="number" title="song speed" step="1" min="1" max="500" maxlength="3" />
-          <button id="plus-10-button">10+</button>
+          <button type="button" id="minus-10-button">-10</button>
+          <input id="song-speed" type="number" title="song speed" step="1" min="1" max="500" />
+          <button type="button" id="plus-10-button">10+</button>
         </span>
         <span>Repeat?</span>
         <span><input type="checkbox" id="song-repeat" /></span>
@@ -44,9 +44,9 @@
     <section class="player">
       <div class="buttons">
         <input title="master volume" class="volume" id="master-volume-control" type="range" min="0" max="1" step="0.01" value="0" />
-        <button title="play" id="play-button" disabled>▶️</button>
-        <button title="pause" id="pause-button" disabled>⏸️</button>
-        <button title="stop" id="stop-button" disabled>⏹️</button>
+        <button type="button" title="play" id="play-button" disabled>▶️</button>
+        <button type="button" title="pause" id="pause-button" disabled>⏸️</button>
+        <button type="button" title="stop" id="stop-button" disabled>⏹️</button>
       </div>
       <div class="progress">
         <span>00:00</span>
@@ -61,7 +61,7 @@
     </section>
     <footer>
       <a title="source code on GitHub" target="_blank" href="https://github.com/crisstanza/machine-drum/">
-        <img src="img/github.png" width="32" height="32" class="github-icon" />
+        <img alt="GitHub" src="img/github.png" width="32" height="32" class="github-icon" />
       </a>
     </footer>
   </body>
