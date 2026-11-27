@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eEo pipefail ; shopt -s inherit_errexit
 clear ; cd "$(dirname "${0}")"
 
 installDeps() {
@@ -26,7 +27,7 @@ transpileJS() {
     echo ''
     echo 'npx tsc --listEmittedFiles'
     echo ''
-    tsc --listEmittedFiles || exit 1
+    tsc --listEmittedFiles
     echo ''
 }
 
@@ -39,11 +40,11 @@ transpileJSAndWatch() {
 }
 
 minifyJS() {
-    npx esbuild `find . -wholename '*/src/js/*.mjs'` --outdir=build/js --minify --format=esm --out-extension:.js=.mjs || exit 1
+    npx esbuild `find . -wholename '*/src/js/*.mjs'` --outdir=build/js --minify --format=esm --out-extension:.js=.mjs
 }
 
 minifyCSS() {
-    npx esbuild `find . -wholename '*/src/css/*.css'` --outdir=build/css --minify || exit 1
+    npx esbuild `find . -wholename '*/src/css/*.css'` --outdir=build/css --minify
 }
 
 viteHelp() {
@@ -83,7 +84,7 @@ build() {
     shopt -s globstar nullglob
     for filePath in src/*/ ; do
         local FOLDER_NAME=`basename ${filePath}`
-        local CONTAINS=`_array_contains DO_NOT_COPY "${FOLDER_NAME}"`
+        local CONTAINS=`_array_contains DO_NOT_COPY "${FOLDER_NAME}" || kill -s ABRT $$`
         if [[ "${CONTAINS}" == 'false' ]] ; then
             cp -r "${filePath}" build --verbose
         else
@@ -168,7 +169,7 @@ function _replace_in_file() { # pseudo-private
     local OLD="${1}"
     local NEW="${2}"
     local FILE="${3}"
-    sed -i "s/${OLD}/${NEW}/gw /dev/stdout" "${FILE}" || exit 1
+    sed -i "s/${OLD}/${NEW}/gw /dev/stdout" "${FILE}"
 }
 
 ########################## HIC SUNT DRACONES ##########################
