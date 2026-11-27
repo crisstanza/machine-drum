@@ -51,9 +51,16 @@ viteHelp() {
 }
 
 run() {
-    cd src
-    npx vite --port 8888 --open
-    cd ..
+    # VITE works fine, but you can serve only the current folder
+    # and it does not return 404 for not found paths:
+    # cd src ; npx vite --port 8888 --open ; cd ..
+    
+    # HTTP-SERVER works fine, but it has no live reload:
+    # npx http-server src -p 8888 -o -c-1
+    
+    # LIVE-SERVER works fine and without the limitations
+    # previously mentioned:
+    npx live-server src --port=8888
 }
 
 build() {
@@ -93,9 +100,8 @@ build() {
 }
 
 runBuild() {
-    cd build
-    npx vite --port 9999 --open
-    cd ..
+    # cd build ; npx vite --port 9999 --open ; cd ..
+    npx live-server build --port=9999
 }
 
 checkAudios() {
