@@ -77,8 +77,10 @@ build() {
     for filePath in src/*/ ; do
         local FOLDER_NAME=`basename ${filePath}`
         local CONTAINS=`_array_contains DO_NOT_COPY "${FOLDER_NAME}"`
-        if [[ $CONTAINS -eq 0 ]] ; then
+        if [[ "${CONTAINS}" == 'false' ]] ; then
             cp -r "${filePath}" build --verbose
+        else
+            echo "Omitted: ${FOLDER_NAME}"
         fi
     done
     echo ''
@@ -149,11 +151,11 @@ function _array_contains() { # pseudo-private
     local STR="${2}"
     for item in ${ARRAY[*]} ; do
         if [[ "${item}" == "${STR}" ]] ; then
-            echo 1
+            echo 'true'
             return
         fi
     done
-    echo 0
+    echo 'false'
 }
 
 function _replace_in_file() { # pseudo-private
