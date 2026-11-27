@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eEo pipefail ; shopt -s inherit_errexit
+# set -eEo pipefail ; shopt -s inherit_errexit
 clear ; cd "$(dirname "${0}")"
 
 installDeps() {
@@ -84,7 +84,8 @@ build() {
     shopt -s globstar nullglob
     for filePath in src/*/ ; do
         local FOLDER_NAME=`basename ${filePath}`
-        local CONTAINS=`_array_contains DO_NOT_COPY "${FOLDER_NAME}" || kill -s ABRT $$`
+        # local CONTAINS=`_array_contains DO_NOT_COPY "${FOLDER_NAME}" || kill -TERM $$`
+        local CONTAINS=`_array_contains DO_NOT_COPY "${FOLDER_NAME}"`
         if [[ "${CONTAINS}" == 'false' ]] ; then
             cp -r "${filePath}" build --verbose
         else
