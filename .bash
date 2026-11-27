@@ -3,6 +3,7 @@ clear ; cd "$(dirname "${0}")"
 
 installDeps() {
     npm install -g typescript
+    npm install -g typescript html-minifier-terser
 }
 
 deps() {
@@ -46,6 +47,17 @@ minifyCSS() {
     npx esbuild `find . -wholename '*/src/css/*.css'` --outdir=build/css --minify || exit 1
 }
 
+minifyHTML() {
+    find src -type f -name "*.html" | while read -r file ; do
+        local DEST="build/${file#src/}"
+        mkdir -p "$(dirname "${DEST}")"
+        html-minifier-terser --collapse-whitespace --remove-comments --minify-js true --minify-css true "${file}" -o "${DEST}" || exit 1
+        local ORIG_SIZE=$(wc -c < "${file}" | tr -d ' ')
+        local MIN_SIZE=$(wc -c < "${DEST}" | tr -d ' ')
+        echo "minified: ${file} -> ${DEST} (${ORIG_SIZE}B -> ${MIN_SIZE}B)"
+    done
+}
+
 viteHelp() {
     npx vite --help
 }
@@ -87,7 +99,7 @@ build() {
         if [[ "${CONTAINS}" == 'false' ]] ; then
             cp -r "${filePath}" build --verbose
         else
-            echo "Omitted: ${FOLDER_NAME}"
+            echo "omitted: ${FOLDER_NAME}"
         fi
     done
     echo ''
@@ -96,6 +108,10 @@ build() {
     for filePath in build/**/*.html ; do
         _replace_in_file '${TS}' "${TS}" "${filePath}"
     done
+    
+    echo ''
+    minifyHTML
+    
     shopt -u globstar
 }
 
