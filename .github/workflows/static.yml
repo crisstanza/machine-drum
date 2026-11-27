@@ -18,16 +18,35 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      NPM_CONFIG_PREFIX: ${{ github.workspace }}/.npm-global
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Build static content
+
+      - name: Adicionar npm global ao PATH
+        run: echo "${{ github.workspace }}/.npm-global/bin" >> $GITHUB_PATH
+
+      - name: Cache do TypeScript instalado
+        id: cache-tsc
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.npm-global
+          key: ${{ runner.os }}-tsc-${{ hashFiles('.bash') }}
+
+      - name: Instalar dependências (apenas se não houver cache)
+        if: steps.cache-tsc.outputs.cache-hit != 'true'
         run: |
           chmod +x ./.bash
           ./.bash installDeps
+
+      - name: Build static content
+        run: |
+          chmod +x ./.bash
           ./.bash build
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
